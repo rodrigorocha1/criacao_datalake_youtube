@@ -169,7 +169,10 @@ cython_debug/
 
 # Ruff stuff:
 .ruff_cache/
-
+temp_hadoop_datanode
+temp_hadoop_namenode
+logs
+.idea
 # PyPI configuration file
 .pypirc
 /hdfs/namenode/current/edits_0000000000000000001-0000000000000000011
@@ -182,3 +185,18 @@ cython_debug/
 /hdfs/namenode/in_use.lock
 /logs/scheduler/latest/
 hdfs
+/hdfss/namenode/current/edits_0000000000000000001-0000000000000000011
+/hdfss/namenode/current/edits_0000000000000000012-0000000000000000014
+/hdfss/namenode/current/edits_0000000000000000015-0000000000000000074
+/hdfss/namenode/current/edits_0000000000000000075-0000000000000000103
+/hdfss/namenode/current/edits_inprogress_0000000000000000104
+/hdfss/namenode/current/fsimage_0000000000000000074
+/hdfss/namenode/current/fsimage_0000000000000000074.md5
+/hdfss/namenode/current/fsimage_0000000000000000103
+/hdfss/namenode/current/fsimage_0000000000000000103.md5
+/hdfss/namenode/current/seen_txid
+/hdfss/namenode/current/VERSION
+/hdfss/namenode/in_use.lock
+/logs/scheduler/latest/
+/temp_hadoop_namenode/arquivo.txt
+/docs/.~lock.requisitos.odt#

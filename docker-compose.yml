@@ -49,6 +49,7 @@ services:
       - ./temp_hadoop_namenode:/hadoop/temp
     environment:
       - CLUSTER_NAME=hive
+      - HDFS_APPEND_ENABLED=true
     env_file:
       - ./hadoop-hive.env
     ports:
