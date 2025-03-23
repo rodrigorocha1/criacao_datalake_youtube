@@ -45,7 +45,8 @@ services:
       hadoop_network:
         ipv4_address: 192.168.1.10
     volumes:
-      - ./hdfs/namenode:/hadoop/dfs/name
+      - ./hdfss/namenode:/hadoop/dfs/name
+      - ./temp_hadoop_namenode:/hadoop/temp
     environment:
       - CLUSTER_NAME=hive
     env_file:
@@ -60,7 +61,8 @@ services:
       hadoop_network:
         ipv4_address: 192.168.1.11
     volumes:
-      - ./hdfs/datanode:/hadoop/dfs/data
+      - ./hdfss/datanode:/hadoop/dfs/data
+      - ./temp_hadoop_datanode:/hadoop/temp
     env_file:
       - ./hadoop-hive.env
     environment:
