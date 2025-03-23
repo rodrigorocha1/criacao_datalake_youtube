@@ -172,3 +172,13 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+/hdfs/namenode/current/edits_0000000000000000001-0000000000000000011
+/hdfs/namenode/current/edits_0000000000000000012-0000000000000000014
+/hdfs/namenode/current/edits_inprogress_0000000000000000015
+/hdfs/namenode/current/fsimage_0000000000000000000
+/hdfs/namenode/current/fsimage_0000000000000000000.md5
+/hdfs/namenode/current/seen_txid
+/hdfs/namenode/current/VERSION
+/hdfs/namenode/in_use.lock
+/logs/scheduler/latest/
+hdfs
