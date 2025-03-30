@@ -11,9 +11,10 @@ dados = {
     "NM_VIDEO": ["Video A", "Video B"],
     "TOTAL_VISUALIZACOES": [10000, 15000],
     "TOTAL_VISUALIZACOES_DIA": [5000, 7500],
-    "TOTAL_INSCRITOS": [2000, 2000],  # Número total de inscritos
+    "TOTAL_INSCRITOS": [2000, 2000],
     "TOTAL_CURTIDAS": [500, 800],
     "TOTAL_COMENTARIOS": [100, 150],
+    "TOTAL_LIKES": [600, 900],  # Supondo que "TOTAL_LIKES" seja outra métrica
 }
 
 df = pd.DataFrame(dados)
@@ -22,8 +23,7 @@ df = pd.DataFrame(dados)
 df["TOTAL_ENGAJAMENTO"] = df["TOTAL_CURTIDAS"] + df["TOTAL_COMENTARIOS"]
 
 # Calculando a Taxa de Engajamento por Inscrito
-df["Taxa de Engajamento por Inscrito (%)"] = (df["TOTAL_ENGAJAMENTO"] / df["TOTAL_INSCRITOS"]) * 100
+df["Taxa de Engajamento Video"] = (df["TOTAL_ENGAJAMENTO"] / df["TOTAL_INSCRITOS"]) * 100
 
 # Exibindo o DataFrame
-print(df[["ID_VIDEO", "NM_VIDEO", "TOTAL_ENGAJAMENTO", "TOTAL_INSCRITOS", "Taxa de Engajamento por Inscrito (%)"]])
-df.to_csv('docs/taxa_eng_inscritos.csv')
+df.to_csv('docs/taxa_eng.csv')
