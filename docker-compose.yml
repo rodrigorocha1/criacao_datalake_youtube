@@ -64,6 +64,7 @@ services:
     volumes:
       - ./hdfss/datanode:/hadoop/dfs/data
       - ./temp_hadoop_datanode:/hadoop/temp
+      - ./arquivo_raiz:/docker_arquivo_raiz
     env_file:
       - ./hadoop-hive.env
     environment:
@@ -109,12 +110,14 @@ services:
       hadoop_network:
         ipv4_address: 192.168.1.14
     volumes:
+      - ./pessoas:/pessoas  # Mapeando o diretório local para o container
       - ./employee:/employee
     env_file:
       - ./hadoop-hive.env
     environment:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"
+      TZ: "America/Sao_Paulo"
     depends_on:
       - hive-metastore
     ports:
