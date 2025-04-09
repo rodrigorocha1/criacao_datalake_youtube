@@ -14,7 +14,7 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
-#    _PIP_ADDITIONAL_REQUIREMENTS: "apache-airflow-providers-microsoft-mssql==3.6.0"
+  #    _PIP_ADDITIONAL_REQUIREMENTS: "apache-airflow-providers-microsoft-mssql==3.6.0"
 
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
@@ -38,118 +38,25 @@ networks:
 
 services:
 
-  namenode:
-    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
-    container_name: namenode
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.10
+  hadoop_hive:
+    image: hadoop-hive:latest
+    container_name: hadoop-hive-container
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+      - "50075:50075"
+      - "50070:50070"
+      - "9870:9870"
+      - "9864:9864"
+      - "8088:8088"
     volumes:
       - ./hdfss/namenode:/hadoop/dfs/name
       - ./temp_hadoop_namenode:/hadoop/temp
     environment:
-      - CLUSTER_NAME=hive
-      - HDFS_APPEND_ENABLED=true
-    env_file:
-      - ./hadoop-hive.env
-    ports:
-      - "50070:50070"
-
-  datanode:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
-    container_name: datanode
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.11
-    volumes:
-      - ./hdfss/datanode:/hadoop/dfs/data
-      - ./temp_hadoop_datanode:/hadoop/temp
-      - ./arquivo_raiz:/docker_arquivo_raiz
-    env_file:
-      - ./hadoop-hive.env
-    environment:
-      SERVICE_PRECONDITION: "namenode:50070"
-    depends_on:
-      - namenode
-    ports:
-      - "50075:50075"
-
-  resourcemanager:
-    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8
-    container_name: resourcemanager
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.12
-    environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075"
-    depends_on:
-      - namenode
-      - datanode
-    ports:
-      - "8088:8088"
-
-  historyserver:
-    image: bde2020/hadoop-historyserver:2.0.0-hadoop2.7.4-java8
-    container_name: historyserver
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.13
-    environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
-    depends_on:
-      - namenode
-      - datanode
-      - resourcemanager
-    ports:
-      - "8188:8188"
-
-  hive-server:
-    image: bde2020/hive:2.3.2-postgresql-metastore
-    container_name: hive-server
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.14
-    volumes:
-      - ./pessoas:/pessoas  # Mapeando o diretório local para o container
-      - ./employee:/employee
-    env_file:
-      - ./hadoop-hive.env
-    environment:
-      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
-      SERVICE_PRECONDITION: "hive-metastore:9083"
       TZ: "America/Sao_Paulo"
-    depends_on:
-      - hive-metastore
-    ports:
-      - "10000:10000"
-      - "10002:10002"
-
-  hive-metastore:
-    image: bde2020/hive:2.3.2-postgresql-metastore
-    container_name: hive-metastore
-    networks:
-      hadoop_network:
-        ipv4_address: 192.168.1.15
-    env_file:
-      - ./hadoop-hive.env
-    command: /opt/hive/bin/hive --service metastore
-    environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
-    depends_on:
-      - hive-metastore-postgresql
-    ports:
-      - "9083:9083"
-
-  hive-metastore-postgresql:
-    image: bde2020/hive-metastore-postgresql:2.3.0
-    container_name: hive-metastore-postgresql
     networks:
       hadoop_network:
         ipv4_address: 192.168.1.16
-    volumes:
-      - ./metastore-postgresql/postgresql/data:/var/lib/postgresql/data
-    depends_on:
-      - datanode
 
   dbt:
     image: ghcr.io/dbt-labs/dbt-core:1.9.2
@@ -158,7 +65,13 @@ services:
       - ./dbt:/usr/app/dbt
     environment:
       - DBT_PROFILES_DIR=/usr/app/dbt
-    entrypoint: [ "tail", "-f", "/dev/null" ]
+      - DBT_TARGET=hive
+      - DBT_PROFILE_HIVE_HOST=192.168.1.14
+      - DBT_PROFILE_HIVE_PORT=10000
+      - DBT_PROFILE_HIVE_DATABASE=youtube_datalake
+    entrypoint: |
+      bash -c "apt-get update && apt-get install -y libkrb5-dev && pip install --upgrade pip && pip install dbt-hive && tail -f /dev/null"
+
     ports:
       - "8081:8080"
     user: root
@@ -252,22 +165,22 @@ services:
         ipv4_address: 192.168.1.21
 
   airflow-scheduler:
-     <<: *airflow-common
-     command: scheduler
-     healthcheck:
-       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
-       interval: 30s
-       timeout: 10s
-       retries: 5
-       start_period: 30s
-     restart: always
-     depends_on:
-       <<: *airflow-common-depends-on
-       airflow-init:
-         condition: service_completed_successfully
-     networks:
-       hadoop_network:
-         ipv4_address: 192.168.1.22
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+    networks:
+      hadoop_network:
+        ipv4_address: 192.168.1.22
 
 
 volumes:
