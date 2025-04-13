@@ -38,22 +38,42 @@ networks:
 
 services:
 
-
-  hive:
-    image: apache/hive:4.0.1
-    container_name: hive4
-    environment:
-      - SERVICE_NAME=hiveserver2
+  hadoop:
+    image: hadoop_hive_v3:latest
+    container_name: hadoop_hive
     ports:
+      - "8088:8088"   # YARN ResourceManager
+      - "9864:9864"   # DataNode
+      - "9870:9870"   # NameNode Web UI
       - "10000:10000"
       - "10002:10002"
-    volumes:
-      - ./hive_metastore:/opt/hive/metastore
-      - ./hive_warehouse:/opt/hive/warehouse
-    restart: always
+    tty: true
+    stdin_open: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-webserver:
+        condition: service_healthy
+    environment:
+      - HADOOP_HOME=/apache/hadoop/hadoop
+      - HIVE_HOME=/apache/hadoop/hive
+      - HADOOP_PREFIX=/apache/hadoop/hadoop
+      - PATH=$PATH:/apache/hadoop/hadoop/bin:/apache/hadoop/hadoop/sbin
+    command: >
+      /bin/bash -c "
+        apt update &&
+        apt install -y sudo &&
+        service ssh start &&
+        bash /apache/hadoop/hadoop/sbin/start-all.sh &&
+        service mysql start &&
+        /apache/hadoop/hive/bin/hive --service metastore &
+        /apache/hadoop/hive/bin/hive --service hiveserver2 &
+        tail -f /dev/null"
     networks:
       hadoop_network:
-        ipv4_address: 192.168.1.12
+        ipv4_address: 192.168.1.16
+
+
 
   dbt:
     image: ghcr.io/dbt-labs/dbt-core:1.9.2
