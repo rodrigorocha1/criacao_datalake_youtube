@@ -38,25 +38,22 @@ networks:
 
 services:
 
-  hadoop_hive:
-    image: hadoop-hive:latest
-    container_name: hadoop-hive-container
+
+  hive:
+    image: apache/hive:4.0.1
+    container_name: hive4
+    environment:
+      - SERVICE_NAME=hiveserver2
     ports:
       - "10000:10000"
       - "10002:10002"
-      - "50075:50075"
-      - "50070:50070"
-      - "9870:9870"
-      - "9864:9864"
-      - "8088:8088"
     volumes:
-      - ./hdfss/namenode:/hadoop/dfs/name
-      - ./temp_hadoop_namenode:/hadoop/temp
-    environment:
-      TZ: "America/Sao_Paulo"
+      - ./hive_metastore:/opt/hive/metastore
+      - ./hive_warehouse:/opt/hive/warehouse
+    restart: always
     networks:
       hadoop_network:
-        ipv4_address: 192.168.1.16
+        ipv4_address: 192.168.1.12
 
   dbt:
     image: ghcr.io/dbt-labs/dbt-core:1.9.2
@@ -66,7 +63,7 @@ services:
     environment:
       - DBT_PROFILES_DIR=/usr/app/dbt
       - DBT_TARGET=hive
-      - DBT_PROFILE_HIVE_HOST=192.168.1.14
+      - DBT_PROFILE_HIVE_HOST=192.168.1.12
       - DBT_PROFILE_HIVE_PORT=10000
       - DBT_PROFILE_HIVE_DATABASE=youtube_datalake
     entrypoint: |
@@ -185,3 +182,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  mysql_data:
+  datalake:

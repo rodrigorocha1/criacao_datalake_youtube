@@ -1,0 +1,1 @@
+A|Vancouver|Female,57|Sales:89,HR:94|Sales:Lead

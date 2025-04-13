@@ -220,3 +220,4 @@ hdfs
 /hdfss/namenode/current/fsimage_0000000000000000337.md5
 /hdfss/namenode/current/fsimage_0000000000000000365
 /hdfss/namenode/current/fsimage_0000000000000000365.md5
+/hue_data/hue.ini

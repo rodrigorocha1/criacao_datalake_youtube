@@ -3,7 +3,7 @@ youtube_datalake:
   outputs:
     hive:
       type: hive
-      host: 192.168.1.16
+      host: 192.168.1.12
       port: 10000
       schema: youtube_datalake
       # username: <user>
