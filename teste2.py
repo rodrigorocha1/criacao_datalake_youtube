@@ -26,4 +26,4 @@ df["Taxa de Engajamento por Inscrito (%)"] = (df["TOTAL_ENGAJAMENTO"] / df["TOTA
 
 # Exibindo o DataFrame
 print(df[["ID_VIDEO", "NM_VIDEO", "TOTAL_ENGAJAMENTO", "TOTAL_INSCRITOS", "Taxa de Engajamento por Inscrito (%)"]])
-df.to_csv('docs/taxa_eng_inscritos.csv')
+df.to_csv('docs/taxa_eng_inscritos.csv)

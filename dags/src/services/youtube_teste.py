@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+
 import os
 
 # Carrega as variáveis de ambiente
