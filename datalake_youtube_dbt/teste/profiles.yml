@@ -1,0 +1,12 @@
+default:
+  outputs:
+    dev:
+      type: hive
+      # Add sample credentials here, like:
+      host: 192.168.1.16
+      port: 10000
+      username: rodrigo
+      password: rodrigo3
+      schema: default  # <== Esse campo precisa ser uma string válida
+      database: default  # também pode ser necessário para Hive/Spark
+  target: dev

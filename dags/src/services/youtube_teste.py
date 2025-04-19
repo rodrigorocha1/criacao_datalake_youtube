@@ -40,3 +40,12 @@ channel_request = youtube.channels().list(
 channel_response = channel_request.execute()
 print(channel_response)
 # Extrai e imprime o ID do canal
+request = youtube.videos().list(
+    part="snippet,contentDetails,statistics",
+    id='-CAzA5bDy3E'
+)
+
+# Executa a requisição e obtém a resposta
+response = request.execute()
+print('*' * 20)
+print(response)
