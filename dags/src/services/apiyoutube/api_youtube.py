@@ -28,19 +28,26 @@ class ApiYoutube(IApiYoutube):
         :return: Um gerador com as respostas dos assuntos
         :rtype: Generator[Dict[str, Any], None, None]
         """
+        next_page_token = None
+        while True:
+            request = self.__youtube.search().list(
+                q=assunto,
+                part='id,snippet',
+                type='video',  # Corrigido de 'vide' para 'video'
+                maxResults=50,
+                publishedAfter=data_publicacao_apos,
+                order='date',
+                pageToken=next_page_token
 
-        request = self.__youtube.search().list(
-            q=assunto,
-            part='id,snippet',
-            type='video',  # Corrigido de 'vide' para 'video'
-            maxResults=50,
-            publishedAfter='2025-04-01T00:00:00Z',
-            order='date'
+            )
 
-        )
+            response = request.execute()
+            yield from response['items']
 
-        response = request.execute()
-        print(response)
+            try:
+                next_page_token = response['nextPageToken']
+            except:
+                break
 
     def obter_dados_canais(self, id_canal: str) -> Dict[str, Any]:
         pass
