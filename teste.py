@@ -9,3 +9,6 @@ data_hora_busca = data_hora_atual.subtract(hours=7)
 data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
 print(data_hora_busca)
 ay = ApiYoutube()
+
+ay.obter_assunto(assunto='Python', data_publicacao_apos=data_hora_busca)
+

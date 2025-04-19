@@ -40,6 +40,7 @@ class ApiYoutube(IApiYoutube):
         )
 
         response = request.execute()
+        print(response)
 
     def obter_dados_canais(self, id_canal: str) -> Dict[str, Any]:
         pass
