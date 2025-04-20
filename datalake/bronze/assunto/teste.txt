@@ -1,3 +1,0 @@
-{"id": 1, "nome": "Tecnologia", "descricao": "Assuntos relacionados à inovação tecnológica, TI e computação", "ativo": true, "data_criacao": "2025-04-20T10:00:00Z"}
-{"id": 2, "nome": "Ciência", "descricao": "Assuntos sobre descobertas científicas e pesquisas", "ativo": true, "data_criacao": "2025-04-18T15:30:00Z"}
-{"id": 3, "nome": "Política", "descricao": "Assuntos políticos nacionais e internacionais", "ativo": false, "data_criacao": "2025-04-15T09:45:00Z"}
