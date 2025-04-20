@@ -63,7 +63,7 @@ class ApiYoutube(IApiYoutube):
         )
         response = requests_canais.execute()
 
-        return response, response['items'][0]['country']
+        return response, response['items'][0]['snippet']['country']
 
     def obter_dados_videos(self, id_video: str) -> Dict[str, Any]:
         """
