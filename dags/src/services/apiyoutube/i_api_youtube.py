@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator, Dict, Any
+from typing import Generator, Dict, Any, Tuple
 
 
 class IApiYoutube(ABC):
@@ -18,18 +18,18 @@ class IApiYoutube(ABC):
         pass
 
     @abstractmethod
-    def obter_dados_canais(self, id_canal: str) -> Dict[str, Any]:
+    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], bool]:
         """
         Método para buscar os dados dos canais
         :param id_canal: id do canal
         :type id_canal:  str
         :return: A lista com os dados dos canais
-        :rtype: Dict[str, Any]
+        :rtype: Tuple[Dict[str, Any], bool]
         """
         pass
 
     @abstractmethod
-    def obter_dados_videos(self, id_video: str) ->  Dict[str, Any]:
+    def obter_dados_videos(self, id_video: str) -> Dict[str, Any]:
         """
         Método para obter os dados estátisticos dos vídeos
         :param id_video: id do vídeo
