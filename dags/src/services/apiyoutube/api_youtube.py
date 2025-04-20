@@ -50,6 +50,13 @@ class ApiYoutube(IApiYoutube):
                 break
 
     def obter_dados_canais(self, id_canal: str) -> Dict[str, Any]:
+        """
+        Método para buscar os dados dos canais
+        :param id_canal: id do canal
+        :type id_canal:  str
+        :return: A lista com os dados dos canais
+        :rtype: Dict[str, Any]
+        """
         requests_canais = self.__youtube.channels().list(
             id=id_canal,
             part='snippet,statistics'
@@ -57,5 +64,17 @@ class ApiYoutube(IApiYoutube):
         response = requests_canais.execute()
         return response
 
-    def obter_dados_videos(self, id_video: str) -> Generator[Dict[str, Any], None, None]:
-        pass
+    def obter_dados_videos(self, id_video: str) -> Dict[str, Any]:
+        """
+        Método para obter os dados estátisticos dos vídeos
+        :param id_video: id do vídeo
+        :type id_video: str
+        :return: Um iterador com os dados dos canais
+        :rtype: Generator[Dict[str, Any], None, None]
+        """
+        request_video = self.__youtube.videos().list(
+                part="snippet,contentDetails,statistics",
+                id=id_video
+            )
+        response = request_video.execute()
+        return response['items']
