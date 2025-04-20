@@ -49,13 +49,13 @@ class ApiYoutube(IApiYoutube):
             except:
                 break
 
-    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], bool]:
+    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], str]:
         """
         Método para buscar os dados dos canais
         :param id_canal: id do canal
         :type id_canal:  str
         :return: A lista com os dados dos canais
-        :rtype: Tuple[Dict[str, Any], bool]
+        :rtype: Tuple[Dict[str, Any], str]
         """
         requests_canais = self.__youtube.channels().list(
             id=id_canal,

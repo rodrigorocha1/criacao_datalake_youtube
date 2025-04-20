@@ -19,6 +19,7 @@ class ETLYoutube:
             print(response)
             print(response['id']['videoId'], response['snippet']['title'])
             print(response['snippet']['channelId'], response['snippet']['channelTitle'])
+            dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
 
 
 if __name__ == '__main__':

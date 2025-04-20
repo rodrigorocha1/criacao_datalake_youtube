@@ -18,13 +18,13 @@ class IApiYoutube(ABC):
         pass
 
     @abstractmethod
-    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], bool]:
+    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], str]:
         """
         Método para buscar os dados dos canais
         :param id_canal: id do canal
         :type id_canal:  str
-        :return: A lista com os dados dos canais
-        :rtype: Tuple[Dict[str, Any], bool]
+        :return: A Tupla com os dados dos canais e
+        :rtype: Tuple[Dict[str, Any], str]
         """
         pass
 
