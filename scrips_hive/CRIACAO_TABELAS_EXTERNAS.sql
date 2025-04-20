@@ -111,6 +111,25 @@ ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///datalake/bronze/canais';
 
+drop table canais; 
+
+create table canais(
+	id_canal varchar(60),
+	nome_canal string
+)
+PARTITIONED BY (assunto STRING)
+STORED AS PARQUET;
+
+create table videos (
+	id_video varchar(80),
+	nome_video string
+)
+
+PARTITIONED BY (assunto STRING)
+STORED AS PARQUET;
+
+
+
 
 
 
