@@ -50,7 +50,12 @@ class ApiYoutube(IApiYoutube):
                 break
 
     def obter_dados_canais(self, id_canal: str) -> Dict[str, Any]:
-        pass
+        requests_canais = self.__youtube.channels().list(
+            id=id_canal,
+            part='snippet,statistics'
+        )
+        response = requests_canais.execute()
+        return response
 
     def obter_dados_videos(self, id_video: str) -> Generator[Dict[str, Any], None, None]:
         pass
