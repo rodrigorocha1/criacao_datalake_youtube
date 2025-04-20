@@ -29,12 +29,12 @@ class IApiYoutube(ABC):
         pass
 
     @abstractmethod
-    def obter_dados_videos(self, id_video: str) -> Generator[Dict[str, Any], None, None]:
+    def obter_dados_videos(self, id_video: str) ->  Dict[str, Any]:
         """
         Método para obter os dados estátisticos dos vídeos
         :param id_video: id do vídeo
         :type id_video: str
         :return: Um iterador com os dados dos canais
-        :rtype: Generator[Dict[str, Any], None, None]
+        :rtype:  Dict[str, Any]
         """
         pass
