@@ -1,5 +1,4 @@
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
-from dags.src.services.apiyoutube.api_youtube import ApiYoutube
 
 
 class ETLYoutube:
