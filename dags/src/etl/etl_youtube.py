@@ -1,11 +1,28 @@
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 from dags.src.services.manipulacao_dados.ioperacao_banco import IOperacaoBanco
+from datetime import datetime
 
 
 class ETLYoutube:
     def __init__(self, api_youtube: IApiYoutube, operacoes_banco: IOperacaoBanco):
         self.__api_youtube = api_youtube
         self.__operacoes_banco = operacoes_banco
+
+    def __obter_semana_portugues(self, data: datetime) -> str:
+
+        dias_semana = {
+            0: 'Segunda-feira',
+            1: 'Terça-feira',
+            2: 'Quarta-feira',
+            3: 'Quinta-feira',
+            4: 'Sexta-feira',
+            5: 'Sábado',
+            6: 'Domingo'
+        }
+
+        nome_dia = dias_semana[data.weekday()]
+
+        return nome_dia
 
     def processo_etl_assunto_video(
             self,
