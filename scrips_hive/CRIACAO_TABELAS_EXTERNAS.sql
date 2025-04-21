@@ -1,11 +1,21 @@
 -- Bronze ---------------------------------------------------
 
-select nome_canal 
+select * 
 from canais c ;
 
 select *
 from videos v ;
 
+ALTER TABLE bronze_assunto
+                        ADD IF NOT EXISTS PARTITION (
+                            ano=2025,
+                            mes=4,
+                            dia=21,
+                            dia_semana='Segunda-feira',
+                            assunto="python"
+                        )
+                        
+drop table bronze_assunto ; 
 
 insert into canais 
 partition(assunto='teste')
@@ -19,55 +29,56 @@ from bronze_assunto;
 describe  bronze_assunto
 
 alter table bronze_assunto
-add partition (ano=2024,mes=1,dia=1,dia_semana='segunda-feira' , assunto="Teste" );
+DROP partition (ano=2025,
+                            mes=4,
+                            dia=21,
+                            dia_semana='Segunda-feira',
+                            assunto="python" );
 
 
-ALTER TABLE bronze_assunto DROP PARTITION (ano=2024,mes=1,dia=1,dia_semana='segunda-feira' , assunto="Teste");
+                        ALTER TABLE bronze_assunto
+                        ADD  PARTITION (
+                            ano=2025,
+                            mes=4,
+                            dia=21,
+                            dia_semana='Segunda-feira',
+                            assunto="python"
+                        )
+                        
+SHOW PARTITIONS bronze_assunto PARTITION (ano=2025, mes=4, dia=21, dia_semana='Segunda-feira', assunto="python")
+
+
+ALTER TABLE bronze_assunto DROP PARTITION (ano=2025, mes=4, dia=21, dia_semana='Segunda-feira', assunto="python");
 
 show partitions bronze_assunto;
 
+drop table bronze_assunto
+
+select ba.snippet.channelid
+from bronze_assunto ba
+
 create external table bronze_assunto (
-	kind string,
-	etag string,
-	nextPageToken CHAR(6),
-	prevPageToken char(6),
-	regionCode CHAR(2),
-	pageInfo struct<totalResults:INT, resultsPerPage:INT>,
-	items ARRAY<STRUCT<
-    kind: STRING,
-    etag: STRING,
-    id: STRUCT<
-      kind: STRING,
-      videoId: STRING
+    kind STRING,
+    etag STRING,
+    id STRUCT<
+        kind: STRING,
+        videoId: STRING
     >,
-    snippet: STRUCT<
-      publishedAt: STRING,
-      channelId: STRING,
-      title: STRING,
-      description: STRING,
-      thumbnails: STRUCT<
-        default: STRUCT<
-          url: STRING,
-          width: INT,
-          height: INT
+    snippet STRUCT<
+        publishedAt: TIMESTAMP,
+        channelId: STRING,
+        title: STRING,
+        description: STRING,
+        thumbnails: STRUCT<
+            default: STRUCT<url: STRING, width: INT, height: INT>,
+            medium: STRUCT<url: STRING, width: INT, height: INT>,
+            high: STRUCT<url: STRING, width: INT, height: INT>
         >,
-        medium: STRUCT<
-          url: STRING,
-          width: INT,
-          height: INT
-        >,
-        high: STRUCT<
-          url: STRING,
-          width: INT,
-          height: INT
-        >
-      >,
-      channelTitle: STRING,
-      liveBroadcastContent: STRING,
-      publishTime: STRING
-    >
-  >>
-	
+        channelTitle: STRING,
+        liveBroadcastContent: STRING,
+        publishTime: TIMESTAMP
+    >,
+    data_pesquisa TIMESTAMP
 )
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana string, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
