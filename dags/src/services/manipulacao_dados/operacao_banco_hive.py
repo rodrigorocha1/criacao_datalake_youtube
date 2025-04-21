@@ -1,9 +1,9 @@
 from typing import Tuple, Any
 from dags.src.services.manipulacao_dados.iconexao_banco import IConexaoBanco
-from dags.src.services.manipulacao_dados.ioperacao_banco import IOperacaoBanco
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 
 
-class OperacaoBancoHive(IOperacaoBanco):
+class OperacaoBancoHive(IOperacaoDados):
     def __init__(self, conexao: IConexaoBanco):
         self.__conexao = conexao
 

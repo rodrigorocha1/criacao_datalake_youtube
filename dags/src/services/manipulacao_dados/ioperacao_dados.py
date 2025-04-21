@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Any
 
 
-class IOperacaoBanco(ABC):
+class IOperacaoDados(ABC):
 
     @abstractmethod
-    def executar_consulta(self, consulta: str) -> Tuple[bool, Any]:
+    def executar_consulta_dados(self, consulta: str) -> Tuple[bool, Any]:
         pass

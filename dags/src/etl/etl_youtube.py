@@ -1,12 +1,14 @@
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
-from dags.src.services.manipulacao_dados.ioperacao_banco import IOperacaoBanco
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoBanco
 from datetime import datetime
 from dateutil import parser
+
 
 class ETLYoutube:
     def __init__(self, api_youtube: IApiYoutube, operacoes_banco: IOperacaoBanco):
         self.__api_youtube = api_youtube
         self.__operacoes_banco = operacoes_banco
+        self.__operacoes_arquivo = None
 
     def __obter_semana_portugues(self, data: datetime) -> str:
 
@@ -51,7 +53,8 @@ class ETLYoutube:
         if dados[0]:
 
             # Criar partição
-            for response in self.__api_youtube.obter_assunto(assunto=assunto, data_publicacao_apos=data_publicacao_apos):
+            for response in self.__api_youtube.obter_assunto(assunto=assunto,
+                                                             data_publicacao_apos=data_publicacao_apos):
                 print(response)
                 response['data_pesquisa'] = data_pesquisa
                 response['assunto'] = assunto
