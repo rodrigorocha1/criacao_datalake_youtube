@@ -7,30 +7,39 @@ class OperacaoBancoHive(IOperacaoDados):
     def __init__(self, conexao: IConexaoBanco):
         self.__conexao = conexao
 
-    def executar_consulta(self, consulta: str) -> Tuple[bool, Any]:
+    def executar_consulta_dados(self, consulta: str) -> Tuple[bool, Any]:
         try:
             with self.__conexao.obter_conexao() as conn:
                 result = conn.execute(consulta)
             return True, result
         except Exception as e:
+            print(e)
             return False, None
 
 
 if __name__ == '__main__':
     from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
 
-    obh = OperacaoBancoHive(conexao=ConexaoBancoHive())
 
+    conexao_hive = ConexaoBancoHive()
+    operacao = OperacaoBancoHive(conexao=conexao_hive)
+
+
+    id_canal = 'b'
     consulta = f"""
-           ALTER TABLE bronze_assunto
-           ADD IF NOT EXISTS PARTITION (
-               ano=2025,
-               mes=4,
-               dia=11,
-               dia_semana='segunda',
-               assunto="teste"
-           )
-           """
+            SELECT 1
+            FROM canais c 
+            WHERE c.id_canal = '{id_canal}'
+            LIMIT 1 
+        """
 
-    a = obh.executar_consulta(consulta=consulta)
-    print(a)
+    sucesso, resultado = operacao.executar_consulta_dados(consulta=consulta)
+
+    if sucesso and resultado:
+        existe = any(resultado)
+        if existe:
+            print(f"Registro com id_canal='{id_canal}' existe.")
+        else:
+            print(f"Nenhum registro encontrado com id_canal='{id_canal}'.")
+    else:
+        print("Erro ao executar a consulta ou nenhum resultado retornado.")

@@ -1,30 +1,54 @@
-from typing import Dict
+from typing import Dict, Optional
 from abc import ABC, abstractmethod
 import os
 
 
 class Arquivo(ABC):
 
-    def __init__(self, datalake: str, assunto: str):
+    def __init__(self):
         self.__caminho_raiz = os.getcwd()
-        self.__pasta_raiz_datalake = datalake
-        self.__assunto = assunto
+        self.__pasta_raiz_datalake = 'datalake'
+        self.__camada = None
+        self.__caminho_particao = None
+        self.__termo_pesquisa = None
+
 
     @property
-    def assunto(self) -> str:
-        return self.__assunto
+    def caminho_particao(self):
+        return self.__caminho_particao
 
-    @assunto.setter
-    def assunto(self, assunto: str):
-        self.__assunto = assunto
+    @caminho_particao.setter
+    def caminho_particao(self, caminho_particao: str):
+        self.__caminho_particao = caminho_particao
 
     @property
-    def datalake(self) -> str:
-        return self.__pasta_raiz_datalake
+    def camada(self):
+        return self.__camada
 
-    @datalake.setter
-    def datalake(self, datalake: str):
-        self.__pasta_raiz_datalake = datalake
+    @camada.setter
+    def camada(self, camada: str):
+        self.__camada = camada
+
+    @property
+    def termo_pesquisa(self) -> str:
+        return self.__termo_pesquisa
+
+    @termo_pesquisa.setter
+    def termo_pesquisa(self, termo_pesquisa: str):
+        self.__termo_pesquisa = termo_pesquisa
+
+    @property
+    def caminho_completo(self) -> Optional[str]:
+        if None not in (self.__pasta_raiz_datalake, self.__camada, self.__termo_pesquisa):
+            return os.path.join(
+                self.__caminho_raiz,
+                self.__pasta_raiz_datalake,
+                self.__camada,
+                self.__termo_pesquisa,
+                self.__caminho_particao
+            )
+        return None
+
 
     @abstractmethod
     def guardar_dados(self, dado: Dict):
