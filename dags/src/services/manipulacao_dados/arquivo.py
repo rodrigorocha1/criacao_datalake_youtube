@@ -47,9 +47,20 @@ class Arquivo(ABC):
         self.__termo_pesquisa = termo_pesquisa
 
     @property
+    def diretorio(self):
+        return os.path.join(
+            self.__caminho_raiz,
+            self.__pasta_raiz_datalake,
+            self.__camada,
+            self.__termo_pesquisa,
+            self.__caminho_particao
+        )
+
+
+    @property
     def caminho_completo(self) -> Optional[str]:
         if None not in (self.__pasta_raiz_datalake, self.__camada, self.__termo_pesquisa):
-            return os.path.join(
+            caminho = os.path.join(
                 self.__caminho_raiz,
                 self.__pasta_raiz_datalake,
                 self.__camada,
@@ -57,6 +68,8 @@ class Arquivo(ABC):
                 self.__caminho_particao,
                 self.__nome_arquivo
             )
+
+            return caminho
         return None
 
     @abstractmethod

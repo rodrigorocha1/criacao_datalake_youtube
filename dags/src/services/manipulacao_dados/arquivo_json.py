@@ -1,5 +1,7 @@
 from typing import Dict
 import json
+import os
+import stat
 
 from dags.src.services.manipulacao_dados.arquivo import Arquivo
 
@@ -9,9 +11,12 @@ class ArquivoJson(Arquivo):
     def __init__(self):
         super().__init__()
 
-
     def guardar_dados(self, dado: Dict):
-        with open(self.caminho_completo, 'a') as arquivo_json:
+        if not os.access(self.diretorio, os.W_OK):
+            os.chmod(self.diretorio, stat.S_IWUSR | stat.S_IRUSR)
+
+
+        with open(self.caminho_completo, 'a', encoding='utf-8') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)
             arquivo_json.write('\n')
 
