@@ -222,3 +222,4 @@ hdfs
 /hdfss/namenode/current/fsimage_0000000000000000365.md5
 /hue_data/hue.ini
 /backup_docker/b_hadoop_hive_atualizado_v4.tar
+/datalake
