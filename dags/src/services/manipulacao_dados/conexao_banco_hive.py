@@ -1,9 +1,9 @@
-from dags.src.services.manipulacao_dados.conexao_banco import ConexaoBanco
+from dags.src.services.manipulacao_dados.iconexao_banco import IConexaoBanco
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Connection
 
 
-class ConexaoBancoHive(ConexaoBanco):
+class ConexaoBancoHive(IConexaoBanco):
     def __init__(self):
         self.__host = '172.28.0.14'
         self.__port = 10000
