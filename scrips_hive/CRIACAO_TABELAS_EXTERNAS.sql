@@ -1,5 +1,15 @@
 -- Bronze ---------------------------------------------------
 
+select nome_canal 
+from canais c ;
+
+select *
+from videos v ;
+
+
+insert into canais 
+partition(assunto='teste')
+VALUES('a', 'b');
 
 drop table bronze_assunto;
 
@@ -64,7 +74,14 @@ ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///datalake/bronze/assunto';
 
-
+ ALTER TABLE bronze_assunto
+    DROP IF EXISTS PARTITION (
+        ano=2025,
+        mes=4,
+        dia=11,
+        dia_semana='segunda',
+        assunto='teste'
+    )
 
 
 
