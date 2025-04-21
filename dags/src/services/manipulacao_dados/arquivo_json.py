@@ -9,6 +9,7 @@ class ArquivoJson(Arquivo):
     def __init__(self):
         super().__init__()
 
+
     def guardar_dados(self, dado: Dict):
         with open(self.caminho_completo, 'a') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)

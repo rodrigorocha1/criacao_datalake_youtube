@@ -6,12 +6,21 @@ import os
 class Arquivo(ABC):
 
     def __init__(self):
-        self.__caminho_raiz = os.getcwd()
+        # self.__caminho_raiz = os.getcwd()
+        self.__caminho_raiz = '/home/rodrigo/Documentos/projetos/criacao_datalake_youtube'
         self.__pasta_raiz_datalake = 'datalake'
         self.__camada = None
         self.__caminho_particao = None
         self.__termo_pesquisa = None
+        self.__nome_arquivo = None
 
+    @property
+    def nome_arquivo(self):
+        return self.__nome_arquivo
+
+    @nome_arquivo.setter
+    def nome_arquivo(self, nome_arquivo: str):
+        self.__nome_arquivo = nome_arquivo
 
     @property
     def caminho_particao(self):
@@ -45,10 +54,10 @@ class Arquivo(ABC):
                 self.__pasta_raiz_datalake,
                 self.__camada,
                 self.__termo_pesquisa,
-                self.__caminho_particao
+                self.__caminho_particao,
+                self.__nome_arquivo
             )
         return None
-
 
     @abstractmethod
     def guardar_dados(self, dado: Dict):
