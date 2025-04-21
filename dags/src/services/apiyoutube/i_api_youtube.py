@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator, Dict, Any, Tuple
+from typing import Generator, Dict, Any, Tuple, Union
 
 
 class IApiYoutube(ABC):
@@ -18,13 +18,13 @@ class IApiYoutube(ABC):
         pass
 
     @abstractmethod
-    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], str]:
+    def obter_dados_canais(self, id_canal: str) -> Union[Tuple[Dict[str, Any], str], Tuple[None, bool]]:
         """
         Método para buscar os dados dos canais
         :param id_canal: id do canal
         :type id_canal:  str
         :return: A Tupla com os dados dos canais e
-        :rtype: Tuple[Dict[str, Any], str]
+        :rtype: Union[Tuple[Dict[str, Any], str], Tuple[None, bool]]
         """
         pass
 

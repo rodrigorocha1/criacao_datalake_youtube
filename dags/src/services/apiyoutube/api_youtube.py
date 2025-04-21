@@ -1,4 +1,4 @@
-from typing import Generator, Dict, Any, Tuple
+from typing import Generator, Dict, Any, Tuple, Union
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 import os
@@ -49,21 +49,24 @@ class ApiYoutube(IApiYoutube):
             except:
                 break
 
-    def obter_dados_canais(self, id_canal: str) -> Tuple[Dict[str, Any], str]:
+    def obter_dados_canais(self, id_canal: str) -> Union[Tuple[Dict[str, Any], str], Tuple[None, bool]]:
         """
         Método para buscar os dados dos canais
         :param id_canal: id do canal
         :type id_canal:  str
         :return: A lista com os dados dos canais
-        :rtype: Tuple[Dict[str, Any], str]
+        :rtype: Union[Tuple[Dict[str, Any], str], Tuple[None, bool]]
         """
-        requests_canais = self.__youtube.channels().list(
-            id=id_canal,
-            part='snippet,statistics'
-        )
-        response = requests_canais.execute()
+        try:
+            requests_canais = self.__youtube.channels().list(
+                id=id_canal,
+                part='snippet,statistics'
+            )
+            response = requests_canais.execute()
 
-        return response, response['items'][0]['snippet']['country']
+            return response, response['items'][0]['snippet']['country']
+        except:
+            return None, False
 
     def obter_dados_videos(self, id_video: str) -> Dict[str, Any]:
         """

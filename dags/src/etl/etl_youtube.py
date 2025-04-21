@@ -97,7 +97,7 @@ class ETLYoutube:
 
                     )
 
-                break
+                # break
         else:
             # Tratamento de erro
             # parar a rotina
@@ -124,7 +124,7 @@ class ETLYoutube:
             if not existe:
                 consulta = f"""
                     INSERT INTO {tabela} 
-                    PARTITION (assunto={assunto})
+                    PARTITION (assunto='{assunto}')
                     VALUES {valor_insercao}
                 """
                 consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
@@ -143,4 +143,4 @@ if __name__ == '__main__':
             conexao=ConexaoBancoHive()
         )
     )
-    etl.processo_etl_assunto_video(assunto='python', data_publicacao_apos='2025-04-21T16:15:00Z')
+    etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-21T16:50:46Z')
