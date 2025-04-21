@@ -40,23 +40,26 @@ class ETLYoutube:
         dia = data.day
         dia_semana = self.__obter_semana_portugues(data=data)
 
-        self.__operacoes_arquivo.camada = 'bronze'
-        self.__operacoes_arquivo.termo_pesquisa = 'assunto'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
-
         consulta = f"""
-                ALTER TABLE bronze_assunto
-                ADD IF NOT EXISTS PARTITION (
-                    ano={ano},
-                    mes={mes},
-                    dia={dia},
-                    dia_semana='{dia_semana}',
-                    assunto="{assunto}"
-                )
-                """
+                        ALTER TABLE bronze_assunto
+                        ADD IF NOT EXISTS PARTITION (
+                            ano={ano},
+                            mes={mes},
+                            dia={dia},
+                            dia_semana='{dia_semana}',
+                            assunto="{assunto}"
+                        )
+                        """
+        print(consulta)
         dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
+
+
         if dados[0]:
+            self.__operacoes_arquivo.camada = 'bronze'
+            self.__operacoes_arquivo.termo_pesquisa = 'assunto'
+            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+            self.__operacoes_arquivo.nome_arquivo = 'assunto.json'
 
             for response in self.__api_youtube.obter_assunto(
                     assunto=assunto,
