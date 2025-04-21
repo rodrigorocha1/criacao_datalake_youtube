@@ -1,10 +1,11 @@
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
+from dags.src.services.manipulacao_dados.ioperacao_banco import IOperacaoBanco
 
 
 class ETLYoutube:
-    def __init__(self, api_youtube: IApiYoutube):
+    def __init__(self, api_youtube: IApiYoutube, operacoes_banco: IOperacaoBanco):
         self.__api_youtube = api_youtube
-        self.__arquivo_hadoop = None
+        self.__operacoes_banco = operacoes_banco
 
     def processo_etl_assunto_video(
             self,
@@ -12,6 +13,7 @@ class ETLYoutube:
             data_publicacao_apos: str,
             data_pesquisa='2025-04-01T00:00:00Z'
     ):
+        # Criar partição
         for response in self.__api_youtube.obter_assunto(assunto=assunto, data_publicacao_apos=data_publicacao_apos):
             print(response)
             response['data_pesquisa'] = data_pesquisa
@@ -26,13 +28,20 @@ class ETLYoutube:
                 dados_canais[0]['assunto'] = assunto
                 # Gravar dados canais
                 print(dados_canais[0])
+            break
 
 
 if __name__ == '__main__':
     from dags.src.services.apiyoutube.api_youtube import ApiYoutube
+    from dags.src.services.manipulacao_dados.operacao_banco_hive import OperacaoBancoHive
+    from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
 
     etl_youtube = ETLYoutube(
-        api_youtube=ApiYoutube()
+        api_youtube=ApiYoutube(),
+        operacoes_banco=OperacaoBancoHive(
+            conexao=ConexaoBancoHive()
+        )
+
     )
     etl_youtube.processo_etl_assunto_video(
         assunto='python',

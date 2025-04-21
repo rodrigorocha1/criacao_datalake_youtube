@@ -1,3 +1,4 @@
+from typing import Tuple, Any
 from dags.src.services.manipulacao_dados.iconexao_banco import IConexaoBanco
 from dags.src.services.manipulacao_dados.ioperacao_banco import IOperacaoBanco
 
@@ -6,13 +7,13 @@ class OperacaoBancoHive(IOperacaoBanco):
     def __init__(self, conexao: IConexaoBanco):
         self.__conexao = conexao
 
-    def executar_consulta(self, consulta: str) -> bool:
+    def executar_consulta(self, consulta: str) -> Tuple[bool, Any]:
         try:
             with self.__conexao.obter_conexao() as conn:
                 result = conn.execute(consulta)
-            return True
+            return True, result
         except Exception as e:
-            return False
+            return False, None
 
 
 if __name__ == '__main__':
