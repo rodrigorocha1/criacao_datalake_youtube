@@ -3,6 +3,8 @@
 select * 
 from canais c ;
 
+TRUNCATE  table canais;
+
 select *
 from videos v ;
 
@@ -50,11 +52,11 @@ SHOW PARTITIONS bronze_assunto PARTITION (ano=2025, mes=4, dia=21, dia_semana='S
 
 ALTER TABLE bronze_assunto DROP PARTITION (ano=2025, mes=4, dia=21, dia_semana='Segunda-feira', assunto="python");
 
-show partitions bronze_assunto;
+show partitions bronze_canais;
 
 drop table bronze_assunto
 
-select ba.snippet.channelid
+select *
 from bronze_assunto ba
 
 create external table bronze_assunto (
@@ -83,61 +85,90 @@ create external table bronze_assunto (
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana string, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
-LOCATION 'file:///datalake/bronze/assunto';
+LOCATION 'file:///home/hadoop/datalake/bronze/assunto';
 
- ALTER TABLE bronze_assunto
+select  1
+
+select *
+from bronze_canais;
+
+
+         ALTER TABLE bronze_canais
+                        ADD  PARTITION (
+                            ano=2025,
+                            mes=4,
+                            dia=22,
+                            dia_semana='Segunda-feira',
+                            assunto="Danilo"
+                        )
+
+drop table bronze_canais;
+
+
+CREATE EXTERNAL TABLE bronze_canais (
+    kind STRING,
+    etag STRING,
+    id STRING,
+    snippet STRUCT<
+        title: STRING,
+        description: STRING,
+        customUrl: STRING,
+        publishedAt: STRING,
+        thumbnails: MAP<STRING, STRUCT<url: STRING, width: INT, height: INT>>,
+        defaultLanguage: STRING,
+        localized: STRUCT<title: STRING, description: STRING>,
+        country: STRING
+    >,
+    statistics STRUCT<
+        viewCount: STRING,
+        subscriberCount: STRING,
+        hiddenSubscriberCount: BOOLEAN,
+        videoCount: STRING
+    >
+)
+PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana STRING, assunto STRING)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE
+LOCATION 'file:///home/hadoop/datalake/bronze/canais';
+
+drop table bronze_canais;
+
+ ALTER TABLE bronze_canais
     DROP IF EXISTS PARTITION (
         ano=2025,
         mes=4,
-        dia=11,
-        dia_semana='segunda',
-        assunto='teste'
+        dia=21,
+        dia_semana='Segunda-feira',
+        assunto='Danilo'
     )
-
-
-
-
+select *
+from bronze_canais;
 
 create external table bronze_canais  (
     kind STRING,
     etag STRING,
-    page_info STRUCT<
-        total_results: INT,
-        results_per_page: INT
+    id STRING,
+    snippet STRUCT<
+        title: STRING,
+        description: STRING,
+        customUrl: STRING,
+        publishedAt: STRING,
+        thumbnails: MAP<STRING, STRUCT<url: STRING, width: INT, height: INT>>,
+        defaultLanguage: STRING,
+        localized: STRUCT<title: STRING, description: STRING>,
+        country: STRING
     >,
-    items ARRAY<STRUCT<
-        kind: STRING,
-        etag: STRING,
-        id: STRING,
-        snippet: STRUCT<
-            title: STRING,
-            description: STRING,
-            custom_url: STRING,
-            published_at: STRING,
-            thumbnails: STRUCT<
-                default: STRUCT<url: STRING, width: INT, height: INT>,
-                medium: STRUCT<url: STRING, width: INT, height: INT>,
-                high: STRUCT<url: STRING, width: INT, height: INT>
-            >,
-            default_language: STRING,
-            localized: STRUCT<
-                title: STRING,
-                description: STRING
-            >,
-            country: STRING
-        >,
-        statistics: STRUCT<
-            view_count: STRING,
-            subscriber_count: STRING,
-            hidden_subscriber_count: BOOLEAN,
-            video_count: STRING
-        >
-    >>
+    statistics STRUCT<
+        viewCount: STRING,
+        subscriberCount: STRING,
+        hiddenSubscriberCount: BOOLEAN,
+        videoCount: STRING
+    >
 )
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana string, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
-LOCATION 'file:///datalake/bronze/canais';
+LOCATION 'file:///home/hadoop/datalake/bronze/canais';
 
 drop table canais; 
 
@@ -157,6 +188,7 @@ PARTITIONED BY (assunto STRING)
 STORED AS PARQUET;
 
 
+select *
 
 
 
