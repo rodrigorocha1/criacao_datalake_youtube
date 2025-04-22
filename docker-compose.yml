@@ -42,7 +42,7 @@ services:
     #    stdin_open: true
     #    tty: true
     volumes:
-      - ./datalake:/datalake
+      - ./datalake:/home/hadoop/datalake
       - ./datalake_youtube_dbt:/home/hadoop/projeto_dbt
       - ./mysql_data:/var/lib/mysql
     environment:
