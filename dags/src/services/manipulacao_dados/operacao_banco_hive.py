@@ -19,27 +19,20 @@ class OperacaoBancoHive(IOperacaoDados):
 
 if __name__ == '__main__':
     from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
-
-
     conexao_hive = ConexaoBancoHive()
     operacao = OperacaoBancoHive(conexao=conexao_hive)
 
 
     id_canal = 'b'
     consulta = f"""
-            SELECT 1
+            SELECT *
             FROM canais c 
-            WHERE c.id_canal = '{id_canal}'
-            LIMIT 1 
+
         """
 
-    sucesso, resultado = operacao.executar_consulta_dados(consulta=consulta)
+    sucesso, resultados = operacao.executar_consulta_dados(consulta=consulta)
 
-    if sucesso and resultado:
-        existe = any(resultado)
-        if existe:
-            print(f"Registro com id_canal='{id_canal}' existe.")
-        else:
-            print(f"Nenhum registro encontrado com id_canal='{id_canal}'.")
-    else:
-        print("Erro ao executar a consulta ou nenhum resultado retornado.")
+    for resultado in resultados:
+        print(resultado[0])
+
+

@@ -1,31 +1,21 @@
-from dags.src.services.apiyoutube.api_youtube import ApiYoutube
-import pendulum
+import docker
 
-data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
-data_hora_atual = pendulum.parse(data_hora_atual)
-hora_atual = int(data_hora_atual.hour)
-data = data_hora_atual.format('YYYY_MM_DD')
-# data_hora_busca = data_hora_atual.subtract(hours=7)
+# Conectando ao Docker
+client = docker.from_env()
 
-data_hora_busca = data_hora_atual.strftime('%Y-%m-%dT%H:%M:%SZ')
+# Nome do container existente (substitua pelo nome do seu container)
+container_name = 'hadoop_hive_dbt_container'
 
-from dateutil import parser
+# Obtenha o container pelo nome
+container = client.containers.get(container_name)
 
-data_str = '2025-04-21T00:00:00Z'
-data_dt = parser.isoparse(data_str)
-print(type(data_dt))
-print(data_dt.strftime('%A'))
+# Defina o caminho do arquivo que deseja criar dentro do container
+container_file_path = '/arquivo.txt'
 
+# Conteúdo do arquivo
+file_content = "Este é um arquivo criado dentro do container Docker."
 
-dias_semana = {
-    0: 'Segunda-feira',
-    1: 'Terça-feira',
-    2: 'Quarta-feira',
-    3: 'Quinta-feira',
-    4: 'Sexta-feira',
-    5: 'Sábado',
-    6: 'Domingo'
-}
-nome_dia_pt = dias_semana[data_dt.weekday()]
-print(nome_dia_pt)
+# Escreva o conteúdo no arquivo dentro do container
+container.exec_run(f'echo "{file_content}" > sudo tee {container_file_path}')
 
+print(f"Arquivo {container_file_path} criado no container {container_name}.")

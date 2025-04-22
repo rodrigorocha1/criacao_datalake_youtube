@@ -41,19 +41,17 @@ class ETLYoutube:
         dia_semana = self.__obter_semana_portugues(data=data)
 
         consulta = f"""
-                        ALTER TABLE bronze_assunto
-                        ADD IF NOT EXISTS PARTITION (
-                            ano={ano},
-                            mes={mes},
-                            dia={dia},
-                            dia_semana='{dia_semana}',
-                            assunto="{assunto}"
-                        )
-                        """
-        print(consulta)
+            ALTER TABLE bronze_assunto
+            ADD IF NOT EXISTS PARTITION (
+            ano={ano},
+            mes={mes},
+            dia={dia},
+            dia_semana='{dia_semana}',
+            assunto="{assunto}"
+        )
+        """
+
         dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-
-
 
         if dados[0]:
             self.__operacoes_arquivo.camada = 'bronze'
@@ -129,6 +127,58 @@ class ETLYoutube:
                 """
                 consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
+    def processo_etl_canal(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
+
+        data = parser.isoparse(data_pesquisa)
+        ano = data.year
+        mes = data.month
+        dia = data.day
+        dia_semana = self.__obter_semana_portugues(data=data)
+
+        self.__operacoes_arquivo.camada = 'bronze'
+        self.__operacoes_arquivo.termo_pesquisa = 'canais'
+        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+        self.__operacoes_arquivo.nome_arquivo = 'canais.json'
+
+        consulta = f"""
+            SELECT *
+            FROM canais c  
+        """
+        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+
+        if sucesso:
+            consulta = f"""
+                ALTER TABLE bronze_canais
+                ADD IF NOT EXISTS PARTITION (
+                ano={ano},
+                mes={mes},
+                dia={dia},
+                dia_semana='{dia_semana}',
+                assunto="{assunto}"
+            )
+             """
+
+            dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            for resultado in resultados:
+                if dados[0]:
+                    # id_canal = resultado[0]
+                    id_canal = 'UCNnROTUy8Zskn44a07F-o-Q'
+                    response, _ = self.__api_youtube.obter_dados_canais(id_canal=id_canal)
+
+                    response = response['items'][0]
+                    print(response)
+
+                    response['data_pesquisa'] = data_pesquisa
+                    response['assunto'] = assunto
+                    self.__operacoes_arquivo.guardar_dados(dado=response)
+
+                else:
+                    pass
+
+        else:
+            pass
+            # tratamento de erro
+
 
 if __name__ == '__main__':
     from dags.src.services.apiyoutube.api_youtube import ApiYoutube
@@ -143,4 +193,5 @@ if __name__ == '__main__':
             conexao=ConexaoBancoHive()
         )
     )
-    etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-21T16:50:46Z')
+    # etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-21T16:50:46Z')
+    etl.processo_etl_canal(assunto='Danilo', data_pesquisa='2025-04-21T16:50:46Z')
