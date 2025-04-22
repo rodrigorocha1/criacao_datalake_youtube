@@ -15,10 +15,7 @@ class ArquivoJson(Arquivo):
 
     def guardar_dados(self, dado: Dict):
         dado = json.dumps(dado)
-
         dado_json_escaped = dado.replace('"', '\\"')
-
-        # Monta o comando bash com o dado JSON formatado
         comando = f"bash -c 'echo \"{dado_json_escaped}\" >> {self.caminho_completo}'"
         exec_log = self.__container.exec_run(
             cmd=comando,
