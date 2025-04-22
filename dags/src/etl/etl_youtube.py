@@ -146,7 +146,7 @@ class ETLYoutube:
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
-        if sucesso:
+        if True:
             consulta = f"""
                 ALTER TABLE bronze_canais
                 ADD IF NOT EXISTS PARTITION (
@@ -159,14 +159,15 @@ class ETLYoutube:
              """
 
             dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-            for resultado in resultados:
+            for resultado in [1]:
                 if dados[0]:
                     # id_canal = resultado[0]
                     id_canal = 'UCNnROTUy8Zskn44a07F-o-Q'
                     response, _ = self.__api_youtube.obter_dados_canais(id_canal=id_canal)
-
-                    response = response['items'][0]
                     print(response)
+                    response = response['items'][0]
+
+                    print(type(response))
 
                     response['data_pesquisa'] = data_pesquisa
                     response['assunto'] = assunto

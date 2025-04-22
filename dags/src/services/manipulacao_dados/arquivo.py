@@ -7,7 +7,7 @@ class Arquivo(ABC):
 
     def __init__(self):
         # self.__caminho_raiz = os.getcwd()
-        self.__caminho_raiz = '/home/rodrigo/Documentos/projetos/criacao_datalake_youtube'
+        self.__caminho_raiz = '/home/hadoop/'
         self.__pasta_raiz_datalake = 'datalake'
         self.__camada = None
         self.__caminho_particao = None
