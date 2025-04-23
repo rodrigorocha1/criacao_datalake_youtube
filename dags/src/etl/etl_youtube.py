@@ -146,7 +146,7 @@ class ETLYoutube:
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
-        if True:
+        if sucesso:
             consulta = f"""
                 ALTER TABLE bronze_canais
                 ADD IF NOT EXISTS PARTITION (
@@ -159,16 +159,57 @@ class ETLYoutube:
              """
 
             dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-            for resultado in [1]:
+            for resultado in resultados:
                 if dados[0]:
-                    # id_canal = resultado[0]
-                    id_canal = 'UCNnROTUy8Zskn44a07F-o-Q'
+                    id_canal = resultado[0]
                     response, _ = self.__api_youtube.obter_dados_canais(id_canal=id_canal)
-                    print(response)
                     response = response['items'][0]
+                    response['data_pesquisa'] = data_pesquisa
+                    response['assunto'] = assunto
+                    self.__operacoes_arquivo.guardar_dados(dado=response)
 
-                    print(type(response))
+                else:
+                    pass
 
+        else:
+            pass
+            # tratamento de erro
+
+    def processo_etl_video(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
+        data = parser.isoparse(data_pesquisa)
+        ano = data.year
+        mes = data.month
+        dia = data.day
+        dia_semana = self.__obter_semana_portugues(data=data)
+
+        self.__operacoes_arquivo.camada = 'bronze'
+        self.__operacoes_arquivo.termo_pesquisa = 'videos'
+        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+        self.__operacoes_arquivo.nome_arquivo = 'video.json'
+
+        consulta = f"""
+                    SELECT *
+                    FROM videos v  
+                """
+        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+
+        if sucesso:
+            consulta = f"""
+                ALTER TABLE bronze_videos
+                ADD IF NOT EXISTS PARTITION (
+                ano={ano},
+                mes={mes},
+                dia={dia},
+                dia_semana='{dia_semana}',
+                assunto="{assunto}"
+            )
+             """
+
+            dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            for resultado in resultados:
+                if dados[0]:
+                    id_video = resultado[0]
+                    response = self.__api_youtube.obter_dados_videos(id_video=id_video)
                     response['data_pesquisa'] = data_pesquisa
                     response['assunto'] = assunto
                     self.__operacoes_arquivo.guardar_dados(dado=response)
@@ -194,5 +235,6 @@ if __name__ == '__main__':
             conexao=ConexaoBancoHive()
         )
     )
-    # etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-21T16:50:46Z')
-    etl.processo_etl_canal(assunto='Danilo', data_pesquisa='2025-04-21T16:50:46Z')
+    # etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-23T18:50:46Z')
+    # etl.processo_etl_canal(assunto='Danilo', data_pesquisa='2025-04-23T18:50:46Z')
+    # etl.processo_etl_video(assunto='Danilo', data_pesquisa='2025-04-23T18:50:46Z')

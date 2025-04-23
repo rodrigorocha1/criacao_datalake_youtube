@@ -22,8 +22,6 @@ class ArquivoJson(Arquivo):
             stdout=True,
             stderr=True
         )
-        print(exec_log)
-
 
 if __name__ == '__main__':
     aj = ArquivoJson()

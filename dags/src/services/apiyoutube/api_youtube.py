@@ -74,14 +74,14 @@ class ApiYoutube(IApiYoutube):
         :param id_video: id do vídeo
         :type id_video: str
         :return: Um iterador com os dados dos canais
-        :rtype: Generator[Dict[str, Any], None, None]
+        :rtype: Dict[str, Any]
         """
         request_video = self.__youtube.videos().list(
             part="snippet,contentDetails,statistics",
             id=id_video
         )
         response = request_video.execute()
-        return response['items']
+        return response['items'][0]
 
 
 if __name__ == '__main__':
