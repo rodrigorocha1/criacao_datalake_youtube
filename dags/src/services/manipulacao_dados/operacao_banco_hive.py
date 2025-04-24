@@ -19,9 +19,9 @@ class OperacaoBancoHive(IOperacaoDados):
 
 if __name__ == '__main__':
     from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
+
     conexao_hive = ConexaoBancoHive()
     operacao = OperacaoBancoHive(conexao=conexao_hive)
-
 
     id_canal = 'b'
     consulta = f"""
@@ -34,5 +34,3 @@ if __name__ == '__main__':
 
     for resultado in resultados:
         print(resultado[0])
-
-
