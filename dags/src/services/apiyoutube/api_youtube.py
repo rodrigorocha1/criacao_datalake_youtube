@@ -33,7 +33,7 @@ class ApiYoutube(IApiYoutube):
             request = self.__youtube.search().list(
                 q=assunto,
                 part='id,snippet',
-                type='video',  # Corrigido de 'vide' para 'video'
+                type='video',
                 maxResults=50,
                 publishedAfter=data_publicacao_apos,
                 order='date',
