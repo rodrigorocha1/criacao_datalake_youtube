@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from googleapiclient.discovery import build
 import os
 
-from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
+from src.services.apiyoutube.i_api_youtube import IApiYoutube
 
 load_dotenv()
 
@@ -11,7 +11,7 @@ load_dotenv()
 class ApiYoutube(IApiYoutube):
 
     def __init__(self):
-        self.__API_KEY = os.environ['API_KEY']
+        self.__API_KEY = 'a' # os.environ['API_KEY']
         self.__youtube = build(
             'youtube',
             'v3',
