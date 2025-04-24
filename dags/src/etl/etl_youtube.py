@@ -1,3 +1,9 @@
+try:
+    import sys
+    import os
+    sys.path.insert(0, os.path.abspath(os.curdir))
+except ModuleNotFoundError:
+    pass
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 from dags.src.services.manipulacao_dados.arquivo import Arquivo

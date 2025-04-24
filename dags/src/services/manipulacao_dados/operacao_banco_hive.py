@@ -1,3 +1,9 @@
+try:
+    import sys
+    import os
+    sys.path.insert(0, os.path.abspath(os.curdir))
+except ModuleNotFoundError:
+    pass
 from typing import Tuple, Any
 from dags.src.services.manipulacao_dados.iconexao_banco import IConexaoBanco
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
