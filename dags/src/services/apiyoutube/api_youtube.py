@@ -8,7 +8,7 @@ except ModuleNotFoundError:
 from typing import Generator, Dict, Any, Tuple, Union
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
-import os
+from airflow.models import  Variable
 
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 
@@ -18,12 +18,13 @@ load_dotenv()
 class ApiYoutube(IApiYoutube):
 
     def __init__(self):
-        self.__API_KEY = 'a' # os.environ['API_KEY']
+        self.__API_KEY = Variable.get('CHAVE_YOUTUBE') # os.environ['API_KEY']
         self.__youtube = build(
             'youtube',
             'v3',
             developerKey=self.__API_KEY
         )
+        print(self.__API_KEY)
 
     def obter_assunto(self, assunto: str, data_publicacao_apos: str) -> Generator[Dict[str, Any], None, None]:
         """

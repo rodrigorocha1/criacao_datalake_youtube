@@ -1,7 +1,6 @@
 import pendulum
 
 from unidecode import unidecode
-from airflow.operators.bash import BashOperator
 
 try:
     import sys
@@ -26,16 +25,14 @@ default_args = {
 
 
 def executar_etl_assunto(**kwargs):
-
-    from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
-    from dags.src.services.manipulacao_dados.operacao_banco_hive import OperacaoBancoHive
+    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
     from dags.src.etl.etl_youtube import ETLYoutube
     from dags.src.services.apiyoutube.api_youtube import ApiYoutube
     from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 
     api_youtube = ApiYoutube()
     arquivo = ArquivoJson()
-    operacoes_dados = OperacaoBancoHive(conexao=ConexaoBancoHive())
+    operacoes_dados = OperacaoBancoHiveAirflow()
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
 
     assunto = kwargs['assunto']
@@ -53,7 +50,7 @@ data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
 data_hora_atual = pendulum.parse(data_hora_atual)
 hora_atual = int(data_hora_atual.hour)
 data = data_hora_atual.format('YYYY_MM_DD')
-data_hora_busca = data_hora_atual.subtract(days=1)
+data_hora_busca = data_hora_atual.subtract(minutes=60)
 data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
@@ -69,7 +66,6 @@ with DAG(
     inicio_dag = EmptyOperator(
         task_id='id_inicio_dag'
     )
-    ip = '172.18.0.4'
 
     with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg1:
         lista_task_assunto = []

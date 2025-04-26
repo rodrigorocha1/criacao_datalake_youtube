@@ -6,6 +6,7 @@ x-airflow-common:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor  # Mudar para LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__WEBSERVER__SECRET_KEY: "uJ7BQc5eZP29KuyRZVsfRY91SpqI3LCee7zkKTpq6rOHRqCjljjvWDp90oOnc4SP5PhD4uXsmiykKKnzow"
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 5
     AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 20
@@ -70,6 +71,9 @@ services:
       retries: 5
       start_period: 30s
     restart: always
+    volumes:
+      - ./datalake:/home/airflow/datalake
+
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:

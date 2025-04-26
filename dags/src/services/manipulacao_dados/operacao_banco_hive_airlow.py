@@ -6,7 +6,9 @@ try:
 except ModuleNotFoundError:
     pass
 from typing import Tuple, Any
+
 from airflow.providers.apache.hive.hooks.hive import HiveServer2Hook
+
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 
 

@@ -1,53 +1,46 @@
-import docker
-import json
-from dags.src.services.apiyoutube.api_youtube import ApiYoutube
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+import os
+import pickle
 
-# Cliente Docker
-client = docker.from_env()
+# Define o escopo de acesso
+SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
 
-api_youtube = ApiYoutube()
+# Função para autenticar e obter o serviço da API do YouTube
+def authenticate_youtube():
+    creds = None
+    # O arquivo token.pickle armazena os tokens de acesso e atualização do usuário
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
 
-data, _ = api_youtube.obter_dados_canais(id_canal='UCNnROTUy8Zskn44a07F-o-Q')
-print(data['items'][0])
+    # Se não houver credenciais válidas, o usuário precisa se autenticar
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'client_secrets.json', SCOPES)
+            creds = flow.run_local_server(port=0)
 
-# Dados a serem gravados
-# data = {'kind': 'youtube#channelListResponse', 'etag': 'a_nm3gteCJsXCfECl7bMw8agUlY',
-#         'pageInfo': {'totalResults': 1, 'resultsPerPage': 5}, 'items': [
-#         {'kind': 'youtube#channel', 'etag': 'kUjQFSwWphZp7jU01aNPpckvbZE', 'id': 'UCNnROTUy8Zskn44a07F-o-Q',
-#          'snippet': {'title': 'Conectado Cortes', 'description': 'Trechos de vídeos do Canal Conectado.\n\n\n',
-#                      'customUrl': '@conectadocortes', 'publishedAt': '2018-12-20T18:51:54Z', 'thumbnails': {'default': {
-#                  'url': 'https://yt3.ggpht.com/P6UpfEDTjytvEtcYqPqYKr_O2JwK_gURpOpOQhMu7e-cj6T_mNBRjwih2V8-z3hjKqymimUC=s88-c-k-c0x00ffffff-no-rj',
-#                  'width': 88, 'height': 88}, 'medium': {
-#                  'url': 'https://yt3.ggpht.com/P6UpfEDTjytvEtcYqPqYKr_O2JwK_gURpOpOQhMu7e-cj6T_mNBRjwih2V8-z3hjKqymimUC=s240-c-k-c0x00ffffff-no-rj',
-#                  'width': 240, 'height': 240}, 'high': {
-#                  'url': 'https://yt3.ggpht.com/P6UpfEDTjytvEtcYqPqYKr_O2JwK_gURpOpOQhMu7e-cj6T_mNBRjwih2V8-z3hjKqymimUC=s800-c-k-c0x00ffffff-no-rj',
-#                  'width': 800, 'height': 800}}, 'defaultLanguage': 'pt', 'localized': {'title': 'Conectado Cortes',
-#                                                                                        'description': 'Trechos de vídeos do Canal Conectado.\n\n\n'},
-#                      'country': 'BR'},
-#          'statistics': {'viewCount': '1421', 'subscriberCount': '4360', 'hiddenSubscriberCount': False,
-#                         'videoCount': '3'}}]}
+        # Salva as credenciais para o próximo uso
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
 
-json_data = json.dumps(data)
+    # Retorna o serviço da API do YouTube
+    youtube = build('youtube', 'v3', credentials=creds)
+    return youtube
 
-# Nome do container
-container_name = 'hadoop_hive_dbt_container'
-file_path = '/home/hadoop/datalake/teste/teste313.json'
+# Exemplo de uso da função para obter dados da API
+youtube = authenticate_youtube()
 
-# Comando para adicionar o JSON ao arquivo dentro do container
-command = f"bash -c 'echo {json_data} >> {file_path}'"
+# Aqui você pode usar o `youtube` para chamar endpoints, por exemplo:
+request = youtube.search().list(
+    part="snippet",
+    q="nomanssky",
+    type="video"
+)
+response = request.execute()
 
-try:
-    # Obtém o container
-    container = client.containers.get(container_name)
-
-    # Executa o comando dentro do container
-    exec_log = container.exec_run(cmd=command, stdout=True, stderr=True)
-
-    # Exibe o resultado
-    print("Comando executado com sucesso.")
-    print("Saída:", exec_log.output.decode())
-except docker.errors.NotFound:
-    print(f"Container '{container_name}' não encontrado.")
-except docker.errors.APIError as e:
-    print("Erro ao executar o comando no container:")
-    print(e.explanation)
+print(response)

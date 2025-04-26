@@ -5,29 +5,21 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
-from typing import Dict
 import json
+from typing import Dict
+
 from dags.src.services.manipulacao_dados.arquivo import Arquivo
-import docker
 
 
 class ArquivoJson(Arquivo):
 
     def __init__(self):
         super().__init__()
-        self.__container_name = 'hadoop_hive_dbt_container'
-        self.__client = docker.from_env()
-        self.__container = self.__client.containers.get(self.__container_name)
 
     def guardar_dados(self, dado: Dict):
-        dado = json.dumps(dado)
-        dado_json_escaped = dado.replace('"', '\\"')
-        comando = f"bash -c 'echo \"{dado_json_escaped}\" >> {self.caminho_completo}'"
-        exec_log = self.__container.exec_run(
-            cmd=comando,
-            stdout=True,
-            stderr=True
-        )
+        with open(os.path.join(self.diretorio, self.nome_arquivo), 'a') as arquivo_json:
+            json.dump(dado, arquivo_json, ensure_ascii=False)
+            arquivo_json.write('\n')
 
 if __name__ == '__main__':
     aj = ArquivoJson()
