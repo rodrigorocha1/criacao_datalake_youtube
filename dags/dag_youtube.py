@@ -1,3 +1,6 @@
+import pendulum
+from unidecode import unidecode
+
 try:
     import sys
     import os
@@ -7,13 +10,9 @@ except ModuleNotFoundError:
     pass
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.utils.task_group import TaskGroup
+from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
-from teste.soma import soma
-from src.services.apiyoutube.api_youtube import ApiYoutube
-from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
-from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
-from dags.src.services.manipulacao_dados.operacao_banco_hive import OperacaoBancoHive
-from dags.src.etl.etl_youtube import ETLYoutube
 
 # Argumentos padrão da DAG
 default_args = {
@@ -23,24 +22,38 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
-# Instâncias dos serviços
-
 
 def executar_etl(**kwargs):
     from dags.src.services.manipulacao_dados.conexao_banco_hive import ConexaoBancoHive
     from dags.src.services.manipulacao_dados.operacao_banco_hive import OperacaoBancoHive
     from dags.src.etl.etl_youtube import ETLYoutube
+    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
+    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 
     api_youtube = ApiYoutube()
     arquivo = ArquivoJson()
     operacoes_dados = OperacaoBancoHive(conexao=ConexaoBancoHive())
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
 
+
     assunto = 'Danilo'
     data_publicacao_apos = '2025-04-23T00:00:00Z'
     data_pesquisa = '2025-04-23T00:00:00Z'
 
-    etl.executar(assunto, data_publicacao_apos, data_pesquisa)
+    etl.processo_etl_assunto_video(
+        assunto='B',
+        data_publicacao_apos=data_publicacao_apos
+    )
+
+
+lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
+
+data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
+data_hora_atual = pendulum.parse(data_hora_atual)
+hora_atual = int(data_hora_atual.hour)
+data = data_hora_atual.format('YYYY_MM_DD')
+data_hora_busca = data_hora_atual.subtract(days=1)
+data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 # Configuração da DAG
 with DAG(
@@ -52,14 +65,32 @@ with DAG(
         catchup=False,
         tags=['youtube', 'etl', 'api']
 ) as dag:
-    assunto = 'Danilo'
-    data_publicacao_apos = '2025-04-23T00:00:00Z'
-    data_pesquisa = '2025-04-23T00:00:00Z'
-
-    tarefa_etl_assunto_video = PythonOperator(
-        task_id='etl_assunto_video',
-        python_callable=executar_etl,
-        provide_context=True
+    inicio_dag = EmptyOperator(
+        task_id='id_inicio_dag'
     )
+
+    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg1:
+        lista_task_assunto = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
+
+            etl_assunto = PythonOperator(
+                dag=dag,
+                task_id=f'assunto_{id_assunto}',
+                python_callable=executar_etl,
+                op_kwargs={
+                    'assunto': assunto,
+                    'data_publicacao_apos': data_hora_busca
+                }
+            )
+
+    fim_dag = EmptyOperator(
+        task_id='id_fim_dag'
+    )
+
     # Dependências
-    tarefa_etl_assunto_video
+    inicio_dag >> fim_dag

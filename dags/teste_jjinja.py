@@ -2,11 +2,12 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
 import pendulum
-from teste.soma import soma
 
 def exemplo_funcao(data_interval_start: pendulum.DateTime, **context):
+    # Pegar a data e hora atual com pendulum
+    data_atual = pendulum.now()
     print(f"Data Interval Start: {data_interval_start}")
-
+    print(f"Data e Hora Atual: {data_atual}")
 
 with DAG(
         dag_id="exemplo_dag",
@@ -19,5 +20,5 @@ with DAG(
     tarefa = PythonOperator(
         task_id="mostrar_data_interval_start",
         python_callable=exemplo_funcao,
-        op_kwargs={"data_interval_start": "{{ data_interval_start }}"},
+        op_kwargs={"data_interval_start": "{{ logical_date }}"},
     )

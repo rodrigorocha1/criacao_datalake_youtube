@@ -32,8 +32,7 @@ class ETLYoutube:
     def processo_etl_assunto_video(
             self,
             assunto: str,
-            data_publicacao_apos: str,
-            data_pesquisa='2025-04-01T00:00:00Z'
+            data_publicacao_apos: str
     ):
         data = parser.isoparse(data_publicacao_apos)
         ano = data.year
@@ -65,13 +64,13 @@ class ETLYoutube:
                     data_publicacao_apos=data_publicacao_apos
             ):
 
-                response['data_pesquisa'] = data_pesquisa
+                response['data_pesquisa'] = data_publicacao_apos
                 response['assunto'] = assunto
                 self.__operacoes_arquivo.guardar_dados(dado=response)
                 dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
 
                 if dados_canais[1] == 'BR':
-                    dados_canais[0]['data_pesquisa'] = data_pesquisa
+                    dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                     dados_canais[0]['assunto'] = assunto
                     id_canal = response['snippet']['channelId']
                     nome_canal = response['snippet']['channelTitle']
