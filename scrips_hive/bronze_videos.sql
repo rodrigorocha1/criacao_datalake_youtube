@@ -65,6 +65,11 @@ from bronze_canais bc ;
 select *
 from bronze_videos bv ;
 
+select bv.snippet.channelid,
+	bv.sni
+	
+from bronze_videos bv 
+
 
 select *
 from videos v ;

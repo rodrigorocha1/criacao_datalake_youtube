@@ -1,9 +1,16 @@
+try:
+    import sys
+    import os
+
+    sys.path.insert(0, os.path.abspath(os.curdir))
+except ModuleNotFoundError:
+    pass
 from typing import Generator, Dict, Any, Tuple, Union
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 import os
 
-from src.services.apiyoutube.i_api_youtube import IApiYoutube
+from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 
 load_dotenv()
 
