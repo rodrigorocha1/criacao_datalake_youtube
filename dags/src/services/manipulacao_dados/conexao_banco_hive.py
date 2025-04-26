@@ -11,7 +11,7 @@ from sqlalchemy.engine.base import Connection
 
 class ConexaoBancoHive(IConexaoBanco):
     def __init__(self):
-        self.__host = '172.28.0.14'
+        self.__host = '172.18.0.4'
         self.__port = 10000
         self.__username = 'rodrigo'
         self.__password = 'rodrigo3'

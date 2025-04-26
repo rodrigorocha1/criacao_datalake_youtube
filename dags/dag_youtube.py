@@ -1,6 +1,6 @@
 import pendulum
 from unidecode import unidecode
-
+from airflow.operators.bash import BashOperator
 try:
     import sys
     import os
@@ -35,13 +35,11 @@ def executar_etl(**kwargs):
     operacoes_dados = OperacaoBancoHive(conexao=ConexaoBancoHive())
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
 
-
-    assunto = 'Danilo'
-    data_publicacao_apos = '2025-04-23T00:00:00Z'
-    data_pesquisa = '2025-04-23T00:00:00Z'
+    assunto = kwargs['assunto']
+    data_publicacao_apos = kwargs['data_publicacao_apos']
 
     etl.processo_etl_assunto_video(
-        assunto='B',
+        assunto=assunto,
         data_publicacao_apos=data_publicacao_apos
     )
 
@@ -68,29 +66,35 @@ with DAG(
     inicio_dag = EmptyOperator(
         task_id='id_inicio_dag'
     )
+    ip='172.18.0.4'
+    ping_task = BashOperator(
+        task_id='ping_task',
+        bash_command='echo "Data e Hora atual: $(date)"', # Comando para pingar google.com, altere conforme necessário
 
-    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg1:
-        lista_task_assunto = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '').lower()
-
-            etl_assunto = PythonOperator(
-                dag=dag,
-                task_id=f'assunto_{id_assunto}',
-                python_callable=executar_etl,
-                op_kwargs={
-                    'assunto': assunto,
-                    'data_publicacao_apos': data_hora_busca
-                }
-            )
+    )
+    # with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg1:
+    #     lista_task_assunto = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
+    #
+    #         etl_assunto = PythonOperator(
+    #             dag=dag,
+    #             task_id=f'assunto_{id_assunto}',
+    #             python_callable=executar_etl,
+    #             op_kwargs={
+    #                 'assunto': assunto,
+    #                 'data_publicacao_apos': data_hora_busca
+    #             }
+    #         )
+    #         lista_task_assunto.append(etl_assunto)
 
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
     # Dependências
-    inicio_dag >> fim_dag
+    inicio_dag >> ping_task >> fim_dag
