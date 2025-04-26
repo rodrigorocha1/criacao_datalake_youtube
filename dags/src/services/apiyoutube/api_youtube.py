@@ -6,9 +6,10 @@ try:
 except ModuleNotFoundError:
     pass
 from typing import Generator, Dict, Any, Tuple, Union
+
+import requests
+from airflow.models import Variable
 from dotenv import load_dotenv
-from googleapiclient.discovery import build
-from airflow.models import  Variable
 
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 
@@ -16,15 +17,13 @@ load_dotenv()
 
 
 class ApiYoutube(IApiYoutube):
-
+    # Variable.get('CHAVE_YOUTUBE') #
     def __init__(self):
-        self.__API_KEY = Variable.get('CHAVE_YOUTUBE') # os.environ['API_KEY']
-        self.__youtube = build(
-            'youtube',
-            'v3',
-            developerKey=self.__API_KEY
-        )
-        print(self.__API_KEY)
+        self.__API_KEY = Variable.get('CHAVE_YOUTUBE')
+        self.__url = 'https://youtube.googleapis.com/youtube/v3/'
+        self.__headers = {
+            'Accept': 'application/json'
+        }
 
     def obter_assunto(self, assunto: str, data_publicacao_apos: str) -> Generator[Dict[str, Any], None, None]:
         """
@@ -36,20 +35,27 @@ class ApiYoutube(IApiYoutube):
         :return: Um gerador com as respostas dos assuntos
         :rtype: Generator[Dict[str, Any], None, None]
         """
-        next_page_token = None
-        while True:
-            request = self.__youtube.search().list(
-                q=assunto,
-                part='id,snippet',
-                type='video',
-                maxResults=50,
-                publishedAfter=data_publicacao_apos,
-                order='date',
-                pageToken=next_page_token
+        next_page_token = ''
 
+        while True:
+            params = {
+                'part': 'snippet',
+                'maxResults': 50,
+                'publishedAfter': data_publicacao_apos,
+                'key': self.__API_KEY,
+                'next_page_token': next_page_token,
+                'q' : assunto
+
+            }
+            url = self.__url + 'search'
+            request = requests.get(
+                url,
+                headers=self.__headers,
+                params=params
             )
 
-            response = request.execute()
+            response = request.json()
+            print(response)
             yield from response['items']
 
             try:
@@ -65,12 +71,19 @@ class ApiYoutube(IApiYoutube):
         :return: A lista com os dados dos canais
         :rtype: Union[Tuple[Dict[str, Any], str], Tuple[None, bool]]
         """
+        url = self.__url + 'channels'
+        params = {
+            'part': 'snippet,statistics',
+            'id': id_canal,
+            'key': self.__API_KEY
+        }
         try:
-            requests_canais = self.__youtube.channels().list(
-                id=id_canal,
-                part='snippet,statistics'
+            requests_canais = requests.get(
+                url=url,
+                headers=self.__headers,
+                params=params
             )
-            response = requests_canais.execute()
+            response = requests_canais.json()
 
             return response, response['items'][0]['snippet']['country']
         except:
@@ -84,15 +97,24 @@ class ApiYoutube(IApiYoutube):
         :return: Um iterador com os dados dos canais
         :rtype: Dict[str, Any]
         """
-        request_video = self.__youtube.videos().list(
-            part="snippet,contentDetails,statistics",
-            id=id_video
+        params = {
+            'part': 'statistics,contentDetails,id,snippet,status',
+            'id': id_video,
+            'key': self.__API_KEY,
+            'regionCode': 'BR'
+        }
+        url = self.__url + 'videos'
+        request_video = requests.get(
+            url=url,
+            params=params,
+            headers=self.__headers
         )
-        response = request_video.execute()
+        response = request_video.json()
         return response['items'][0]
 
 
 if __name__ == '__main__':
     api_youtube = ApiYoutube()
-    dados_canais = api_youtube.obter_dados_canais('UCCmONmoMVBaAOj_NLjA00nA')
-    print(dados_canais)
+    dados_canais = api_youtube.obter_assunto(assunto='Python', data_publicacao_apos='2025-04-21T16:50:46Z')
+    for dado in dados_canais:
+        print(dado)
