@@ -15,7 +15,10 @@ class Arquivo(ABC):
     def __init__(self):
         # self.__caminho_raiz = os.getcwd()
         print(f'CAMINHO {os.getcwd()}')
-        self.__caminho_raiz = '/home/airflow/'
+        print("Diretórios e arquivos no diretório atual:")
+        for item in os.listdir(os.getcwd()):
+            print(item)
+        self.__caminho_raiz = '/opt/'
         self.__pasta_raiz_datalake = 'datalake'
         self.__camada = None
         self.__caminho_particao = None
