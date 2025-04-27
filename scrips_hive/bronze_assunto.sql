@@ -34,21 +34,44 @@ DROP TABLE bronze_assunto;
             ano=2025,
             mes=4,
             dia=26,
-            dia_semana="Sábado",
-            assunto="Python"
+            dia_semana='Saábado',
+            assunto='Python'
         )
+        
+  show partitions   bronze_assunto 
+        
+ALTER TABLE bronze_assunto
+DROP IF EXISTS PARTITION (
+    ano=2026,
+    mes=4,
+    dia=26,
+    dia_semana='ábado',
+    assunto='Píthon'
+);        
         
 ALTER TABLE bronze_assunto
 ADD IF NOT EXISTS PARTITION (
-    ano=2025,
+    ano=2026,
     mes=4,
     dia=26,
-    dia_semana=CONVERT('Sábado' USING utf8mb4),
-    assunto="Python"
+    dia_semana='Sábado',
+    assunto="Píthon"
 );
 
+ALTER TABLE bronze_assunto ADD PARTITION (dia='Sábado');
 
 SHOW VARIABLES LIKE 'character_set%';
 
+
+select *
+from bronze_assunto
+
+select 1;
+
+
+drop table bronze_assunto
+
+DELETE FROM youtube.bronze_assunto
+WHERE kind='' AND etag='' AND id=? AND snippet=? AND data_pesquisa='' AND ano=0 AND mes=0 AND dia=0 AND dia_semana='' AND assunto='';
 
 
