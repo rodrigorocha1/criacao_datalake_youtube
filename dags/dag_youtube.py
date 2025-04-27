@@ -55,7 +55,7 @@ data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 with DAG(
-        dag_id='youtube_etl_dag',
+        dag_id='youtube_etl_dag_exemplos',
         default_args=default_args,
         description='DAG para processo ETL dos vídeos e canais do YouTube por assunto',
         schedule_interval='@daily',

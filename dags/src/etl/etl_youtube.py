@@ -50,7 +50,7 @@ class ETLYoutube:
                 mes={mes},
                 dia={dia},
                 dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_')}"
+                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
         )
         """
 
@@ -59,7 +59,7 @@ class ETLYoutube:
         if dados[0]:
             self.__operacoes_arquivo.camada = 'bronze'
             self.__operacoes_arquivo.termo_pesquisa = 'assunto'
-            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto).replace(' ', '_')}'
+            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto).replace(' ', '_').replace("'", "")}'
             self.__operacoes_arquivo.nome_arquivo = 'assunto.json'
 
             for response in self.__api_youtube.obter_assunto(
@@ -157,7 +157,7 @@ class ETLYoutube:
                 mes={mes},
                 dia={dia},
                 dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_')}"
+                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
             )
              """
 
@@ -187,7 +187,7 @@ class ETLYoutube:
 
         self.__operacoes_arquivo.camada = 'bronze'
         self.__operacoes_arquivo.termo_pesquisa = 'videos'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto).replace(' ', '_')}'
+        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto.replace("'", "")).replace(' ', '_')}'
         self.__operacoes_arquivo.nome_arquivo = 'video.json'
 
         consulta = f"""
@@ -204,7 +204,7 @@ class ETLYoutube:
                 mes={mes},
                 dia={dia},
                 dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_')}"
+                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
             )
              """
 

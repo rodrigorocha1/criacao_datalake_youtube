@@ -16,9 +16,9 @@ class Arquivo(ABC):
         # self.__caminho_raiz = os.getcwd()
         print(f'CAMINHO {os.getcwd()}')
         print("Diretórios e arquivos no diretório atual:")
-        for item in os.listdir(os.getcwd()):
+        for item in os.listdir('/'):
             print(item)
-        self.__caminho_raiz = '/opt/'
+        self.__caminho_raiz = '/'
         self.__pasta_raiz_datalake = 'datalake'
         self.__camada = None
         self.__caminho_particao = None
