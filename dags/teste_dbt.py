@@ -29,7 +29,8 @@ with DAG(
         command=(
             "cd /home/hadoop/projeto_dbt && "
             "source venv/bin/activate && "
-            "dbt"
+            "cd teste && "
+            "dbt debug"
         ),
     )
 
