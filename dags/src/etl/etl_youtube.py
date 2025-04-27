@@ -193,7 +193,7 @@ class ETLYoutube:
     def processo_etl_video(self):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
         self.__preparar_caminho_particao(
-            termo_pesquisa='video',
+            termo_pesquisa='videos',
             nome_arquivo='video.json',
             assunto_tratado=assunto_tratado
         )

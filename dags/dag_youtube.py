@@ -1,5 +1,6 @@
 import pendulum
-
+from airflow.operators.python import PythonOperator
+from airflow.utils.task_group import TaskGroup
 from unidecode import unidecode
 
 try:
@@ -10,8 +11,6 @@ try:
 except ModuleNotFoundError:
     pass
 from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.utils.task_group import TaskGroup
 from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
 
@@ -52,6 +51,20 @@ def executar_etl_canais(**kwargs):
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
     etl.assunto = kwargs['assunto']
     etl.processo_etl_canal()
+
+
+def executar_etl_videos(**kwargs):
+    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
+    from dags.src.etl.etl_youtube import ETLYoutube
+    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
+    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
+
+    api_youtube = ApiYoutube()
+    arquivo = ArquivoJson()
+    operacoes_dados = OperacaoBancoHiveAirflow()
+    etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
+    etl.assunto = kwargs['assunto']
+    etl.processo_etl_video()
 
 # lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
 lista_assunto = ["No Man's Sky"]
@@ -114,10 +127,26 @@ with DAG(
     #         )
     #         lista_canais.append(etl_canais)
 
+    with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
+        lista_videos = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
+            etl_videos = PythonOperator(
+                task_id=f'id_video_{id_assunto}',
+                python_callable=executar_etl_videos,
+                op_kwargs={
+                    'assunto': assunto
+                }
+            )
+            lista_videos.append(etl_videos)
 
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
 
-    inicio_dag >> tg_canais >> fim_dag
+    inicio_dag >> tg_videos >> fim_dag
