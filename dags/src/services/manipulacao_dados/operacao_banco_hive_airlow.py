@@ -16,7 +16,7 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
         self.__schema = 'youtube'
         self.__hook = HiveServer2Hook(hiveserver2_conn_id=self.__id)
 
-    def executar_consulta_dados(self, consulta: str, opcao_consulta: 1) -> Tuple[bool, Any]:
+    def executar_consulta_dados(self, consulta: str, opcao_consulta: int) -> Tuple[bool, Any]:
         try:
 
             with self.__hook.get_conn() as conn:

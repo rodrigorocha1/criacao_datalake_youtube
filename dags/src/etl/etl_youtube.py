@@ -165,7 +165,7 @@ class ETLYoutube:
         consulta = f"""
             SELECT DISTINCT c.id_canal
             FROM canais c 
-            where c.assunto = {assunto_tratado}  
+            where c.assunto = "{assunto_tratado}"
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
         print('Resultados canais')
@@ -201,13 +201,14 @@ class ETLYoutube:
         consulta = f"""
                     SELECT DISTINCT v.id_video
                     FROM videos v 
-                    where v.assunto = {assunto_tratado}
+                    where v.assunto = "{assunto_tratado}"
                 """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=2)
 
         if sucesso:
             self.__criar_particao(tabela_particao='bronze_videos')
             for resultado in resultados:
+                print(resultado)
                 if resultado[0]:
                     id_video = resultado[0]
                     response = self.__api_youtube.obter_dados_videos(id_video=id_video)
