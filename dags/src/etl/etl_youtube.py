@@ -157,7 +157,7 @@ class ETLYoutube:
     def processo_etl_canal(self):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
         self.__preparar_caminho_particao(
-            termo_pesquisa='canal',
+            termo_pesquisa='canais',
             nome_arquivo='canal.json',
             assunto_tratado=assunto_tratado
         )
