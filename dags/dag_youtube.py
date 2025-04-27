@@ -44,8 +44,8 @@ def executar_etl_assunto(**kwargs):
     )
 
 
-lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
-
+# lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
+lista_assunto = ["No Man's Sky"]
 data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
 data_hora_atual = pendulum.parse(data_hora_atual)
 hora_atual = int(data_hora_atual.hour)
@@ -82,7 +82,7 @@ with DAG(
                 python_callable=executar_etl_assunto,
                 op_kwargs={
                     'assunto': assunto,
-                    'data_publicacao_apos': data_hora_busca
+                    'data_publicacao_apos': '2025-04-26T22:50:46Z'
                 }
             )
             lista_task_assunto.append(etl_assunto)
