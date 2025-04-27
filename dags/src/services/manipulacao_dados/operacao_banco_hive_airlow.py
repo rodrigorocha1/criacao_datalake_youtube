@@ -31,9 +31,6 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
                     result = True
             else:
                 result = self.__hook.get_records(consulta)
-                print('Resultado Consulta')
-                print(result)
-
             return True, result
         except Exception as e:
             print(e)

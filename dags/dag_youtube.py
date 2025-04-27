@@ -96,23 +96,23 @@ with DAG(
     #         )
     #         lista_task_assunto.append(etl_assunto)
 
-    with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
-        lista_canais = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                        lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '').lower()
-            etl_canais = PythonOperator(
-                task_id=f'canais_{id_assunto}',
-                python_callable=executar_etl_canais,
-                op_kwargs={
-                    'assunto' : assunto
-                }
-
-            )
-            lista_canais.append(etl_canais)
+    # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
+    #     lista_canais = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                     lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
+    #         etl_canais = PythonOperator(
+    #             task_id=f'canais_{id_assunto}',
+    #             python_callable=executar_etl_canais,
+    #             op_kwargs={
+    #                 'assunto' : assunto
+    #             }
+    #
+    #         )
+    #         lista_canais.append(etl_canais)
 
 
     fim_dag = EmptyOperator(

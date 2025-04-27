@@ -208,7 +208,6 @@ class ETLYoutube:
         if sucesso:
             self.__criar_particao(tabela_particao='bronze_videos')
             for resultado in resultados:
-                print(resultado)
                 if resultado[0]:
                     id_video = resultado[0]
                     response = self.__api_youtube.obter_dados_videos(id_video=id_video)
