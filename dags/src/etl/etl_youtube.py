@@ -1,17 +1,40 @@
 
-from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
-from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
-from dags.src.services.manipulacao_dados.arquivo import Arquivo
 from datetime import datetime
-from dateutil import parser
 from typing import Tuple
+
+from dateutil import parser
 from unidecode import unidecode
 
+from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
+from dags.src.services.manipulacao_dados.arquivo import Arquivo
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
+
+
 class ETLYoutube:
-    def __init__(self, api_youtube: IApiYoutube, operacoes_dados: IOperacaoDados, arquivo: Arquivo):
+    def __init__(
+            self,
+            api_youtube: IApiYoutube,
+            operacoes_dados: IOperacaoDados,
+            arquivo: Arquivo,
+
+    ):
         self.__api_youtube = api_youtube
         self.__operacoes_banco = operacoes_dados
         self.__operacoes_arquivo = arquivo
+        self.__assunto = None
+        self.__data_coleta = datetime.now()
+        self.__ano = self.__data_coleta.year
+        self.__mes = self.__data_coleta.month
+        self.__dia = self.__data_coleta.day
+        self.__dia_semana = self.__obter_semana_portugues(self.__data_coleta)
+
+    @property
+    def assunto(self):
+        return self.__assunto
+
+    @assunto.setter
+    def assunto(self, assunto: str):
+        self.__assunto = assunto
 
 
     def __obter_semana_portugues(self, data: datetime) -> str:
@@ -30,58 +53,56 @@ class ETLYoutube:
 
         return nome_dia
 
+    def __criar_particao(self):
+        consulta = f"""
+                    ALTER TABLE bronze_assunto
+                    ADD IF NOT EXISTS PARTITION (
+                        ano={self.__ano},
+                        mes={self.__mes},
+                        dia={self.__dia_semana},
+                        dia_semana='{self.__dia_semana.replace(' ', '_')}',
+                        assunto="{unidecode(self.__assunto).replace(' ', '_').replace("'", "")}"
+                )
+                """
+
+        dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+        return dados
+
+
     def processo_etl_assunto_video(
             self,
-            assunto: str,
             data_publicacao_apos: str
     ):
         data = parser.isoparse(data_publicacao_apos)
-        ano = data.year
-        mes = data.month
-        dia = data.day
-        dia_semana = self.__obter_semana_portugues(data=data)
-        # dia_semana = dia_semana.encode('utf-8').decode('utf-8')
-        # assunto = assunto.encode('utf-8').decode('utf-8')
-
-        consulta = f"""
-            ALTER TABLE bronze_assunto
-            ADD IF NOT EXISTS PARTITION (
-                ano={ano},
-                mes={mes},
-                dia={dia},
-                dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
-        )
-        """
-
-        dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+        dados = self.__criar_particao()
 
         if dados[0]:
             self.__operacoes_arquivo.camada = 'bronze'
             self.__operacoes_arquivo.termo_pesquisa = 'assunto'
-            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto).replace(' ', '_').replace("'", "")}'
+            self.__operacoes_arquivo.caminho_particao = f'ano={self.__ano}/mes={self.__mes}/dia={self.__dia}/dia_semana={self.__dia_semana.replace(' ', '_')}/assunto={unidecode(self.__assunto).replace(' ', '_').replace("'", "")}'
             self.__operacoes_arquivo.nome_arquivo = 'assunto.json'
 
             for response in self.__api_youtube.obter_assunto(
-                    assunto=assunto,
+                    assunto=self.__assunto,
                     data_publicacao_apos=data_publicacao_apos
             ):
 
                 response['data_pesquisa'] = data_publicacao_apos
-                response['assunto'] = assunto
+                response['assunto'] = self.__assunto
                 self.__operacoes_arquivo.guardar_dados(dado=response)
                 dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
 
                 if dados_canais[1] == 'BR':
 
                     dados_canais[0]['data_pesquisa'] = data_publicacao_apos
-                    dados_canais[0]['assunto'] = assunto
+                    dados_canais[0]['assunto'] = self.__assunto
                     id_canal = response['snippet']['channelId']
                     nome_canal = response['snippet']['channelTitle']
                     print('Canal Brasileiro', id_canal)
                     print('Video Brasilero')
+
                     self.__inserir_dados_novos(
-                        assunto=assunto,
+                        assunto=self.__assunto.replace("'", "").replace('_', ''),
                         tabela='canais',
                         valor_insercao=(id_canal, nome_canal),
                         coluna_verificacao='id_canal',
@@ -93,7 +114,7 @@ class ETLYoutube:
                     titulo_video = response['snippet']['title']
 
                     self.__inserir_dados_novos(
-                        assunto=assunto,
+                        assunto=self.__assunto.replace("'", "").replace('_', ''),
                         tabela='videos',
                         valor_insercao=(id_video, titulo_video),
                         coluna_verificacao='id_video',
@@ -106,6 +127,13 @@ class ETLYoutube:
             # Tratamento de erro
             # parar a rotina
             pass
+
+    def __fazer_tratamento_assunto(self, assunto: str) -> str:
+        assunto = assunto.replace().replace("'", "").replace('', '_')
+        return assunto
+
+    def __preparar_caminho_particao(self):
+        pass
 
     def __inserir_dados_novos(
             self,
@@ -129,7 +157,7 @@ class ETLYoutube:
             print('não existe')
             consulta = f"""
                     INSERT INTO {tabela} 
-                    PARTITION (assunto="{assunto.replace("'", "")}")
+                    PARTITION (assunto="{assunto}")
                     VALUES {valor_insercao}
                 """
             consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
