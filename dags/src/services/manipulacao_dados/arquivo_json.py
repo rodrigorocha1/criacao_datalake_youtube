@@ -17,8 +17,7 @@ class ArquivoJson(Arquivo):
         super().__init__()
 
     def guardar_dados(self, dado: Dict):
-        home_directories = [d for d in os.listdir('/home') if os.path.isdir(os.path.join('/home', d))]
-        print('diretórios', home_directories)
+
         with open(os.path.join(self.diretorio, self.nome_arquivo), 'a') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)
             arquivo_json.write('\n')
