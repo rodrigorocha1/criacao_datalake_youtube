@@ -63,12 +63,33 @@ ALTER TABLE bronze_assunto ADD PARTITION (dia='Sábado');
 SHOW VARIABLES LIKE 'character_set%';
 
 
-select *
+select *  
 from bronze_assunto
-
+order by assunto desc
 select 1;
 
 
+select *
+from canais;
+
+SELECT 1
+            FROM videos 
+            WHERE id_video = 'a'
+            LIMIT 1   
+
+SELECT 1
+            FROM canais 
+            WHERE id_canal = 'UCRvcwdGvUUYkDkUvqj4UYjA'
+            LIMIT 1  
+
+INSERT INTO videos 
+                    PARTITION (assunto="No Man's Sky")
+                    VALUES ('hFmcrZ8zoqc', 'No Man&#39;s Sky [PS4] | A culpa é minha...a vida poderia sim, ser mais bela...saber que...eu..s.. |')
+
+
+INSERT INTO videos 
+                    PARTITION (assunto='No Man's Sky')
+                    VALUES ('hFmcrZ8zoqc', 'No Man&#39;s Sky [PS4] | A culpa é minha...a vida poderia sim, ser mais bela...saber que...eu..s.. |')
 drop table bronze_assunto
 
 DELETE FROM youtube.bronze_assunto

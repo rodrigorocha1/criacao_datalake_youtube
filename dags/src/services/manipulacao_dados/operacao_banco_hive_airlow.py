@@ -18,10 +18,13 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
 
     def executar_consulta_dados(self, consulta: str) -> Tuple[bool, Any]:
         try:
+
             with self.__hook.get_conn() as conn:
                 cursor = conn.cursor()
                 cursor.execute(f'USE {self.__schema}')
                 result = cursor.execute(consulta)
+                conn.commit()
+
                 return True, result
         except Exception as e:
             print(e)
