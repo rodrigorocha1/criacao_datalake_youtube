@@ -23,3 +23,7 @@ PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana STRING, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/bronze/canais';
+
+
+select *
+from bronze_canais bc 

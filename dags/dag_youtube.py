@@ -89,43 +89,43 @@ with DAG(
         task_id='id_inicio_dag'
     )
 
-    # with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
-    #     lista_task_assunto = []
-    #     for assunto in lista_assunto:
-    #         id_assunto = ''.join(
-    #             filter(
-    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-    #             )
-    #         ).replace(' ', '').lower()
-    #
-    #         etl_assunto = PythonOperator(
-    #             dag=dag,
-    #             task_id=f'assunto_{id_assunto}',
-    #             python_callable=executar_etl_assunto,
-    #             op_kwargs={
-    #                 'assunto': assunto,
-    #                 'data_publicacao_apos': '2025-04-27T10:00:00Z'
-    #             }
-    #         )
-    #         lista_task_assunto.append(etl_assunto)
+    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
+        lista_task_assunto = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
 
-    # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
-    #     lista_canais = []
-    #     for assunto in lista_assunto:
-    #         id_assunto = ''.join(
-    #             filter(
-    #                     lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-    #             )
-    #         ).replace(' ', '').lower()
-    #         etl_canais = PythonOperator(
-    #             task_id=f'canais_{id_assunto}',
-    #             python_callable=executar_etl_canais,
-    #             op_kwargs={
-    #                 'assunto' : assunto
-    #             }
-    #
-    #         )
-    #         lista_canais.append(etl_canais)
+            etl_assunto = PythonOperator(
+                dag=dag,
+                task_id=f'assunto_{id_assunto}',
+                python_callable=executar_etl_assunto,
+                op_kwargs={
+                    'assunto': assunto,
+                    'data_publicacao_apos': '2025-04-27T10:00:00Z'
+                }
+            )
+            lista_task_assunto.append(etl_assunto)
+
+    with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
+        lista_canais = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
+            etl_canais = PythonOperator(
+                task_id=f'canais_{id_assunto}',
+                python_callable=executar_etl_canais,
+                op_kwargs={
+                    'assunto': assunto
+                }
+
+            )
+            lista_canais.append(etl_canais)
 
     with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
         lista_videos = []
@@ -148,5 +148,4 @@ with DAG(
         task_id='id_fim_dag'
     )
 
-
-    inicio_dag >> tg_videos >> fim_dag
+    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> fim_dag

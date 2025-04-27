@@ -62,6 +62,13 @@ ALTER TABLE bronze_assunto ADD PARTITION (dia='Sábado');
 
 SHOW VARIABLES LIKE 'character_set%';
 
+select *
+from videos v2  
+
+
+ SELECT DISTINCT c.id_canal
+            FROM canais c 
+            where c.assunto = "No_Mans_Sky"
 
 select *  
 from bronze_assunto
@@ -69,6 +76,10 @@ order by assunto desc
 select 1;
 
 
+
+INSERT INTO videos 
+                    PARTITION (assunto="No_Mans_Sky")
+                    VALUES ('NlRHLtDjgqU', '👨\u200d🚀 Continuando o dilema do ATLAS no No Man&#39;s Sky VR!🚀 !discord !donate !exitlag !amazon')
 select *
 from canais;
 
@@ -77,22 +88,19 @@ SELECT 1
             WHERE id_video = 'a'
             LIMIT 1   
 
-SELECT 1
-            FROM canais 
-            WHERE id_canal = 'UCRvcwdGvUUYkDkUvqj4UYjA'
-            LIMIT 1  
-
-INSERT INTO videos 
-                    PARTITION (assunto="No Man's Sky")
-                    VALUES ('hFmcrZ8zoqc', 'No Man&#39;s Sky [PS4] | A culpa é minha...a vida poderia sim, ser mais bela...saber que...eu..s.. |')
-
-
-INSERT INTO videos 
-                    PARTITION (assunto='No Man's Sky')
-                    VALUES ('hFmcrZ8zoqc', 'No Man&#39;s Sky [PS4] | A culpa é minha...a vida poderia sim, ser mais bela...saber que...eu..s.. |')
-drop table bronze_assunto
-
-DELETE FROM youtube.bronze_assunto
-WHERE kind='' AND etag='' AND id=? AND snippet=? AND data_pesquisa='' AND ano=0 AND mes=0 AND dia=0 AND dia_semana='' AND assunto='';
-
-
+      ALTER TABLE bronze_assunto
+                    ADD IF NOT EXISTS PARTITION ( 
+                        ano=2025,
+                        mes=4,
+                        dia='Domingo',
+                        dia_semana='Domingo',
+                        assunto="No_Mans_Sky"
+                )
+                
+                
+  select ba.* 
+  from bronze_assunto ba;
+  
+  
+  SELECT * FROM canais c
+  
