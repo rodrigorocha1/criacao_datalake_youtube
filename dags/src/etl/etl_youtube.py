@@ -13,6 +13,7 @@ class ETLYoutube:
         self.__operacoes_banco = operacoes_dados
         self.__operacoes_arquivo = arquivo
 
+
     def __obter_semana_portugues(self, data: datetime) -> str:
 
         dias_semana = {
