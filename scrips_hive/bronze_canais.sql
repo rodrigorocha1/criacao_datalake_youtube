@@ -15,15 +15,28 @@ CREATE EXTERNAL TABLE bronze_canais (
     statistics STRUCT<
         viewCount: STRING,
         subscriberCount: STRING,
-        hiddenSubscrfile:/home/rodrigo/Documentos/projetos/criacao_datalake_youtube/scrips_hive/bronze_assunto.sqliberCount: BOOLEAN,
+        hiddenSubscrfile: BOOLEAN,
         videoCount: STRING
-    >
+    >,
+    data_pesquisa string 
 )
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana STRING, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/bronze/canais';
 
+alter table bronze_canais 
+add if not exists partition (
+	ano=2025,
+	mes=4,
+	dia=27,
+	dia_semana="Domingo",
+	assunto="No_Mans_Sky"
+)
 
 select *
-from bronze_canais bc 
+from bronze_canais
+
+drop table bronze_canais
+
+ALTER TABLE bronze_canais ADD COLUMNS (data_pesquisa STRING);

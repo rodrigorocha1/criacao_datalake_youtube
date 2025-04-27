@@ -47,7 +47,8 @@ CREATE EXTERNAL TABLE bronze_videos(
     pageInfo STRUCT<
         totalResults: INT,
         resultsPerPage: INT
-    >
+    >,
+    data_pesquisa TIMESTAMP
 )
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana STRING, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
@@ -55,13 +56,21 @@ STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/bronze/videos';
 
 
-
+drop table bronze_videos;
 
 select *
-from videos v ;
+from bronze_videos v ;
 
 
 
+alter table bronze_videos 
+add if not exists partition (
+	ano=2025,
+	mes=4,
+	dia=27,
+	dia_semana="Domingo",
+	assunto="No_Mans_Sky"
+)
 
 
 
