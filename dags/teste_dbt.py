@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.providers.ssh.hooks.ssh import SSHHook
@@ -13,7 +14,7 @@ default_args = {
 ssh_hook = SSHHook(
     remote_host="172.28.0.15",
     username="hadoop",
-    password="hadoop",
+    password="hadoop"
 )
 
 with DAG(
@@ -32,6 +33,11 @@ with DAG(
             "cd teste && "
             "dbt debug"
         ),
+
+        retries=20,
+        retry_delay=timedelta(minutes=20),
+        cmd_timeout=240,  # Aumente o tempo de espera para o comando
+
     )
 
     ssh_task

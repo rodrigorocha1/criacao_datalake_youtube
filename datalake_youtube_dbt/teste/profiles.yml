@@ -3,10 +3,10 @@ default:
     dev:
       type: hive
       # Add sample credentials here, like:
-      host: 192.168.1.16
+      host: 172.28.0.15
       port: 10000
-      username: rodrigo
-      password: rodrigo3
-      schema: default  # <== Esse campo precisa ser uma string válida
-      database: default  # também pode ser necessário para Hive/Spark
+      username: hadoop
+      password: hadoop
+      schema: youtube  # <== Esse campo precisa ser uma string válida
+      database: youtube  # também pode ser necessário para Hive/Spark
   target: dev
