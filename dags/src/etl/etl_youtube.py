@@ -161,9 +161,9 @@ class ETLYoutube:
 
         if sucesso:
 
-            dados = self.__criar_particao(tabela_particao='bronze_canais')
+            self.__criar_particao(tabela_particao='bronze_canais')
             for resultado in resultados:
-                if dados[0]:
+                if resultado:
                     id_canal = resultado[0]
                     response, _ = self.__api_youtube.obter_dados_canais(id_canal=id_canal)
                     response = response['items'][0]
@@ -189,10 +189,9 @@ class ETLYoutube:
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
         if sucesso:
-
-            dados = self.__criar_particao(tabela_particao='bronze_videos')
+            self.__criar_particao(tabela_particao='bronze_videos')
             for resultado in resultados:
-                if dados[0]:
+                if resultado[0]:
                     id_video = resultado[0]
                     response = self.__api_youtube.obter_dados_videos(id_video=id_video)
                     response['data_pesquisa'] = data_pesquisa
