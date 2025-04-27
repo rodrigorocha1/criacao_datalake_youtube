@@ -43,7 +43,7 @@ class ApiYoutube(IApiYoutube):
                 'maxResults': 50,
                 'publishedAfter': data_publicacao_apos,
                 'key': self.__API_KEY,
-                'next_page_token': next_page_token,
+                'pageToken': next_page_token,
                 'q' : assunto
 
             }

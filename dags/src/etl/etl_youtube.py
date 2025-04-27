@@ -73,10 +73,13 @@ class ETLYoutube:
                 dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
 
                 if dados_canais[1] == 'BR':
+
                     dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                     dados_canais[0]['assunto'] = assunto
                     id_canal = response['snippet']['channelId']
                     nome_canal = response['snippet']['channelTitle']
+                    print('Canal Brasileiro', id_canal)
+                    print('Video Brasilero')
                     self.__inserir_dados_novos(
                         assunto=assunto,
                         tabela='canais',
@@ -120,15 +123,16 @@ class ETLYoutube:
             LIMIT 1   
         """
         sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-        if sucesso and resultado:
-            existe = any(resultado)
-            if not existe:
-                consulta = f"""
+        print(sucesso, resultado)
+
+        if not resultado:
+            print('não existe')
+            consulta = f"""
                     INSERT INTO {tabela} 
-                    PARTITION (assunto='{assunto}')
+                    PARTITION (assunto="{assunto.replace("'", "")}")
                     VALUES {valor_insercao}
                 """
-                consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
     def processo_etl_canal(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
 
