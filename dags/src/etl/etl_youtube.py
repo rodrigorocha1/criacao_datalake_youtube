@@ -93,7 +93,7 @@ class ETLYoutube:
 
         consulta = f"""
             SELECT 1
-            FROM {tabela} 
+            FROM youtube.{tabela} 
             WHERE {coluna_verificacao} = '{valor_verificacao}'
             LIMIT 1   
         """
@@ -164,7 +164,7 @@ class ETLYoutube:
 
         consulta = f"""
             SELECT DISTINCT c.id_canal
-            FROM canais c 
+            FROM youtube.canais c 
             where c.assunto = "{assunto_tratado}"
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
@@ -200,7 +200,7 @@ class ETLYoutube:
 
         consulta = f"""
                     SELECT DISTINCT v.id_video
-                    FROM videos v 
+                    FROM youtube.videos v 
                     where v.assunto = "{assunto_tratado}"
                 """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=2)

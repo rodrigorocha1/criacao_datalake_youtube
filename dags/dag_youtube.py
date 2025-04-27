@@ -40,6 +40,18 @@ def executar_etl_assunto(**kwargs):
         data_publicacao_apos=data_publicacao_apos
     )
 
+def executar_etl_canais(**kwargs):
+    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
+    from dags.src.etl.etl_youtube import ETLYoutube
+    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
+    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
+
+    api_youtube = ApiYoutube()
+    arquivo = ArquivoJson()
+    operacoes_dados = OperacaoBancoHiveAirflow()
+    etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
+    etl.assunto = kwargs['assunto']
+    etl.processo_etl_canal()
 
 # lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
 lista_assunto = ["No Man's Sky"]
@@ -64,29 +76,48 @@ with DAG(
         task_id='id_inicio_dag'
     )
 
-    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg1:
-        lista_task_assunto = []
+    # with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
+    #     lista_task_assunto = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
+    #
+    #         etl_assunto = PythonOperator(
+    #             dag=dag,
+    #             task_id=f'assunto_{id_assunto}',
+    #             python_callable=executar_etl_assunto,
+    #             op_kwargs={
+    #                 'assunto': assunto,
+    #                 'data_publicacao_apos': '2025-04-27T10:00:00Z'
+    #             }
+    #         )
+    #         lista_task_assunto.append(etl_assunto)
+
+    with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
+        lista_canais = []
         for assunto in lista_assunto:
             id_assunto = ''.join(
                 filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                        lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
                 )
             ).replace(' ', '').lower()
-
-            etl_assunto = PythonOperator(
-                dag=dag,
-                task_id=f'assunto_{id_assunto}',
-                python_callable=executar_etl_assunto,
+            etl_canais = PythonOperator(
+                task_id=f'canais_{id_assunto}',
+                python_callable=executar_etl_canais,
                 op_kwargs={
-                    'assunto': assunto,
-                    'data_publicacao_apos': '2025-04-27T10:00:00Z'
+                    'assunto' : assunto
                 }
+
             )
-            lista_task_assunto.append(etl_assunto)
+            lista_canais.append(etl_canais)
+
 
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
 
-    inicio_dag >> tg1 >> fim_dag
+    inicio_dag >> tg_canais >> fim_dag
