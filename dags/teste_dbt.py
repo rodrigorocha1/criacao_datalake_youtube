@@ -1,0 +1,36 @@
+from datetime import datetime
+
+from airflow import DAG
+from airflow.providers.ssh.hooks.ssh import SSHHook
+from airflow.providers.ssh.operators.ssh import SSHOperator
+
+# Definir argumentos padrão para o DAG
+default_args = {
+    'owner': 'airflow',
+    'start_date': datetime(2025, 4, 27),
+}
+
+ssh_hook = SSHHook(
+    remote_host="172.28.0.15",
+    username="hadoop",
+    password="hadoop",
+)
+
+with DAG(
+        dag_id='ssh_connection_example',
+        default_args=default_args,
+        schedule_interval=None,
+        catchup=False,
+) as dag:
+
+    ssh_task = SSHOperator(
+        task_id="connect_via_ssh_with_password",
+        ssh_hook=ssh_hook,
+        command=(
+            "cd /home/hadoop/projeto_dbt && "
+            "source venv/bin/activate && "
+            "dbt"
+        ),
+    )
+
+    ssh_task
