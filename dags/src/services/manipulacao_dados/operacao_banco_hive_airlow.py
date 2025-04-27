@@ -16,14 +16,19 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
         self.__schema = 'youtube'
         self.__hook = HiveServer2Hook(hiveserver2_conn_id=self.__id)
 
-    def executar_consulta_dados(self, consulta: str) -> Tuple[bool, Any]:
+    def executar_consulta_dados(self, consulta: str, opcao_consulta: 1) -> Tuple[bool, Any]:
         try:
 
             with self.__hook.get_conn() as conn:
                 cursor = conn.cursor()
                 cursor.execute(f'USE {self.__schema}')
-                result = cursor.execute(consulta)
-                conn.commit()
+                if opcao_consulta == 1:
+                    result = cursor.execute(consulta)
+                else:
+                    result =self.__hook.get_records(consulta)
+                print('Resultado Consulta')
+                print(result)
+
 
                 return True, result
         except Exception as e:

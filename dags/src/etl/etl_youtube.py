@@ -79,7 +79,7 @@ class ETLYoutube:
                         assunto="{unidecode(self.__assunto).replace(' ', '_').replace("'", "")}"
                 )
                 """
-        dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+        dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=1)
 
 
     def __inserir_dados_novos(
@@ -97,7 +97,7 @@ class ETLYoutube:
             WHERE {coluna_verificacao} = '{valor_verificacao}'
             LIMIT 1   
         """
-        sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+        sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
         print(sucesso, resultado)
 
         if not resultado:
@@ -107,7 +107,7 @@ class ETLYoutube:
                     PARTITION (assunto="{assunto}")
                     VALUES {valor_insercao}
                 """
-            consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
@@ -154,7 +154,7 @@ class ETLYoutube:
 
                 )
 
-    def processo_etl_canal(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
+    def processo_etl_canal(self):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
         self.__preparar_caminho_particao(
             termo_pesquisa='canal',
@@ -163,21 +163,24 @@ class ETLYoutube:
         )
 
         consulta = f"""
-            SELECT *
-            FROM canais c  
+            SELECT DISTINCT c.id_canal
+            FROM canais c 
+            where c.assunto = {assunto_tratado}  
         """
-        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-
+        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
+        print('Resultados canais')
+        print(sucesso, resultados)
         if sucesso:
 
             self.__criar_particao(tabela_particao='bronze_canais')
+
             for resultado in resultados:
-                if resultado:
+                if resultado is not None:
                     id_canal = resultado[0]
                     response, _ = self.__api_youtube.obter_dados_canais(id_canal=id_canal)
                     response = response['items'][0]
-                    response['data_pesquisa'] = data_pesquisa
-                    response['assunto'] = assunto
+                    response['data_pesquisa'] = self.__data_coleta.strftime('%Y-%m-%d %H:%M:%S')
+                    response['assunto'] = self.__assunto
                     self.__operacoes_arquivo.guardar_dados(dado=response)
 
                 else:
@@ -187,7 +190,7 @@ class ETLYoutube:
             pass
             # tratamento de erro
 
-    def processo_etl_video(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
+    def processo_etl_video(self):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
         self.__preparar_caminho_particao(
             termo_pesquisa='video',
@@ -196,10 +199,11 @@ class ETLYoutube:
         )
 
         consulta = f"""
-                    SELECT *
-                    FROM videos v  
+                    SELECT DISTINCT v.id_video
+                    FROM videos v 
+                    where v.assunto = {assunto_tratado}
                 """
-        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+        sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=2)
 
         if sucesso:
             self.__criar_particao(tabela_particao='bronze_videos')
@@ -207,8 +211,8 @@ class ETLYoutube:
                 if resultado[0]:
                     id_video = resultado[0]
                     response = self.__api_youtube.obter_dados_videos(id_video=id_video)
-                    response['data_pesquisa'] = data_pesquisa
-                    response['assunto'] = assunto
+                    response['data_pesquisa'] = self.__data_coleta.strftime('%Y-%m-%d %H:%M:%S')
+                    response['assunto'] = self.__assunto
                     self.__operacoes_arquivo.guardar_dados(dado=response)
 
                 else:

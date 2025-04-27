@@ -11,5 +11,5 @@ from typing import Tuple, Any
 class IOperacaoDados(ABC):
 
     @abstractmethod
-    def executar_consulta_dados(self, consulta: str) -> Tuple[bool, Any]:
+    def executar_consulta_dados(self, consulta: str, opcao_consulta: int) -> Tuple[bool, Any]:
         pass
