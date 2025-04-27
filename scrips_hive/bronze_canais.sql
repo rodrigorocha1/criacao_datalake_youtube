@@ -15,7 +15,7 @@ CREATE EXTERNAL TABLE bronze_canais (
     statistics STRUCT<
         viewCount: STRING,
         subscriberCount: STRING,
-        hiddenSubscriberCount: BOOLEAN,
+        hiddenSubscrfile:/home/rodrigo/Documentos/projetos/criacao_datalake_youtube/scrips_hive/bronze_assunto.sqliberCount: BOOLEAN,
         videoCount: STRING
     >
 )

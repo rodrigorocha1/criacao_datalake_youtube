@@ -5,7 +5,7 @@ from dags.src.services.manipulacao_dados.arquivo import Arquivo
 from datetime import datetime
 from dateutil import parser
 from typing import Tuple
-
+from unidecode import unidecode
 
 class ETLYoutube:
     def __init__(self, api_youtube: IApiYoutube, operacoes_dados: IOperacaoDados, arquivo: Arquivo):
@@ -21,7 +21,7 @@ class ETLYoutube:
             2: 'Quarta-feira',
             3: 'Quinta-feira',
             4: 'Sexta-feira',
-            5: 'Sábado',
+            5: 'Sabado',
             6: 'Domingo'
         }
 
@@ -39,6 +39,8 @@ class ETLYoutube:
         mes = data.month
         dia = data.day
         dia_semana = self.__obter_semana_portugues(data=data)
+        # dia_semana = dia_semana.encode('utf-8').decode('utf-8')
+        # assunto = assunto.encode('utf-8').decode('utf-8')
 
         consulta = f"""
             ALTER TABLE bronze_assunto
@@ -56,7 +58,7 @@ class ETLYoutube:
         if dados[0]:
             self.__operacoes_arquivo.camada = 'bronze'
             self.__operacoes_arquivo.termo_pesquisa = 'assunto'
-            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+            self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto.replace(' ', '_'))}'
             self.__operacoes_arquivo.nome_arquivo = 'assunto.json'
 
             for response in self.__api_youtube.obter_assunto(
@@ -137,7 +139,7 @@ class ETLYoutube:
 
         self.__operacoes_arquivo.camada = 'bronze'
         self.__operacoes_arquivo.termo_pesquisa = 'canais'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto.replace(' ', '_'))}'
         self.__operacoes_arquivo.nome_arquivo = 'canais.json'
 
         consulta = f"""
@@ -184,7 +186,7 @@ class ETLYoutube:
 
         self.__operacoes_arquivo.camada = 'bronze'
         self.__operacoes_arquivo.termo_pesquisa = 'videos'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana}/assunto={assunto}'
+        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto.replace(' ', '_'))}'
         self.__operacoes_arquivo.nome_arquivo = 'video.json'
 
         consulta = f"""

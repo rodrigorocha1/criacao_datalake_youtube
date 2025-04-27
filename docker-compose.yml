@@ -72,7 +72,8 @@ services:
       start_period: 30s
     restart: always
     volumes:
-      - ./datalake:/opt/datalake
+      - ./datalake:/home/airflow/datalake
+
 
     depends_on:
       <<: *airflow-common-depends-on
@@ -145,7 +146,7 @@ services:
 
 
   hadoop_hive:
-    image: hadoop_hive_dbt_container_v4:latest
+    image: hadoop_hive_dbt_iso88591:latest
     container_name: hadoop_hive_dbt_container
 
     ports:
@@ -162,7 +163,7 @@ services:
       - ./datalake_youtube_dbt:/home/hadoop/projeto_dbt
       - ./mysql_data:/var/lib/mysql
     environment:
-      TZ: "America/Sao_Paulo"
+      - TZ=America/Sao_Paulo
     networks:
       airflow-net:
         ipv4_address: 172.28.0.15
@@ -171,3 +172,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  datalake:
+    driver: local

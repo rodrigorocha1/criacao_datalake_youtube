@@ -223,3 +223,4 @@ hdfs
 /hue_data/hue.ini
 /backup_docker/b_hadoop_hive_atualizado_v4.tar
 /datalake
+/backup_docker/hadoop_hive_dbt_iso88591.tar
