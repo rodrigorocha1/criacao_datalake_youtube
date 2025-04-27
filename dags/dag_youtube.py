@@ -34,12 +34,9 @@ def executar_etl_assunto(**kwargs):
     arquivo = ArquivoJson()
     operacoes_dados = OperacaoBancoHiveAirflow()
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
-
-    assunto = kwargs['assunto']
+    etl.assunto = kwargs['assunto']
     data_publicacao_apos = kwargs['data_publicacao_apos']
-
     etl.processo_etl_assunto_video(
-        assunto=assunto,
         data_publicacao_apos=data_publicacao_apos
     )
 
@@ -82,7 +79,7 @@ with DAG(
                 python_callable=executar_etl_assunto,
                 op_kwargs={
                     'assunto': assunto,
-                    'data_publicacao_apos': '2025-04-26T22:50:46Z'
+                    'data_publicacao_apos': '2025-04-27T10:00:00Z'
                 }
             )
             lista_task_assunto.append(etl_assunto)

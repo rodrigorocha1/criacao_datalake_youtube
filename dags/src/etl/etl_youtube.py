@@ -2,7 +2,6 @@
 from datetime import datetime
 from typing import Tuple
 
-from dateutil import parser
 from unidecode import unidecode
 
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
@@ -53,9 +52,9 @@ class ETLYoutube:
 
         return nome_dia
 
-    def __criar_particao(self):
+    def __criar_particao(self, tabela_particao: str):
         consulta = f"""
-                    ALTER TABLE bronze_assunto
+                    ALTER TABLE {tabela_particao}
                     ADD IF NOT EXISTS PARTITION (
                         ano={self.__ano},
                         mes={self.__mes},
@@ -64,76 +63,64 @@ class ETLYoutube:
                         assunto="{unidecode(self.__assunto).replace(' ', '_').replace("'", "")}"
                 )
                 """
-
         dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
-        return dados
 
+    def processo_etl_assunto_video(self, data_publicacao_apos: str):
+        termo_pesquisa = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+        self.__preparar_caminho_particao(termo_pesquisa=termo_pesquisa, nome_arquivo='asssunto.json')
+        self.__criar_particao(tabela_particao='bronze_assunto')
+        for response in self.__api_youtube.obter_assunto(
+                assunto=self.__assunto,
+                data_publicacao_apos=data_publicacao_apos
+        ):
+            response['data_pesquisa'] = data_publicacao_apos
+            response['assunto'] = self.__assunto
+            self.__operacoes_arquivo.guardar_dados(dado=response)
+            dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
+            if dados_canais[1] == 'BR':
+                dados_canais[0]['data_pesquisa'] = data_publicacao_apos
+                dados_canais[0]['assunto'] = self.__assunto
+                id_canal = response['snippet']['channelId']
+                nome_canal = response['snippet']['channelTitle']
+                print('Canal Brasileiro', id_canal)
+                print('Video Brasilero')
 
-    def processo_etl_assunto_video(
-            self,
-            data_publicacao_apos: str
-    ):
-        data = parser.isoparse(data_publicacao_apos)
-        dados = self.__criar_particao()
+                self.__inserir_dados_novos(
+                    assunto=termo_pesquisa,
+                    tabela='canais',
+                    valor_insercao=(id_canal, nome_canal),
+                    coluna_verificacao='id_canal',
+                    valor_verificacao=id_canal,
 
-        if dados[0]:
-            self.__operacoes_arquivo.camada = 'bronze'
-            self.__operacoes_arquivo.termo_pesquisa = 'assunto'
-            self.__operacoes_arquivo.caminho_particao = f'ano={self.__ano}/mes={self.__mes}/dia={self.__dia}/dia_semana={self.__dia_semana.replace(' ', '_')}/assunto={unidecode(self.__assunto).replace(' ', '_').replace("'", "")}'
-            self.__operacoes_arquivo.nome_arquivo = 'assunto.json'
+                )
 
-            for response in self.__api_youtube.obter_assunto(
-                    assunto=self.__assunto,
-                    data_publicacao_apos=data_publicacao_apos
-            ):
+                id_video = response['id']['videoId']
+                titulo_video = response['snippet']['title']
 
-                response['data_pesquisa'] = data_publicacao_apos
-                response['assunto'] = self.__assunto
-                self.__operacoes_arquivo.guardar_dados(dado=response)
-                dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
+                self.__inserir_dados_novos(
+                    assunto=termo_pesquisa,
+                    tabela='videos',
+                    valor_insercao=(id_video, titulo_video),
+                    coluna_verificacao='id_video',
+                    valor_verificacao=id_video
 
-                if dados_canais[1] == 'BR':
-
-                    dados_canais[0]['data_pesquisa'] = data_publicacao_apos
-                    dados_canais[0]['assunto'] = self.__assunto
-                    id_canal = response['snippet']['channelId']
-                    nome_canal = response['snippet']['channelTitle']
-                    print('Canal Brasileiro', id_canal)
-                    print('Video Brasilero')
-
-                    self.__inserir_dados_novos(
-                        assunto=self.__assunto.replace("'", "").replace('_', ''),
-                        tabela='canais',
-                        valor_insercao=(id_canal, nome_canal),
-                        coluna_verificacao='id_canal',
-                        valor_verificacao=id_canal,
-
-                    )
-
-                    id_video = response['id']['videoId']
-                    titulo_video = response['snippet']['title']
-
-                    self.__inserir_dados_novos(
-                        assunto=self.__assunto.replace("'", "").replace('_', ''),
-                        tabela='videos',
-                        valor_insercao=(id_video, titulo_video),
-                        coluna_verificacao='id_video',
-                        valor_verificacao=id_video
-
-                    )
-
-                # break
-        else:
-            # Tratamento de erro
-            # parar a rotina
-            pass
+                )
 
     def __fazer_tratamento_assunto(self, assunto: str) -> str:
-        assunto = assunto.replace().replace("'", "").replace('', '_')
+        assunto = assunto.replace("'", "").replace('', '_')
         return assunto
 
-    def __preparar_caminho_particao(self):
-        pass
+    def __preparar_caminho_particao(self, termo_pesquisa: str, nome_arquivo: str):
+        self.__operacoes_arquivo.camada = 'bronze'
+        self.__operacoes_arquivo.termo_pesquisa = termo_pesquisa
+        self.__operacoes_arquivo.caminho_particao = (
+            f'ano={self.__ano}'
+            f'/mes={self.__mes}'
+            f'/dia={self.__dia_semana}'
+            f'/dia_semana={self.__dia_semana.replace(" ", "_")}'
+            f'/assunto={unidecode(self.__assunto).replace(" ", "_")}'
+        )
+        self.__operacoes_arquivo.nome_arquivo = nome_arquivo
 
     def __inserir_dados_novos(
             self,
@@ -163,17 +150,8 @@ class ETLYoutube:
             consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
     def processo_etl_canal(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
-
-        data = parser.isoparse(data_pesquisa)
-        ano = data.year
-        mes = data.month
-        dia = data.day
-        dia_semana = self.__obter_semana_portugues(data=data)
-
-        self.__operacoes_arquivo.camada = 'bronze'
-        self.__operacoes_arquivo.termo_pesquisa = 'canais'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto).replace(' ', '_')}'
-        self.__operacoes_arquivo.nome_arquivo = 'canais.json'
+        termo_pesquisa = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+        self.__preparar_caminho_particao(termo_pesquisa=termo_pesquisa, nome_arquivo='canal.json')
 
         consulta = f"""
             SELECT *
@@ -182,18 +160,8 @@ class ETLYoutube:
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
         if sucesso:
-            consulta = f"""
-                ALTER TABLE bronze_canais
-                ADD IF NOT EXISTS PARTITION (
-                ano={ano},
-                mes={mes},
-                dia={dia},
-                dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
-            )
-             """
 
-            dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            dados = self.__criar_particao(tabela_particao='bronze_canais')
             for resultado in resultados:
                 if dados[0]:
                     id_canal = resultado[0]
@@ -211,16 +179,8 @@ class ETLYoutube:
             # tratamento de erro
 
     def processo_etl_video(self, assunto: str, data_pesquisa: str = '2025-04-01T00:00:00Z'):
-        data = parser.isoparse(data_pesquisa)
-        ano = data.year
-        mes = data.month
-        dia = data.day
-        dia_semana = self.__obter_semana_portugues(data=data)
-
-        self.__operacoes_arquivo.camada = 'bronze'
-        self.__operacoes_arquivo.termo_pesquisa = 'videos'
-        self.__operacoes_arquivo.caminho_particao = f'ano={ano}/mes={mes}/dia={dia}/dia_semana={dia_semana.replace(' ', '_')}/assunto={unidecode(assunto.replace("'", "")).replace(' ', '_')}'
-        self.__operacoes_arquivo.nome_arquivo = 'video.json'
+        termo_pesquisa = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+        self.__preparar_caminho_particao(termo_pesquisa=termo_pesquisa, nome_arquivo='video.json')
 
         consulta = f"""
                     SELECT *
@@ -229,18 +189,8 @@ class ETLYoutube:
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
 
         if sucesso:
-            consulta = f"""
-                ALTER TABLE bronze_videos
-                ADD IF NOT EXISTS PARTITION (
-                ano={ano},
-                mes={mes},
-                dia={dia},
-                dia_semana='{dia_semana.replace(' ', '_')}',
-                assunto="{unidecode(assunto).replace(' ', '_').replace("'", "")}"
-            )
-             """
 
-            dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta)
+            dados = self.__criar_particao(tabela_particao='bronze_videos')
             for resultado in resultados:
                 if dados[0]:
                     id_video = resultado[0]
