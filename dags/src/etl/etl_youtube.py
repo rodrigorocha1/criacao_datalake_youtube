@@ -5,6 +5,7 @@ from typing import Dict
 import pytz
 from unidecode import unidecode
 
+from dags.enums.camada_enum import Camada
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
 from dags.src.services.manipulacao_dados.arquivo import Arquivo
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
@@ -59,9 +60,10 @@ class ETLYoutube:
             self,
             nome_arquivo: str,
             assunto_tratado: str,
+            nome_camada: Camada,
             opcao_particao: int = 1
     ):
-        self.__operacoes_arquivo.camada = 'bronze'
+        self.__operacoes_arquivo.camada = nome_camada
         self.__operacoes_arquivo.entidade = self.__assunto
         self.__operacoes_arquivo.caminho_particao = (
             f'ano={self.__ano}'
@@ -90,73 +92,70 @@ class ETLYoutube:
                 ADD IF NOT EXISTS PARTITION (
                     assunto="{self.__assunto}" 
                 ) 
-             """
+            """
         dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=1)
 
 
     def __inserir_dados_novos(
             self,
-            assunto: str,
             tabela: str,
             coluna_verificacao: str,
             valor_verificacao: str,
-            camada: str,
             nome_arquivo: str,
-            json_arquivo: Dict,
-            opcao: int
+            json_arquivo: Dict
     ):
 
         consulta = f"""
             SELECT 1
             FROM youtube.{tabela} 
             WHERE {coluna_verificacao} = '{valor_verificacao}'
-            AND assunto = {assunto} 
+            AND assunto = {self.__assunto} 
             LIMIT 1   
         """
+
         sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
-        print(sucesso, resultado)
+
 
         if not resultado:
-            self.__operacoes_arquivo.camada = camada
-            self.__operacoes_arquivo.termo_pesquisa = tabela
-            self.__operacoes_arquivo.nome_arquivo = nome_arquivo
+            self.__preparar_caminho_particao(opcao_particao=2, nome_arquivo=nome_arquivo)
             self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
 
         self.__preparar_caminho_particao(
-            termo_pesquisa='assunto',
-            nome_arquivo='asssunto.json',
-            assunto_tratado=self.__assunto
+            nome_arquivo='assunto.json',
+            assunto_tratado=self.__assunto,
+            opcao_particao=1,
+            nome_camada=Camada.Bronze
         )
-        self.__criar_particao(tabela_particao='bronze_assunto')
+
+        self.__criar_particao(
+            tabela_particao='bronze_assunto',
+            opcao_particao=1,
+        )
+
         for response in self.__api_youtube.obter_assunto(
-                assunto=self.__assunto,
+                assunto=self.__assunto_pesquisa,
                 data_publicacao_apos=data_publicacao_apos
         ):
             response['data_pesquisa'] = data_publicacao_apos
             response['assunto'] = self.__assunto
-            self.__operacoes_arquivo.guardar_dados(dado=response, opcao=1)
+            self.__operacoes_arquivo.guardar_dados(dado=response)
             dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
             if dados_canais[1] == 'BR':
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                 dados_canais[0]['assunto'] = self.__assunto
+
                 id_canal = response['snippet']['channelId']
                 nome_canal = response['snippet']['channelTitle']
-                print('Canal Brasileiro', id_canal)
-                print('Video Brasilero')
-
                 json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
 
                 self.__inserir_dados_novos(
-                    assunto=assunto_tratado,
                     tabela='canais',
                     nome_arquivo='canais.json',
                     coluna_verificacao='id_canal',
                     valor_verificacao=id_canal,
-                    json_arquivo=json_canal,
-                    camada='depara',
-                    opcao=2
+                    json_arquivo=json_canal
 
                 )
 
@@ -166,29 +165,28 @@ class ETLYoutube:
                 json_video = {'id_video': id_video, 'titulo_video': titulo_video}
 
                 self.__inserir_dados_novos(
-                    assunto=assunto_tratado,
+
                     tabela='videos',
                     nome_arquivo='videos.json',
                     coluna_verificacao='id_video',
                     valor_verificacao=id_video,
                     json_arquivo=json_video,
-                    camada='depara',
-                    opcao=2
 
                 )
 
     def processo_etl_canal(self):
-        assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+
         self.__preparar_caminho_particao(
-            termo_pesquisa='canais',
             nome_arquivo='canal.json',
-            assunto_tratado=assunto_tratado
+            nome_camada=Camada.Bronze,
+            opcao_particao=1,
+            assunto_tratado=self.__assunto
         )
 
         consulta = f"""
             SELECT DISTINCT c.id_canal
             FROM youtube.canais c 
-            where c.assunto = "{assunto_tratado}"
+            where c.assunto = "{self.__assunto}"
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
         print('Resultados canais')
@@ -214,17 +212,19 @@ class ETLYoutube:
             # tratamento de erro
 
     def processo_etl_video(self):
-        assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+
         self.__preparar_caminho_particao(
-            termo_pesquisa='videos',
+
             nome_arquivo='video.json',
-            assunto_tratado=assunto_tratado
+            assunto_tratado=self.__assunto,
+            nome_camada=Camada.Bronze
+
         )
 
         consulta = f"""
                     SELECT DISTINCT v.id_video
                     FROM youtube.videos v 
-                    where v.assunto = "{assunto_tratado}"
+                    where v.assunto = "{self.__assunto}"
                 """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=2)
 
