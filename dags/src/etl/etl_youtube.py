@@ -16,12 +16,14 @@ class ETLYoutube:
             api_youtube: IApiYoutube,
             operacoes_dados: IOperacaoDados,
             arquivo: Arquivo,
+            assunto_pesquisa: str
 
     ):
         self.__api_youtube = api_youtube
         self.__operacoes_banco = operacoes_dados
         self.__operacoes_arquivo = arquivo
-        self.__assunto = None
+        self.__assunto_pesquisa = assunto_pesquisa
+        self.__assunto = self.__assunto_pesquisa
         self.__data_coleta = datetime.now(pytz.timezone("America/Sao_Paulo"))
         self.__ano = self.__data_coleta.year
         self.__mes = self.__data_coleta.month
@@ -34,7 +36,7 @@ class ETLYoutube:
 
     @assunto.setter
     def assunto(self, assunto: str):
-        self.__assunto = assunto
+        self.__assunto = unidecode(assunto).replace(' ', '_').replace("'", "")
 
 
     def __obter_semana_portugues(self, data: datetime) -> str:
@@ -51,35 +53,44 @@ class ETLYoutube:
 
         nome_dia = dias_semana[data.weekday()]
 
-        return nome_dia
+        return nome_dia.replace(" ", "_")
 
-    def __fazer_tratamento_assunto(self, assunto: str) -> str:
-        assunto = assunto.replace("'", "").replace(' ', '_')
-        return assunto
-
-    def __preparar_caminho_particao(self, termo_pesquisa: str, nome_arquivo: str, assunto_tratado: str):
+    def __preparar_caminho_particao(
+            self,
+            nome_arquivo: str,
+            assunto_tratado: str,
+            opcao_particao: int = 1
+    ):
         self.__operacoes_arquivo.camada = 'bronze'
-        self.__operacoes_arquivo.termo_pesquisa = termo_pesquisa
+        self.__operacoes_arquivo.entidade = self.__assunto
         self.__operacoes_arquivo.caminho_particao = (
             f'ano={self.__ano}'
             f'/mes={self.__mes}'
             f'/dia={self.__dia}'
-            f'/dia_semana={self.__dia_semana.replace(" ", "_")}'
+            f'/dia_semana={self.__dia_semana}'
             f'/assunto={assunto_tratado}'
-        )
+        ) if opcao_particao == 1 else f'assunto={assunto_tratado}'
         self.__operacoes_arquivo.nome_arquivo = nome_arquivo
 
-    def __criar_particao(self, tabela_particao: str):
-        consulta = f"""
-                    ALTER TABLE {tabela_particao}
-                    ADD IF NOT EXISTS PARTITION ( 
-                        ano={self.__ano},
-                        mes={self.__mes},
-                        dia={self.__dia},
-                        dia_semana='{self.__dia_semana.replace(' ', '_')}',
-                        assunto="{unidecode(self.__assunto).replace(' ', '_').replace("'", "")}"
-                )
-                """
+    def __criar_particao(self, tabela_particao: str, opcao_particao: int = 1):
+        if opcao_particao == 1:
+            consulta = f"""
+                        ALTER TABLE {tabela_particao}
+                        ADD IF NOT EXISTS PARTITION ( 
+                            ano={self.__ano},
+                            mes={self.__mes},
+                            dia={self.__dia},
+                            dia_semana='{self.__dia_semana.replace(' ', '_')}',
+                            assunto="{self.__assunto}"
+                    )
+                    """
+        else:
+            consulta = f"""
+                ALTER TABLE {tabela_particao}  
+                ADD IF NOT EXISTS PARTITION (
+                    assunto="{self.__assunto}" 
+                ) 
+             """
         dados = self.__operacoes_banco.executar_consulta_dados(consulta=consulta , opcao_consulta=1)
 
 
@@ -99,6 +110,7 @@ class ETLYoutube:
             SELECT 1
             FROM youtube.{tabela} 
             WHERE {coluna_verificacao} = '{valor_verificacao}'
+            AND assunto = {assunto} 
             LIMIT 1   
         """
         sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=2)
@@ -108,14 +120,14 @@ class ETLYoutube:
             self.__operacoes_arquivo.camada = camada
             self.__operacoes_arquivo.termo_pesquisa = tabela
             self.__operacoes_arquivo.nome_arquivo = nome_arquivo
-            self.__operacoes_arquivo.guardar_dados(dado=json_arquivo, opcao=opcao)
+            self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
-        assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
+
         self.__preparar_caminho_particao(
             termo_pesquisa='assunto',
             nome_arquivo='asssunto.json',
-            assunto_tratado=assunto_tratado
+            assunto_tratado=self.__assunto
         )
         self.__criar_particao(tabela_particao='bronze_assunto')
         for response in self.__api_youtube.obter_assunto(
