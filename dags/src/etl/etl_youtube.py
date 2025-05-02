@@ -63,7 +63,7 @@ class ETLYoutube:
             nome_camada: Camada,
             opcao_particao: int = 1
     ):
-        self.__operacoes_arquivo.camada = nome_camada
+        self.__operacoes_arquivo.camada = nome_camada.value
         self.__operacoes_arquivo.entidade = self.__assunto
         self.__operacoes_arquivo.caminho_particao = (
             f'ano={self.__ano}'
@@ -217,7 +217,7 @@ class ETLYoutube:
 
             nome_arquivo='video.json',
             assunto_tratado=self.__assunto,
-            nome_camada=Camada.Bronze
+            nome_camada=Camada.Bronze.value
 
         )
 
