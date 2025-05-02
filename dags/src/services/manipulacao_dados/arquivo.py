@@ -68,5 +68,5 @@ class Arquivo(ABC):
         )
 
     @abstractmethod
-    def guardar_dados(self, dado: Dict, opcao: int = 1):
+    def guardar_dados(self, dado: Dict):
         pass
