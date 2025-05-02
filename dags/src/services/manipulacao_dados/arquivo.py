@@ -9,18 +9,27 @@ import os
 from abc import ABC, abstractmethod
 from typing import Dict, Optional
 
+from dags.enums.camada_enum import Camada
+
 
 class Arquivo(ABC):
 
     def __init__(self):
         # self.__caminho_raiz = os.getcwd()
 
-        self.__caminho_raiz = '/'
-        self.__pasta_raiz_datalake = 'datalake'
-        self.__camada = None
-        self.__caminho_particao = None
-        self.__termo_pesquisa = None
-        self.__nome_arquivo = None
+        self.__caminho_raiz = '/'  # Caminho Raiz
+        self.__pasta_raiz_datalake = 'datalake'  # Nome do diretório do datalake
+        self.__camada = None  # Bronze Prata ou ouro
+        self.__caminho_particao = None  # Caminho da particao criada no hive
+        self.__nome_arquivo = None  # Nome do arquivo
+
+    @property
+    def camada(self) -> Optional[Camada]:
+        return self.__camada
+
+    @camada.setter
+    def camada(self, camada: Camada):
+        self.__camada = camada
 
     @property
     def nome_arquivo(self):
@@ -87,11 +96,11 @@ class Arquivo(ABC):
                 self.__caminho_raiz,
                 self.__pasta_raiz_datalake,
                 self.__camada,
-                self.__nome_arquivo
+                self.__termo_pesquisa
             )
             return caminho_depara
         return None
 
     @abstractmethod
-    def guardar_dados(self, dado: Dict, opcao: int):
+    def guardar_dados(self, dado: Dict, opcao: int = 1):
         pass

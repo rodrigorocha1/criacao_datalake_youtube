@@ -18,6 +18,7 @@ class ArquivoJson(Arquivo):
 
     def guardar_dados(self, dado: Dict, opcao: int = 1):
         caminho = self.diretorio if opcao == 1 else self.caminho_depara
+        print(caminho)
         with open(os.path.join(caminho, self.nome_arquivo), 'a') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)
             arquivo_json.write('\n')

@@ -35,6 +35,7 @@ def executar_etl_assunto(**kwargs):
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
     etl.assunto = kwargs['assunto']
     data_publicacao_apos = kwargs['data_publicacao_apos']
+    print(f'===========Data hora busca =================={data_publicacao_apos}')
     etl.processo_etl_assunto_video(
         data_publicacao_apos=data_publicacao_apos
     )

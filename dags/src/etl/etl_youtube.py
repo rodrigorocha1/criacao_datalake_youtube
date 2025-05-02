@@ -1,7 +1,8 @@
 
 from datetime import datetime
-from typing import Tuple
+from typing import Dict
 
+import pytz
 from unidecode import unidecode
 
 from dags.src.services.apiyoutube.i_api_youtube import IApiYoutube
@@ -21,7 +22,7 @@ class ETLYoutube:
         self.__operacoes_banco = operacoes_dados
         self.__operacoes_arquivo = arquivo
         self.__assunto = None
-        self.__data_coleta = datetime.now()
+        self.__data_coleta = datetime.now(pytz.timezone("America/Sao_Paulo"))
         self.__ano = self.__data_coleta.year
         self.__mes = self.__data_coleta.month
         self.__dia = self.__data_coleta.day
@@ -88,7 +89,10 @@ class ETLYoutube:
             tabela: str,
             coluna_verificacao: str,
             valor_verificacao: str,
-            valor_insercao: Tuple[str, str]
+            camada: str,
+            nome_arquivo: str,
+            json_arquivo: Dict,
+            opcao: int
     ):
 
         consulta = f"""
@@ -101,13 +105,10 @@ class ETLYoutube:
         print(sucesso, resultado)
 
         if not resultado:
-            print('não existe')
-            # consulta = f"""
-            #         INSERT INTO {tabela}
-            #         PARTITION (assunto="{assunto}")
-            #         VALUES {valor_insercao}
-            #     """
-            # consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
+            self.__operacoes_arquivo.camada = camada
+            self.__operacoes_arquivo.termo_pesquisa = tabela
+            self.__operacoes_arquivo.nome_arquivo = nome_arquivo
+            self.__operacoes_arquivo.guardar_dados(dado=json_arquivo, opcao=opcao)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
@@ -123,7 +124,7 @@ class ETLYoutube:
         ):
             response['data_pesquisa'] = data_publicacao_apos
             response['assunto'] = self.__assunto
-            self.__operacoes_arquivo.guardar_dados(dado=response)
+            self.__operacoes_arquivo.guardar_dados(dado=response, opcao=1)
             dados_canais = self.__api_youtube.obter_dados_canais(id_canal=response['snippet']['channelId'])
             if dados_canais[1] == 'BR':
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
@@ -133,34 +134,34 @@ class ETLYoutube:
                 print('Canal Brasileiro', id_canal)
                 print('Video Brasilero')
 
-                json_canal = {
-                    'id_canal': id_canal,
-                    'nome_canal': nome_canal
-                }
+                json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
 
                 self.__inserir_dados_novos(
                     assunto=assunto_tratado,
                     tabela='canais',
-                    valor_insercao=(id_canal, nome_canal),
+                    nome_arquivo='canais.json',
                     coluna_verificacao='id_canal',
                     valor_verificacao=id_canal,
+                    json_arquivo=json_canal,
+                    camada='depara',
+                    opcao=2
 
                 )
 
                 id_video = response['id']['videoId']
                 titulo_video = response['snippet']['title']
 
-                json_video = {
-                    'id_video': id_video,
-                    'titulo_video': titulo_video
-                }
+                json_video = {'id_video': id_video, 'titulo_video': titulo_video}
 
                 self.__inserir_dados_novos(
                     assunto=assunto_tratado,
                     tabela='videos',
-                    valor_insercao=(id_video, titulo_video),
+                    nome_arquivo='videos.json',
                     coluna_verificacao='id_video',
-                    valor_verificacao=id_video
+                    valor_verificacao=id_video,
+                    json_arquivo=json_video,
+                    camada='depara',
+                    opcao=2
 
                 )
 
@@ -246,6 +247,8 @@ if __name__ == '__main__':
             conexao=ConexaoBancoHive()
         )
     )
-    # etl.processo_etl_assunto_video(assunto='Danilo', data_publicacao_apos='2025-04-23T18:50:46Z')
+    etl.assunto = "No Man's Sky"
+    etl.processo_etl_assunto_video(data_publicacao_apos='2025-01-05T20:20:46Z')
+
     # etl.processo_etl_canal(assunto='Danilo', data_pesquisa='2025-04-23T18:50:46Z')
     # etl.processo_etl_video(assunto='Danilo', data_pesquisa='2025-04-23T18:50:46Z')
