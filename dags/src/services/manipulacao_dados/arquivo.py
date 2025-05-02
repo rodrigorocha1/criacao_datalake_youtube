@@ -5,19 +5,16 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
-from typing import Dict, Optional
-from abc import ABC, abstractmethod
 import os
+from abc import ABC, abstractmethod
+from typing import Dict, Optional
 
 
 class Arquivo(ABC):
 
     def __init__(self):
         # self.__caminho_raiz = os.getcwd()
-        print(f'CAMINHO {os.getcwd()}')
-        print("Diretórios e arquivos no diretório atual:")
-        for item in os.listdir('/'):
-            print(item)
+
         self.__caminho_raiz = '/'
         self.__pasta_raiz_datalake = 'datalake'
         self.__camada = None
@@ -80,6 +77,18 @@ class Arquivo(ABC):
                 self.__nome_arquivo
             )
 
+            return caminho
+        return None
+
+    @property
+    def caminho_depara(self) -> Optional[str]:
+        if None not in (self.__pasta_raiz_datalake, self.__camada, self.__termo_pesquisa):
+            caminho_depara = os.path.join(
+                self.__caminho_raiz,
+                self.__pasta_raiz_datalake,
+                self.__camada,
+                self.__nome_arquivo
+            )
             return caminho
         return None
 
