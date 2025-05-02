@@ -89,9 +89,9 @@ class Arquivo(ABC):
                 self.__camada,
                 self.__nome_arquivo
             )
-            return caminho
+            return caminho_depara
         return None
 
     @abstractmethod
-    def guardar_dados(self, dado: Dict):
+    def guardar_dados(self, dado: Dict, opcao: int):
         pass

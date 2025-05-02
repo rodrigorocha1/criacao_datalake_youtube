@@ -102,12 +102,12 @@ class ETLYoutube:
 
         if not resultado:
             print('não existe')
-            consulta = f"""
-                    INSERT INTO {tabela} 
-                    PARTITION (assunto="{assunto}")
-                    VALUES {valor_insercao}
-                """
-            consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
+            # consulta = f"""
+            #         INSERT INTO {tabela}
+            #         PARTITION (assunto="{assunto}")
+            #         VALUES {valor_insercao}
+            #     """
+            # consulta_canal = self.__operacoes_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
         assunto_tratado = self.__fazer_tratamento_assunto(assunto=self.__assunto)
@@ -133,6 +133,11 @@ class ETLYoutube:
                 print('Canal Brasileiro', id_canal)
                 print('Video Brasilero')
 
+                json_canal = {
+                    'id_canal': id_canal,
+                    'nome_canal': nome_canal
+                }
+
                 self.__inserir_dados_novos(
                     assunto=assunto_tratado,
                     tabela='canais',
@@ -144,6 +149,11 @@ class ETLYoutube:
 
                 id_video = response['id']['videoId']
                 titulo_video = response['snippet']['title']
+
+                json_video = {
+                    'id_video': id_video,
+                    'titulo_video': titulo_video
+                }
 
                 self.__inserir_dados_novos(
                     assunto=assunto_tratado,

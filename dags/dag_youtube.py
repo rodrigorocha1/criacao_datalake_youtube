@@ -104,7 +104,7 @@ with DAG(
                 python_callable=executar_etl_assunto,
                 op_kwargs={
                     'assunto': assunto,
-                    'data_publicacao_apos': '2025-04-27T10:00:00Z'
+                    'data_publicacao_apos': data_hora_busca
                 }
             )
             lista_task_assunto.append(etl_assunto)
