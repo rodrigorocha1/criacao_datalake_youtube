@@ -20,6 +20,7 @@ class Arquivo(ABC):
         self.__caminho_raiz = '/'  # Caminho Raiz
         self.__pasta_raiz_datalake = 'datalake'  # Nome do diretório do datalake
         self.__camada = None  # Bronze Prata ou ouro
+        self.__entidade = None  # Assunto, canal e vídeo
         self.__caminho_particao = None  # Caminho da particao criada no hive
         self.__nome_arquivo = None  # Nome do arquivo
 
@@ -28,78 +29,43 @@ class Arquivo(ABC):
         return self.__camada
 
     @camada.setter
-    def camada(self, camada: Camada):
-        self.__camada = camada
+    def camada(self, value: Camada):
+        self.__camada = value
 
     @property
-    def nome_arquivo(self):
-        return self.__nome_arquivo
+    def entidade(self) -> Optional[str]:
+        return self.__entidade
 
-    @nome_arquivo.setter
-    def nome_arquivo(self, nome_arquivo: str):
-        self.__nome_arquivo = nome_arquivo
+    @entidade.setter
+    def entidade(self, value: str):
+        self.__entidade = value
 
     @property
-    def caminho_particao(self):
+    def caminho_particao(self) -> Optional[str]:
         return self.__caminho_particao
 
     @caminho_particao.setter
-    def caminho_particao(self, caminho_particao: str):
-        self.__caminho_particao = caminho_particao
+    def caminho_particao(self, value: str):
+        self.__caminho_particao = value
 
     @property
-    def camada(self):
-        return self.__camada
+    def nome_arquivo(self) -> Optional[str]:
+        return self.__nome_arquivo
 
-    @camada.setter
-    def camada(self, camada: str):
-        self.__camada = camada
-
-    @property
-    def termo_pesquisa(self) -> str:
-        return self.__termo_pesquisa
-
-    @termo_pesquisa.setter
-    def termo_pesquisa(self, termo_pesquisa: str):
-        self.__termo_pesquisa = termo_pesquisa
+    @nome_arquivo.setter
+    def nome_arquivo(self, value: str):
+        self.__nome_arquivo = value
 
     @property
-    def diretorio(self):
+    def caminho_datalake(self):
         return os.path.join(
             self.__caminho_raiz,
             self.__pasta_raiz_datalake,
             self.__camada,
-            self.__termo_pesquisa,
-            self.__caminho_particao
+            self.__entidade,
+            self.__caminho_particao,
+            self.__nome_arquivo
         )
-
-
-    @property
-    def caminho_completo(self) -> Optional[str]:
-        if None not in (self.__pasta_raiz_datalake, self.__camada, self.__termo_pesquisa):
-            caminho = os.path.join(
-                self.__caminho_raiz,
-                self.__pasta_raiz_datalake,
-                self.__camada,
-                self.__termo_pesquisa,
-                self.__caminho_particao,
-                self.__nome_arquivo
-            )
-
-            return caminho
-        return None
-
-    @property
-    def caminho_depara(self) -> Optional[str]:
-        if None not in (self.__pasta_raiz_datalake, self.__camada, self.__termo_pesquisa):
-            caminho_depara = os.path.join(
-                self.__caminho_raiz,
-                self.__pasta_raiz_datalake,
-                self.__camada,
-                self.__termo_pesquisa
-            )
-            return caminho_depara
-        return None
 
     @abstractmethod
     def guardar_dados(self, dado: Dict, opcao: int = 1):
