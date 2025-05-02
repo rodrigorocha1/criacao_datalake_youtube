@@ -56,6 +56,15 @@ STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/bronze/videos';
 
 
+create external table videos (
+	id_video VARCHAR(80),
+	nome_video string,
+	
+) partitioned by (assunto STRING)
+STORED AS TEXTFILE
+LOCATION 'file:///home/hadoop/datalake/depara/videos';
+
+
 drop table bronze_videos;
 
 select *

@@ -43,6 +43,51 @@ select
 	
 from bronze_videos bv ;
 
+SELECT current_timestamp;
+
+
+SELECT date_format(current_timestamp, 'yyyy-MM-dd HH:mm:ss') AS formatted_time;
+
+select *
+from teste_particao_external_ttable tpet ;
+
+select *
+from tteste_particao_external_ttable tpet ;
+
+select *
+from clientes;
+
+select *
+from produtos;
+
+select *
+from stg_usuarios su  ;
+
+
+create database teste;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

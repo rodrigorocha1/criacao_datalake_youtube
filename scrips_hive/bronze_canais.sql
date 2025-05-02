@@ -34,6 +34,15 @@ add if not exists partition (
 	assunto="No_Mans_Sky"
 )
 
+
+create external table canais (
+	id_canal VARCHAR(80),
+	nome_canal STRING
+) partitioned by (assunto STRING)
+STORED AS TEXTFILE
+LOCATION 'file:///home/hadoop/datalake/depara/canais';
+
+
 select *
 from bronze_canais
 

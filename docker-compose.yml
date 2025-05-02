@@ -158,6 +158,7 @@ services:
       - "8088:8088"   # YARN ResourceManager
       - "7077:7077"   # Spark Master
       - "4040:4040"   # Spark UI
+      - "8081:8081"
     #    stdin_open: true
     #    tty: true
     volumes:
