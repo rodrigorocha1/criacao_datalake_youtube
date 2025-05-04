@@ -492,3 +492,10 @@ metastore_db/#innodb_temp/temp_7.ibt
 metastore_db/#innodb_temp/temp_8.ibt
 metastore_db/#innodb_temp/temp_9.ibt
 metastore_db/#innodb_temp/temp_10.ibt
+metastore_db/binlog.000004
+metastore_db/binlog.000005
+metastore_db/binlog.000006
+metastore_db/binlog.000007
+metastore_db/binlog.000008
+metastore_db/binlog.000009
+metastore_db/binlog.000010

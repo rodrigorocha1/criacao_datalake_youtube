@@ -1,8 +1,3 @@
-import pendulum
-from airflow.operators.python import PythonOperator
-from airflow.utils.task_group import TaskGroup
-from unidecode import unidecode
-
 try:
     import sys
     import os
@@ -10,9 +5,14 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
+import pendulum
+from airflow.operators.python import PythonOperator
+from airflow.utils.task_group import TaskGroup
+from unidecode import unidecode
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
+from airflow.operators.bash import BashOperator
 
 # Argumentos padrão da DAG
 default_args = {
@@ -35,10 +35,12 @@ def executar_etl_assunto(**kwargs):
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
     etl.assunto = kwargs['assunto']
     data_publicacao_apos = kwargs['data_publicacao_apos']
-    print(f'===========Data hora busca =================={data_publicacao_apos}')
+    print(
+        f'===========Data hora busca =================={data_publicacao_apos}')
     etl.processo_etl_assunto_video(
         data_publicacao_apos=data_publicacao_apos
     )
+
 
 def executar_etl_canais(**kwargs):
     from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
@@ -66,6 +68,7 @@ def executar_etl_videos(**kwargs):
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
     etl.assunto = kwargs['assunto']
     etl.processo_etl_video()
+
 
 # lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
 lista_assunto = ["No Man's Sky"]
@@ -110,43 +113,43 @@ with DAG(
             )
             lista_task_assunto.append(etl_assunto)
 
-    with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
-        lista_canais = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '').lower()
-            etl_canais = PythonOperator(
-                task_id=f'canais_{id_assunto}',
-                python_callable=executar_etl_canais,
-                op_kwargs={
-                    'assunto': assunto
-                }
+    # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
+    #     lista_canais = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
+    #         etl_canais = PythonOperator(
+    #             task_id=f'canais_{id_assunto}',
+    #             python_callable=executar_etl_canais,
+    #             op_kwargs={
+    #                 'assunto': assunto
+    #             }
 
-            )
-            lista_canais.append(etl_canais)
+    #         )
+    #         lista_canais.append(etl_canais)
 
-    with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
-        lista_videos = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '').lower()
-            etl_videos = PythonOperator(
-                task_id=f'id_video_{id_assunto}',
-                python_callable=executar_etl_videos,
-                op_kwargs={
-                    'assunto': assunto
-                }
-            )
-            lista_videos.append(etl_videos)
+    # with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
+    #     lista_videos = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
+    #         etl_videos = PythonOperator(
+    #             task_id=f'id_video_{id_assunto}',
+    #             python_callable=executar_etl_videos,
+    #             op_kwargs={
+    #                 'assunto': assunto
+    #             }
+    #         )
+    #         lista_videos.append(etl_videos)
 
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> fim_dag
+    inicio_dag >> tg_assunto >> fim_dag

@@ -102,5 +102,13 @@ SELECT 1
   from bronze_assunto ba;
   
   
-  SELECT * FROM canais c
-  
+ALTER TABLE bronze_assunto
+                        ADD IF NOT EXISTS PARTITION ( 
+                            ano=2025,
+                            mes=5,
+                            dia=4,
+                            dia_semana='Domingo',
+                            assunto="No_Mans_Sky"
+                    )
+                    
+                    

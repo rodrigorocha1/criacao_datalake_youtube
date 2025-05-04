@@ -3,6 +3,8 @@ try:
     import os
 
     sys.path.insert(0, os.path.abspath(os.curdir))
+    print('========')
+    print(os.getcwd())
 except ModuleNotFoundError:
     pass
 import os
@@ -17,12 +19,12 @@ class Arquivo(ABC):
     def __init__(self):
         # self.__caminho_raiz = os.getcwd()
 
-        self.__caminho_raiz = '/'  # Caminho Raiz
-        self.__pasta_raiz_datalake = 'datalake'  # Nome do diretório do datalake
-        self.__camada = None  # Bronze Prata ou ouro
-        self.__entidade = None  # Assunto, canal e vídeo
-        self.__caminho_particao = None  # Caminho da particao criada no hive
-        self.__nome_arquivo = None  # Nome do arquivo
+        self._caminho_raiz = '/opt/airflow'  # Caminho Raiz
+        self._pasta_raiz_datalake = 'datalake'  # Nome do diretório do datalake
+        self._camada = None  # Bronze Prata ou ouro
+        self._entidade = None  # Assunto, canal e vídeo
+        self._caminho_particao = None  # Caminho da particao criada no hive
+        self._nome_arquivo = None  # Nome do arquivo
 
     @property
     def camada(self) -> Optional[Camada]:
@@ -30,41 +32,42 @@ class Arquivo(ABC):
 
     @camada.setter
     def camada(self, value: Camada):
-        self.__camada = value
+        self._camada = value
 
     @property
     def entidade(self) -> Optional[str]:
-        return self.__entidade
+        return self._entidade
 
     @entidade.setter
     def entidade(self, value: str):
-        self.__entidade = value
+        self._entidade = value
 
     @property
     def caminho_particao(self) -> Optional[str]:
-        return self.__caminho_particao
+        return self._caminho_particao
 
     @caminho_particao.setter
     def caminho_particao(self, value: str):
-        self.__caminho_particao = value
+        self._caminho_particao = value
 
     @property
     def nome_arquivo(self) -> Optional[str]:
-        return self.__nome_arquivo
+        return self._nome_arquivo
 
     @nome_arquivo.setter
     def nome_arquivo(self, value: str):
-        self.__nome_arquivo = value
+        self._nome_arquivo = value
 
     @property
     def caminho_datalake(self):
+        print(self.entidade)
         return os.path.join(
-            self.__caminho_raiz,
-            self.__pasta_raiz_datalake,
-            self.__camada,
-            self.__entidade,
-            self.__caminho_particao,
-            self.__nome_arquivo
+            self._caminho_raiz,
+            self._pasta_raiz_datalake,
+            self._camada,
+            self._entidade,
+            self._caminho_particao,
+            self._nome_arquivo
         )
 
     @abstractmethod
