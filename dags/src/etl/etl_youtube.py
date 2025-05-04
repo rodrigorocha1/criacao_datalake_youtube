@@ -145,7 +145,6 @@ class ETLYoutube:
 
         self.__preparar_caminho_particao(
             nome_arquivo='assunto.json',
-            assunto_tratado=self.__assunto,
             opcao_particao=1,
             entidade='assunto',
             nome_camada=Camada.Bronze
@@ -164,7 +163,9 @@ class ETLYoutube:
             response['assunto'] = self.__assunto
             self.__operacoes_arquivo.guardar_dados(dado=response)
             dados_canais = self.__api_youtube.obter_dados_canais(
-                id_canal=response['snippet']['channelId'])
+                id_canal=response['snippet']['channelId']
+            )
+
             if dados_canais[1] == 'BR':
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                 dados_canais[0]['assunto'] = self.__assunto
