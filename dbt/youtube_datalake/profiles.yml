@@ -7,6 +7,6 @@ youtube_datalake:
       port: 10000
       username: rodrigo
       password: rodrigo3
-      schema: youtube  
+      schema: youtube
       database: youtube  
   target: dev
