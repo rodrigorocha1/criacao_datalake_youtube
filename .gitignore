@@ -224,3 +224,6 @@ hdfs
 /backup_docker/b_hadoop_hive_atualizado_v4.tar
 /datalake
 /backup_docker/hadoop_hive_dbt_iso88591.tar
+backup_docker/hadoop_hive_atualizado.tar
+mysql_data/auto.cnf
+mysql_data/binlog.index

@@ -148,9 +148,10 @@ services:
 
 
   hadoop_hive:
-    image: hadoop_hive_dbt_iso88591:latest
-    container_name: hadoop_hive_dbt_container
+    image: hadoop_hive_atualizado:latest
 
+    container_name: hadoop_hive_dbt_container
+  
     ports:
       - "9870:9870"   # HDFS NameNode
       - "10000:10000" # HiveServer2
@@ -164,7 +165,7 @@ services:
     volumes:
       - ./datalake:/home/hadoop/datalake
       - ./datalake_youtube_dbt:/home/hadoop/projeto_dbt
-      - ./mysql_data:/var/lib/mysql
+      # - ./mysql_data:/var/lib/mysql
     environment:
       - TZ=America/Sao_Paulo
     networks:
