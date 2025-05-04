@@ -153,7 +153,7 @@ class ETLYoutube:
 
         self.__criar_particao(
             tabela_particao='bronze_assunto',
-            opcao_particao=1,
+            opcao_particao=2,
         )
 
         for response in self.__api_youtube.obter_assunto(
