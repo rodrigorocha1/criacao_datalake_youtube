@@ -35,7 +35,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.28.0.0/16
+        - subnet: 172.25.0.0/16
 
 services:
   postgres:
@@ -54,7 +54,7 @@ services:
     restart: always
     networks:
       airflow-net:
-        ipv4_address: 172.28.0.2
+        ipv4_address: 172.25.0.16
 
 
   airflow-webserver:
@@ -72,17 +72,13 @@ services:
       retries: 5
       start_period: 30s
     restart: always
-
-
-
-
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
     networks:
           airflow-net:
-            ipv4_address: 172.28.0.11
+            ipv4_address: 172.25.0.15
 
 
   airflow-scheduler:
@@ -101,7 +97,7 @@ services:
         condition: service_completed_successfully
     networks:
       airflow-net:
-        ipv4_address: 172.28.0.12
+        ipv4_address: 172.25.0.14
 
 
   airflow-init:
@@ -127,7 +123,7 @@ services:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
     networks:
       airflow-net:
-        ipv4_address: 172.28.0.13
+        ipv4_address: 172.25.0.13
 
   airflow-cli:
     <<: *airflow-common
@@ -144,33 +140,45 @@ services:
 
     networks:
       airflow-net:
-        ipv4_address: 172.28.0.14
+        ipv4_address: 172.25.0.12
 
 
-  hadoop_hive:
-    image: hadoop_hive_atualizado:latest
-
-    container_name: hadoop_hive_dbt_container
-  
+  hive:
+    image: hadoop_hive
+    container_name: hive_server
+    hostname: hive_server
     ports:
-      - "9870:9870"   # HDFS NameNode
-      - "10000:10000" # HiveServer2
-      - "10002:10002" # Hive Web UI ou Thrift
-      - "8088:8088"   # YARN ResourceManager
-      - "7077:7077"   # Spark Master
-      - "4040:4040"   # Spark UI
-      - "8081:8081"
-    #    stdin_open: true
-    #    tty: true
-    volumes:
-      - ./datalake:/home/hadoop/datalake
-      - ./datalake_youtube_dbt:/home/hadoop/projeto_dbt
-      # - ./mysql_data:/var/lib/mysql
+      - "10000:10000"   # HiveServer2
+      - "10002:10002"   # Beeline (opcional)
+      - "9870:9870"     # HDFS Namenode Web UI
+      - "9864:9864"     # HDFS Namenode Web UI
+
     environment:
+      - HIVE_METASTORE_HOST=hive-metastore-db
+      - HIVE_METASTORE_PORT=9083
       - TZ=America/Sao_Paulo
+    volumes:
+      - ./hive_data:/data
     networks:
-      airflow-net:
-        ipv4_address: 172.28.0.15
+      hive_net:
+        ipv4_address: 172.25.0.10
+
+  metastore-db:
+    image: mysql:8.0.30
+    container_name: hive-metastore-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: hive
+      TZ: America/Sao_Paulo
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./metastore_db:/var/lib/mysql
+    networks:
+      hive_net:
+        ipv4_address: 172.25.0.11
 
 
 
