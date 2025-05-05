@@ -23,8 +23,8 @@ class ETLYoutube:
         self.__api_youtube = api_youtube
         self.__operacoes_banco = operacoes_dados
         self.__operacoes_arquivo = arquivo
-        self.__assunto_pesquisa = assunto_pesquisa
-        self.__assunto = self.__assunto_pesquisa
+        self.assunto_pesquisa = assunto_pesquisa
+        self.__assunto = assunto_pesquisa
         self.__data_coleta = datetime.now(pytz.timezone("America/Sao_Paulo"))
         self.__ano = self.__data_coleta.year
         self.__mes = self.__data_coleta.month
@@ -172,7 +172,7 @@ class ETLYoutube:
         )
 
         for response in self.__api_youtube.obter_assunto(
-                assunto=self.__assunto_pesquisa,
+                assunto=self.assunto_pesquisa,
                 data_publicacao_apos=data_publicacao_apos
         ):
             response['data_pesquisa'] = data_publicacao_apos
@@ -202,7 +202,10 @@ class ETLYoutube:
                 id_canal = response['snippet']['channelId']
                 nome_canal = response['snippet']['channelTitle']
 
-                json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
+                json_canal = {
+                    'id_canal': id_canal,
+                    'nome_canal': nome_canal
+                }
 
                 self.__inserir_dados_novos(
                     tabela='canais',
@@ -218,8 +221,10 @@ class ETLYoutube:
                 id_video = response['id']['videoId']
                 titulo_video = response['snippet']['title']
 
-                json_video = {'id_video': id_video,
-                              'nome_video': titulo_video}
+                json_video = {
+                    'id_video': id_video,
+                    'nome_video': titulo_video
+                }
 
                 self.__inserir_dados_novos(
 
@@ -232,7 +237,6 @@ class ETLYoutube:
                     camada=Camada.Depara.value
 
                 )
-                break
 
     def processo_etl_canal(self):
 

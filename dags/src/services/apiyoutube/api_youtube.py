@@ -35,18 +35,21 @@ class ApiYoutube(IApiYoutube):
         :return: Um gerador com as respostas dos assuntos
         :rtype: Generator[Dict[str, Any], None, None]
         """
-        next_page_token = ''
+        next_page_token = None
 
         while True:
+
             params = {
                 'part': 'snippet',
                 'maxResults': 50,
                 'publishedAfter': data_publicacao_apos,
                 'key': self.__API_KEY,
-                'pageToken': next_page_token,
-                'q' : assunto
+                'q': assunto
 
             }
+
+            if next_page_token is not None:
+                params['pageToken'] = next_page_token
             url = self.__url + 'search'
             request = requests.get(
                 url,
@@ -115,6 +118,7 @@ class ApiYoutube(IApiYoutube):
 
 if __name__ == '__main__':
     api_youtube = ApiYoutube()
-    dados_canais = api_youtube.obter_assunto(assunto='Python', data_publicacao_apos='2025-04-21T16:50:46Z')
+    dados_canais = api_youtube.obter_assunto(
+        assunto='Python', data_publicacao_apos='2025-04-21T16:50:46Z')
     for dado in dados_canais:
         print(dado)

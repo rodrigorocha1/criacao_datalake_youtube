@@ -33,7 +33,10 @@ def executar_etl_assunto(**kwargs):
     arquivo = ArquivoJson()
     operacoes_dados = OperacaoBancoHiveAirflow()
     etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
+    etl.assunto_pesquisa = kwargs['assunto']
     etl.assunto = kwargs['assunto']
+    print('=' * 20)
+    print(etl.assunto_pesquisa)
     data_publicacao_apos = kwargs['data_publicacao_apos']
     print(
         f'===========Data hora busca =================={data_publicacao_apos}')
