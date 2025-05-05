@@ -224,7 +224,7 @@ class ETLYoutube:
                 titulo_video = response['snippet']['title']
 
                 json_video = {'id_video': id_video,
-                              'titulo_video': titulo_video}
+                              'nome_video': titulo_video}
                 print(f'Vídeo Brasileiro {json_video}')
                 self.__inserir_dados_novos(
 
@@ -234,7 +234,7 @@ class ETLYoutube:
                     valor_verificacao=id_video,
                     json_arquivo=json_video,
                     entidade='videos',
-                    camada=Camada.Depara
+                    camada=Camada.Depara.value
 
                 )
                 break

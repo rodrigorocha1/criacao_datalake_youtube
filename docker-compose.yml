@@ -106,15 +106,16 @@ services:
     <<: *airflow-common
     entrypoint: /bin/bash
     command:
-      - -c
-      - |
-        mkdir -p /sources/logs /sources/dags /sources/plugins /sources/datalake/depara
-        chmod -R 777 /sources/{logs,dags,plugins,datalake}
-        chmod -R 777 /sources/datalake/depara
-        chmod g+s /sources/datalake/depara
-        chmod g+s /sources/{logs,dags,plugins,datalake}
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
-        exec /entrypoint airflow version
+    - -c
+    - |
+      mkdir -p /sources/{logs,dags,plugins,datalake/depara}
+
+      chmod -R 777 /sources/{logs,dags,plugins,datalake}
+      chmod g+s /sources/{logs,dags,plugins,datalake}
+      chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,datalake}
+
+      exec /entrypoint airflow version
+
     environment:
       <<: *airflow-common-env
       TZ: "America/Sao_Paulo"  # Adicionando configuração de fuso horário
