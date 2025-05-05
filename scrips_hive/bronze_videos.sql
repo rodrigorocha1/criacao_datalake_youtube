@@ -58,9 +58,10 @@ LOCATION 'file:///home/hadoop/datalake/bronze/videos';
 
 create external table videos (
 	id_video VARCHAR(80),
-	nome_video string,
+	nome_video string
 	
 ) partitioned by (assunto STRING)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/depara/videos';
 
@@ -68,12 +69,14 @@ LOCATION 'file:///home/hadoop/datalake/depara/videos';
 
 
 SELECT 1 FROM youtube.videos WHERE id_video = 'lBCbqciE26w' AND assunto = "No_Mans_Sky" LIMIT 1
+
 drop table bronze_videos;
 
 select *
 from bronze_videos v ;
 
 
+drop table videos;
 
 alter table bronze_videos 
 add if not exists partition (
@@ -89,9 +92,11 @@ add if not exists partition (
 
 
 
-
-
-
+SELECT 1
+            FROM youtube.videos
+            WHERE id_video = 'QGPGbxeXi1c'
+            AND assunto = 'No_Mans_Sky'
+            LIMIT 1
 
 
 

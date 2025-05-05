@@ -39,6 +39,7 @@ create external table canais (
 	id_canal VARCHAR(80),
 	nome_canal STRING
 ) partitioned by (assunto STRING)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/depara/canais';
 
@@ -53,7 +54,7 @@ alter table CANAIS
 drop partition (assunto="No_Mans_Sky")
 
 select *
-from bronze_canais
+from canais
 
 drop table canais
 

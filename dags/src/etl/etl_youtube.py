@@ -146,16 +146,18 @@ class ETLYoutube:
 
         resultado = self.__operacoes_banco.executar_consulta_dados(
             consulta=consulta, opcao_consulta=2)
-
-        if len(resultado[1]) == 0:
-            self.__preparar_caminho_particao(
-                opcao_particao=2,
-                nome_arquivo=nome_arquivo,
-                entidade=entidade,
-                nome_camada=camada,
-            )
-
-            self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
+        print('8' * 20, resultado)
+        if resultado[1] is not None:
+            if len(resultado[1]) == 0:
+                print(f'Recebi para gravar {json_arquivo}')
+                self.__preparar_caminho_particao(
+                    opcao_particao=2,
+                    nome_arquivo=nome_arquivo,
+                    entidade=entidade,
+                    nome_camada=camada,
+                )
+                print(f'json arquivo {json_arquivo}')
+                self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
 
@@ -170,6 +172,7 @@ class ETLYoutube:
             tabela_particao='bronze_assunto',
             opcao_particao=1,
         )
+        i = 0
 
         for response in self.__api_youtube.obter_assunto(
                 assunto=self.assunto_pesquisa,
@@ -225,6 +228,7 @@ class ETLYoutube:
                     'id_video': id_video,
                     'nome_video': titulo_video
                 }
+                print('antes de inserir no depara vídeos')
 
                 self.__inserir_dados_novos(
 
@@ -237,6 +241,8 @@ class ETLYoutube:
                     camada=Camada.Depara.value
 
                 )
+                # if i == 7:
+                #     break
 
     def processo_etl_canal(self):
 
