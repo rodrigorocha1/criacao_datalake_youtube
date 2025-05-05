@@ -3,8 +3,7 @@ try:
     import os
 
     sys.path.insert(0, os.path.abspath(os.curdir))
-    print('========')
-    print(os.getcwd())
+
 except ModuleNotFoundError:
     pass
 import os
@@ -60,7 +59,7 @@ class Arquivo(ABC):
 
     @property
     def caminho_datalake(self):
-        print(self.entidade)
+
         return os.path.join(
             self._caminho_raiz,
             self._pasta_raiz_datalake,

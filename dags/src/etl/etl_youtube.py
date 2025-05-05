@@ -146,9 +146,8 @@ class ETLYoutube:
 
         resultado = self.__operacoes_banco.executar_consulta_dados(
             consulta=consulta, opcao_consulta=2)
-        print('*' * 20)
-        print(resultado)
-        if resultado[0] is not None:
+
+        if len(resultado[1]) == 0:
             self.__preparar_caminho_particao(
                 opcao_particao=2,
                 nome_arquivo=nome_arquivo,
@@ -180,8 +179,7 @@ class ETLYoutube:
             response['assunto'] = self.__assunto
             self.__operacoes_arquivo.guardar_dados(dado=response)
 
-            # id_canal = response['snippet']['channelId']
-            id_canal = "UCGxmd2AnLNrSWFhrCcEj0lQ"
+            id_canal = response['snippet']['channelId']
 
             dados_canais = self.__api_youtube.obter_dados_canais(
                 id_canal=id_canal
@@ -195,11 +193,9 @@ class ETLYoutube:
                 tabela_particao='videos',
                 opcao_particao=2,
             )
-            print('=' * 40)
-            print(dados_canais)
 
-            # if dados_canais[1] == 'BR':
-            if True:
+            if dados_canais[1] == 'BR':
+
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                 dados_canais[0]['assunto'] = self.__assunto
 
@@ -207,7 +203,6 @@ class ETLYoutube:
                 nome_canal = response['snippet']['channelTitle']
 
                 json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
-                print(f'Canal Brasileiro: {json_canal}')
 
                 self.__inserir_dados_novos(
                     tabela='canais',
@@ -225,7 +220,7 @@ class ETLYoutube:
 
                 json_video = {'id_video': id_video,
                               'nome_video': titulo_video}
-                print(f'Vídeo Brasileiro {json_video}')
+
                 self.__inserir_dados_novos(
 
                     tabela='videos',
@@ -256,8 +251,7 @@ class ETLYoutube:
         """
         sucesso, resultados = self.__operacoes_banco.executar_consulta_dados(
             consulta=consulta, opcao_consulta=2)
-        print('Resultados canais')
-        print(sucesso, resultados)
+
         if sucesso:
 
             self.__criar_particao(tabela_particao='bronze_canais')
