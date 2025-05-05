@@ -58,21 +58,22 @@ class ETLYoutube:
     def __preparar_caminho_particao(
             self,
             nome_arquivo: str,
-            nome_camada: Camada,
+            nome_camada: str,
             entidade: str,
             opcao_particao: int = 1,
 
     ):
-        """Método para preparar o caminho da partição 
+        """Método para preparar o caminho da partição
 
         Args:
             nome_arquivo (str): nome do arquico
-            nome_camada (Camada): Enun camanda bronze, prata, ouro, depara
+            nome_camada (str): Enun camanda bronze, prata, ouro, depara
             entidade (str): # Assunto, canal e vídeo
-            opcao_particao (int, optional): opção de redirecionamento: 1 para criar 
+            opcao_particao (int, optional): opção de redirecionamento: 1 para criar
              a partiçao com tempo, 2 para criar partição do assunto Defaults to 1.
         """
-        self.__operacoes_arquivo.camada = nome_camada.value
+
+        self.__operacoes_arquivo.camada = nome_camada
         self.__operacoes_arquivo.entidade = entidade
         self.__operacoes_arquivo.caminho_particao = (
             f'ano={self.__ano}'
@@ -84,7 +85,7 @@ class ETLYoutube:
         self.__operacoes_arquivo.nome_arquivo = nome_arquivo
 
     def __criar_particao(self, tabela_particao: str, opcao_particao: int = 1):
-        """Método para criar a partiçao 
+        """Método para criar a partiçao
 
         Args:
             tabela_particao (str): tabela_particao
@@ -121,7 +122,7 @@ class ETLYoutube:
             nome_arquivo: str,
             json_arquivo: Dict,
             entidade: str,
-            camada: Camada
+            camada: str
     ):
         """_summary_
 
@@ -137,21 +138,22 @@ class ETLYoutube:
 
         consulta = f"""
             SELECT 1
-            FROM youtube.{tabela} 
+            FROM youtube.{tabela}
             WHERE {coluna_verificacao} = '{valor_verificacao}'
-            AND assunto = {self.__assunto} 
-            LIMIT 1   
+            AND assunto = '{self.__assunto}'
+            LIMIT 1
         """
 
         resultado = self.__operacoes_banco.executar_consulta_dados(
             consulta=consulta, opcao_consulta=2)
-
-        if not resultado:
+        print('*' * 20)
+        print(resultado)
+        if resultado[0] is not None:
             self.__preparar_caminho_particao(
                 opcao_particao=2,
                 nome_arquivo=nome_arquivo,
                 entidade=entidade,
-                nome_camada=camada.value,
+                nome_camada=camada,
             )
 
             self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
@@ -162,12 +164,12 @@ class ETLYoutube:
             nome_arquivo='assunto.json',
             opcao_particao=1,
             entidade='assunto',
-            nome_camada=Camada.Bronze
+            nome_camada=Camada.Bronze.value
         )
 
         self.__criar_particao(
             tabela_particao='bronze_assunto',
-            opcao_particao=2,
+            opcao_particao=1,
         )
 
         for response in self.__api_youtube.obter_assunto(
@@ -177,16 +179,33 @@ class ETLYoutube:
             response['data_pesquisa'] = data_publicacao_apos
             response['assunto'] = self.__assunto
             self.__operacoes_arquivo.guardar_dados(dado=response)
+
+            # id_canal = response['snippet']['channelId']
+            id_canal = "UCGxmd2AnLNrSWFhrCcEj0lQ"
+
             dados_canais = self.__api_youtube.obter_dados_canais(
-                id_canal=response['snippet']['channelId']
+                id_canal=id_canal
+            )
+            self.__criar_particao(
+                tabela_particao='canais',
+                opcao_particao=2,
             )
 
-            if dados_canais[1] == 'BR':
+            self.__criar_particao(
+                tabela_particao='videos',
+                opcao_particao=2,
+            )
+            print('=' * 40)
+            print(dados_canais)
+
+            # if dados_canais[1] == 'BR':
+            if True:
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                 dados_canais[0]['assunto'] = self.__assunto
 
                 id_canal = response['snippet']['channelId']
                 nome_canal = response['snippet']['channelTitle']
+
                 json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
                 print(f'Canal Brasileiro: {json_canal}')
 
@@ -197,7 +216,7 @@ class ETLYoutube:
                     valor_verificacao=id_canal,
                     json_arquivo=json_canal,
                     entidade='canais',
-                    camada=Camada.Depara
+                    camada=Camada.Depara.value
 
                 )
 
@@ -218,6 +237,7 @@ class ETLYoutube:
                     camada=Camada.Depara
 
                 )
+                break
 
     def processo_etl_canal(self):
 
