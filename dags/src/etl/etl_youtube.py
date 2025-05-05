@@ -119,8 +119,21 @@ class ETLYoutube:
             coluna_verificacao: str,
             valor_verificacao: str,
             nome_arquivo: str,
-            json_arquivo: Dict
+            json_arquivo: Dict,
+            entidade: str,
+            camada: Camada
     ):
+        """_summary_
+
+        Args:
+            tabela (str): nome da tabela
+            coluna_verificacao (str): coluna do verificação do where
+            valor_verificacao (str): valor do where
+            nome_arquivo (str): nome do arquivo
+            json_arquivo (Dict): json de resposta
+            entidade (str): Entidade canal e vídeo
+            camada (Camada): Enum Camada
+        """
 
         consulta = f"""
             SELECT 1
@@ -130,15 +143,17 @@ class ETLYoutube:
             LIMIT 1   
         """
 
-        sucesso, resultado = self.__operacoes_banco.executar_consulta_dados(
+        resultado = self.__operacoes_banco.executar_consulta_dados(
             consulta=consulta, opcao_consulta=2)
 
         if not resultado:
             self.__preparar_caminho_particao(
                 opcao_particao=2,
                 nome_arquivo=nome_arquivo,
-                entidade=''
+                entidade=entidade,
+                nome_camada=camada.value,
             )
+
             self.__operacoes_arquivo.guardar_dados(dado=json_arquivo)
 
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
@@ -173,13 +188,16 @@ class ETLYoutube:
                 id_canal = response['snippet']['channelId']
                 nome_canal = response['snippet']['channelTitle']
                 json_canal = {'id_canal': id_canal, 'nome_canal': nome_canal}
+                print(f'Canal Brasileiro: {json_canal}')
 
                 self.__inserir_dados_novos(
                     tabela='canais',
                     nome_arquivo='canais.json',
                     coluna_verificacao='id_canal',
                     valor_verificacao=id_canal,
-                    json_arquivo=json_canal
+                    json_arquivo=json_canal,
+                    entidade='canais',
+                    camada=Camada.Depara
 
                 )
 
@@ -188,7 +206,7 @@ class ETLYoutube:
 
                 json_video = {'id_video': id_video,
                               'titulo_video': titulo_video}
-
+                print(f'Vídeo Brasileiro {json_video}')
                 self.__inserir_dados_novos(
 
                     tabela='videos',
@@ -196,6 +214,8 @@ class ETLYoutube:
                     coluna_verificacao='id_video',
                     valor_verificacao=id_video,
                     json_arquivo=json_video,
+                    entidade='videos',
+                    camada=Camada.Depara
 
                 )
 
