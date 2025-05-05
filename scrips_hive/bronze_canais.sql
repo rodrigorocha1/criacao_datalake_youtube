@@ -43,9 +43,18 @@ STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/depara/canais';
 
 
+ ALTER TABLE canais
+                ADD IF NOT EXISTS PARTITION (
+                    assunto="a"
+                )
+
+                
+alter table CANAIS 
+drop partition (assunto="No_Mans_Sky")
+
 select *
 from bronze_canais
 
-drop table bronze_canais
+drop table canais
 
 ALTER TABLE bronze_canais ADD COLUMNS (data_pesquisa STRING);

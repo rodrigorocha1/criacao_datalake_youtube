@@ -65,6 +65,9 @@ STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/depara/videos';
 
 
+
+
+SELECT 1 FROM youtube.videos WHERE id_video = 'lBCbqciE26w' AND assunto = "No_Mans_Sky" LIMIT 1
 drop table bronze_videos;
 
 select *
