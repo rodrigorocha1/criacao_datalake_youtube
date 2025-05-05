@@ -12,7 +12,7 @@ from unidecode import unidecode
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
-from airflow.operators.bash import BashOperator
+
 
 # Argumentos padrão da DAG
 default_args = {
