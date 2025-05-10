@@ -19,8 +19,17 @@ class Arquivo(ABC):
         self._pasta_raiz_datalake = 'datalake'  # Nome do diretório do datalake
         self._camada = camada  # Bronze Prata ou ouro
         self._entidade = entidade  # Assunto, canal e vídeo
-        self._caminho_particao = caminho_particao  # Caminho da particao criada no hive
+        self._caminho_particao = None  # Caminho da particao criada no hive
         self._nome_arquivo = nome_arquivo  # Nome do arquivo
+
+    @property
+    def caminho_particao(self) -> str:
+        return self._caminho_particao
+
+
+    @caminho_particao.setter
+    def caminho_particao(self, caminho_particao: str):
+        self._caminho_particao = caminho_particao
 
     @abstractmethod
     def guardar_dados(self, dado: Dict):
