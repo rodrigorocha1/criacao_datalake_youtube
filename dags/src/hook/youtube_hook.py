@@ -50,7 +50,7 @@ class YotubeHook(HttpHook, ABC):
                         '%Y-%m-%d %H:%M:%S'
                     )
 
-                    yield json_response
+                    yield json_response['items']
                     try:
                         next_token = json_response['nextPageToken']
                         param['pageToken'] = next_token
