@@ -35,6 +35,8 @@ class YoutubeBuscaOperator(YoutubeOperator):
             **kwargs
         )
 
+
+
     def gravar_dados(self, req: Dict):
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)

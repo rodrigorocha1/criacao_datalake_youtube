@@ -9,7 +9,7 @@ from datetime import datetime
 from airflow.models import BaseOperator
 from abc import ABC, abstractmethod
 from dags.src.hook.youtube_hook import YotubeHook
-from typing import Dict, Optional
+from typing import Dict
 
 
 class YoutubeOperator(BaseOperator, ABC):
@@ -26,22 +26,21 @@ class YoutubeOperator(BaseOperator, ABC):
         super().__init__(task_id=task_id, **kwargs)
 
     def __obter_semana_portugues(self, data: datetime) -> str:
-
         dias_semana = {
-                0: 'Segunda-feira',
-                1: 'Terça-feira',
-                2: 'Quarta-feira',
-                3: 'Quinta-feira',
-                4: 'Sexta-feira',
-                5: 'Sabado',
-                6: 'Domingo'
-            }
+            0: 'Segunda-feira',
+            1: 'Terça-feira',
+            2: 'Quarta-feira',
+            3: 'Quinta-feira',
+            4: 'Sexta-feira',
+            5: 'Sabado',
+            6: 'Domingo'
+        }
 
         nome_dia = dias_semana[data.weekday()]
 
         return nome_dia.replace(" ", "_")
 
-    def __criar_particao_datalake_camada(self, tabela_particao: str, assunto: str):
+    def _criar_particao_datalake_camada(self, tabela_particao: str, assunto: str):
         consulta = f"""
             ALTER TABLE {tabela_particao}
             ADD IF NOT EXISTS PARTITION (
@@ -52,7 +51,7 @@ class YoutubeOperator(BaseOperator, ABC):
                 assunto="{assunto}"
             )
         """
-
+        return consulta
 
     @abstractmethod
     def gravar_dados(self, req: Dict):
@@ -61,4 +60,3 @@ class YoutubeOperator(BaseOperator, ABC):
     @abstractmethod
     def execute(self, context):
         pass
-    
