@@ -10,7 +10,7 @@ from airflow.models import BaseOperator
 from abc import ABC, abstractmethod
 from dags.src.hook.youtube_hook import YotubeHook
 from typing import Dict
-
+import pendulum
 
 class YoutubeOperator(BaseOperator, ABC):
     def __init__(
@@ -23,6 +23,7 @@ class YoutubeOperator(BaseOperator, ABC):
     ):
         self._operacao_hook = operacao_hook
         self._assunto = assunto
+        self._data = pendulum.now('America/Sao_Paulo').to_iso8601_string()
         super().__init__(task_id=task_id, **kwargs)
 
     def __obter_semana_portugues(self, data: datetime) -> str:

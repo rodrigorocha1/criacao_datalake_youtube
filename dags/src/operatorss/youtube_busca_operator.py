@@ -12,7 +12,7 @@ from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 from dags.src.hook.youtube_hook import YotubeHook
 from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 from typing import Dict
-import pendulum
+
 
 class YoutubeBuscaOperator(YoutubeOperator):
 
@@ -29,7 +29,6 @@ class YoutubeBuscaOperator(YoutubeOperator):
     ):
         self.__arquivo_json = arquivo_json
         self.__tabela = 'bronze_assunto'
-        self._data = pendulum.now('America/Sao_Paulo').to_iso8601_string()
 
         super().__init__(
             task_id=task_id,
