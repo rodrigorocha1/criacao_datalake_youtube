@@ -45,9 +45,10 @@ with DAG(
                 filter(
                     lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
                 )
-            ).replace(' ', '').lower()
+            ).replace(' ', '_').lower()
 
             etl_assunto = YoutubeBuscaOperator(
+                task_id=id_assunto,
                 operacao_hook=YoutubeBuscaAssuntoHook(
                     data_publicacao=data_hora_busca,
                     assunto_pesquisa=assunto
@@ -58,7 +59,10 @@ with DAG(
                     entidade='assunto',
                     nome_arquivo='assunto.json',
 
-                )
+                ),
+                arquivo_temp_canal=None,
+                arquivo_temp_video=None,
+                operacao_banco=None
             )
             lista_task_assunto.append(etl_assunto)
 
@@ -101,4 +105,4 @@ with DAG(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> fim_dag
+    inicio_dag >> tg_assunto >> fim_dag
