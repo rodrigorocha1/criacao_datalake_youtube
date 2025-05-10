@@ -499,3 +499,8 @@ metastore_db/binlog.000007
 metastore_db/binlog.000008
 metastore_db/binlog.000009
 metastore_db/binlog.000010
+metastore_db/binlog.000011
+metastore_db/binlog.000012
+metastore_db/binlog.000013
+metastore_db/binlog.000014
+metastore_db/#innodb_redo/#ib_redo11
