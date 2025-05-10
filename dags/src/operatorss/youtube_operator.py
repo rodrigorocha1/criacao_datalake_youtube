@@ -43,6 +43,16 @@ class YoutubeOperator(BaseOperator, ABC):
 
         return nome_dia.replace(" ", "_")
 
+    def _criar_caminho_particao(self) -> str:
+        caminho_particao = (
+            f"ano={self._data.year}/"
+            f"mes={self._data.month}/"
+            f"dia={self._data.day}/"
+            f"dia_semana={self.__obter_semana_portugues(data=self._data).replace(' ', '_')}/"
+            f"assunto={self._assunto}"
+        )
+        return caminho_particao
+
     def _criar_particao_datalake_camada(self, tabela_particao: str) -> str:
         consulta = f"""
             ALTER TABLE {tabela_particao}
