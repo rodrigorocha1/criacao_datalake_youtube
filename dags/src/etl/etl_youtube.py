@@ -180,6 +180,9 @@ class ETLYoutube:
         ):
             response['data_pesquisa'] = data_publicacao_apos
             response['assunto'] = self.__assunto
+
+            print(f'Response: {response}')
+
             self.__operacoes_arquivo.guardar_dados(dado=response)
 
             id_canal = response['snippet']['channelId']
@@ -198,6 +201,7 @@ class ETLYoutube:
             )
 
             if dados_canais[1] == 'BR':
+                print('Canal Brasilleiro')
 
                 dados_canais[0]['data_pesquisa'] = data_publicacao_apos
                 dados_canais[0]['assunto'] = self.__assunto
@@ -210,16 +214,16 @@ class ETLYoutube:
                     'nome_canal': nome_canal
                 }
 
-                self.__inserir_dados_novos(
-                    tabela='canais',
-                    nome_arquivo='canais.json',
-                    coluna_verificacao='id_canal',
-                    valor_verificacao=id_canal,
-                    json_arquivo=json_canal,
-                    entidade='canais',
-                    camada=Camada.Depara.value
+                # self.__inserir_dados_novos(
+                #     tabela='canais',
+                #     nome_arquivo='canais.json',
+                #     coluna_verificacao='id_canal',
+                #     valor_verificacao=id_canal,
+                #     json_arquivo=json_canal,
+                #     entidade='canais',
+                #     camada=Camada.Depara.value
 
-                )
+                # )
 
                 id_video = response['id']['videoId']
                 titulo_video = response['snippet']['title']
@@ -229,6 +233,7 @@ class ETLYoutube:
                     'nome_video': titulo_video
                 }
                 print('antes de inserir no depara vídeos')
+                print(f'Json Vídeo {json_video}')
 
                 self.__inserir_dados_novos(
 
@@ -241,8 +246,9 @@ class ETLYoutube:
                     camada=Camada.Depara.value
 
                 )
-                # if i == 7:
-                #     break
+
+                if i == 3:
+                    break
 
     def processo_etl_canal(self):
 
