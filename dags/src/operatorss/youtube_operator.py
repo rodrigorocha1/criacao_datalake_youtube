@@ -40,7 +40,7 @@ class YoutubeOperator(BaseOperator, ABC):
 
         return nome_dia.replace(" ", "_")
 
-    def _criar_particao_datalake_camada(self, tabela_particao: str, assunto: str):
+    def _criar_particao_datalake_camada(self, tabela_particao: str) -> str:
         consulta = f"""
             ALTER TABLE {tabela_particao}
             ADD IF NOT EXISTS PARTITION (
@@ -48,8 +48,17 @@ class YoutubeOperator(BaseOperator, ABC):
                 mes={self.__mes},
                 dia={self.__dia},
                 dia_semana='{self.__dia_semana.replace(' ', '_')}',
-                assunto="{assunto}"
+                assunto="{self._assunto}"
             )
+        """
+        return consulta
+
+    def _criar_particao_datalake_depara(self, tabela_particao: str) -> str:
+        consulta = f"""
+            ALTER TABLE {tabela_particao}
+            ADD IF NOT EXISTS PARTITION (
+            ssunto="{self.__assunto}"
+        )
         """
         return consulta
 
