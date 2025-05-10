@@ -9,7 +9,7 @@ except ModuleNotFoundError:
 from dags.src.operatorss.youtube_operator import YoutubeOperator
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 from dags.src.hook.youtube_hook import YotubeHook
-from src.services.manipulacao_dados.arquivo_json import ArquivoJson
+from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 from typing import Dict
 
 
@@ -27,6 +27,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
             **kwargs
     ):
         self.__arquivo_json = arquivo_json
+        self.__tabela = 'bronze_assunto'
         super().__init__(
             task_id=task_id,
             assunto=assunto,
@@ -37,6 +38,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
     def gravar_dados(self, req: Dict):
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)
+
         json_canal = {
 
         }

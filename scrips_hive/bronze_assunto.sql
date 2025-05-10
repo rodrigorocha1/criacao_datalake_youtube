@@ -75,6 +75,8 @@ from bronze_assunto
 order by assunto desc
 select 1;
 
+select *
+from 
 
 
 INSERT INTO videos 
@@ -101,6 +103,10 @@ SELECT 1
   select ba.* 
   from bronze_assunto ba;
   
+  
+select *
+from bronze_assunto ba
+where ba.data_pesquisa is not null;
   
 ALTER TABLE bronze_assunto
                         ADD IF NOT EXISTS PARTITION ( 

@@ -6,7 +6,7 @@ try:
 except ModuleNotFoundError:
     pass
 from typing import Tuple, Any
-
+from datetime import datetime
 from airflow.providers.apache.hive.hooks.hive import HiveServer2Hook
 
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
@@ -20,6 +20,9 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
             hiveserver2_conn_id=self.__id,
             schema=self.__schema
         )
+
+
+
 
     def executar_consulta_dados(self, consulta: str, opcao_consulta: int) -> Tuple[bool, Any]:
         try:

@@ -54,7 +54,7 @@ alter table CANAIS
 drop partition (assunto="No_Mans_Sky")
 
 select *
-from canais
+from canais;
 
 drop table canais
 
