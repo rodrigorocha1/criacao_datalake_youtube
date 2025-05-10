@@ -1,13 +1,12 @@
-
 import pendulum
 from src.operatorss.youtube_busca_operator import YoutubeBuscaOperator
 from dags.src.hook.youtube_busca_assunto_hook import YoutubeBuscaAssuntoHook
+from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 from airflow.utils.task_group import TaskGroup
 from unidecode import unidecode
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
-
 
 # Argumentos padrão da DAG
 default_args = {
@@ -17,7 +16,6 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
-
 # lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
 lista_assunto = ["No Man's Sky"]
 data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
@@ -26,7 +24,6 @@ hora_atual = int(data_hora_atual.hour)
 data = data_hora_atual.format('YYYY_MM_DD')
 data_hora_busca = data_hora_atual.subtract(minutes=60)
 data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
-
 
 with DAG(
         dag_id='youtube_etl_dag_exemplos',
@@ -41,25 +38,29 @@ with DAG(
         task_id='id_inicio_dag'
     )
 
-    # with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
-    #     lista_task_assunto = []
-    #     for assunto in lista_assunto:
-    #         id_assunto = ''.join(
-    #             filter(
-    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-    #             )
-    #         ).replace(' ', '').lower()
+    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
+        lista_task_assunto = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
 
-    #         etl_assunto = YoutubeBuscaOperator(
-    #             task_id=f'id_assunto_{id_assunto}',
-    #             assunto=assunto,
-    #             operacao_hook=YoutubeBuscaAssuntoHook(
-    #                 data_publicacao=data_hora_busca,
-    #                 assunto_pesquisa=assunto,
+            etl_assunto = YoutubeBuscaOperator(
+                operacao_hook=YoutubeBuscaAssuntoHook(
+                    data_publicacao=data_hora_busca,
+                    assunto_pesquisa=assunto
+                ),
+                assunto=assunto,
+                arquivo_json=ArquivoJson(
+                    camada='bronze',
+                    entidade='assunto',
+                    nome_arquivo='assunto.json',
 
-    #             )
-    #         )
-    #         lista_task_assunto.append(etl_assunto)
+                )
+            )
+            lista_task_assunto.append(etl_assunto)
 
     # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
     #     lista_canais = []
