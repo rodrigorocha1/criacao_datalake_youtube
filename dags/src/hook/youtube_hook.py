@@ -10,7 +10,7 @@ from typing import Iterable, List, Optional, Dict
 from abc import ABC, abstractmethod
 from airflow.providers.http.hooks.http import HttpHook
 import requests
-from src.configuracao.configuracao import Configuracao
+from dags.src.configuracao.configuracao import Configuracao
 
 
 class YotubeHook(HttpHook, ABC):
