@@ -1,6 +1,14 @@
 
+try:
+    import sys
+    import os
+
+    sys.path.insert(0, os.path.abspath(os.curdir))
+except ModuleNotFoundError:
+    pass
 from dags.src.operatorss.youtube_operator import YoutubeOperator
-from hook.youtube_hook import YotubeHook
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
+from dags.src.hook.youtube_hook import YotubeHook
 from src.services.manipulacao_dados.arquivo_json import ArquivoJson
 from typing import Dict
 
@@ -13,6 +21,9 @@ class YoutubeBuscaOperator(YoutubeOperator):
             assunto: str,
             operacao_hook: YotubeHook,
             arquivo_json: ArquivoJson,
+            arquivo_temp_canal: ArquivoJson,
+            arquivo_temp_video: ArquivoJson,
+            operacao_banco: IOperacaoDados,
             **kwargs
     ):
         self.__arquivo_json = arquivo_json
@@ -26,8 +37,13 @@ class YoutubeBuscaOperator(YoutubeOperator):
     def gravar_dados(self, req: Dict):
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)
+        json_canal = {
+
+        }
+        json_video = {}
 
     def execute(self, context):
+        # Criar _particao
         try:
             for json_response in self._operacao_hook.run():
                 self.gravar_dados(req=json_response)

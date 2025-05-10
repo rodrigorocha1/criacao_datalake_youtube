@@ -1,12 +1,7 @@
-try:
-    import sys
-    import os
 
-    sys.path.insert(0, os.path.abspath(os.curdir))
-except ModuleNotFoundError:
-    pass
 import pendulum
-from airflow.operators.python import PythonOperator
+from src.operatorss.youtube_busca_operator import YoutubeBuscaOperator
+from dags.src.hook.youtube_busca_assunto_hook import YoutubeBuscaAssuntoHook
 from airflow.utils.task_group import TaskGroup
 from unidecode import unidecode
 from airflow import DAG
@@ -21,56 +16,6 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5)
 }
-
-
-def executar_etl_assunto(**kwargs):
-    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
-    from dags.src.etl.etl_youtube import ETLYoutube
-    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
-    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
-
-    api_youtube = ApiYoutube()
-    arquivo = ArquivoJson()
-    operacoes_dados = OperacaoBancoHiveAirflow()
-    etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
-    etl.assunto_pesquisa = kwargs['assunto']
-    etl.assunto = kwargs['assunto']
-    print('=' * 20)
-    print(etl.assunto_pesquisa)
-    data_publicacao_apos = kwargs['data_publicacao_apos']
-    print(
-        f'===========Data hora busca =================={data_publicacao_apos}')
-    etl.processo_etl_assunto_video(
-        data_publicacao_apos=data_publicacao_apos
-    )
-
-
-def executar_etl_canais(**kwargs):
-    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
-    from dags.src.etl.etl_youtube import ETLYoutube
-    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
-    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
-
-    api_youtube = ApiYoutube()
-    arquivo = ArquivoJson()
-    operacoes_dados = OperacaoBancoHiveAirflow()
-    etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
-    etl.assunto = kwargs['assunto']
-    etl.processo_etl_canal()
-
-
-def executar_etl_videos(**kwargs):
-    from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
-    from dags.src.etl.etl_youtube import ETLYoutube
-    from dags.src.services.apiyoutube.api_youtube import ApiYoutube
-    from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
-
-    api_youtube = ApiYoutube()
-    arquivo = ArquivoJson()
-    operacoes_dados = OperacaoBancoHiveAirflow()
-    etl = ETLYoutube(api_youtube, operacoes_dados, arquivo)
-    etl.assunto = kwargs['assunto']
-    etl.processo_etl_video()
 
 
 # lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
@@ -96,25 +41,25 @@ with DAG(
         task_id='id_inicio_dag'
     )
 
-    with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
-        lista_task_assunto = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '').lower()
+    # with TaskGroup('task_youtube_api_historico_pesquisa', dag=dag) as tg_assunto:
+    #     lista_task_assunto = []
+    #     for assunto in lista_assunto:
+    #         id_assunto = ''.join(
+    #             filter(
+    #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+    #             )
+    #         ).replace(' ', '').lower()
 
-            etl_assunto = PythonOperator(
-                dag=dag,
-                task_id=f'assunto_{id_assunto}',
-                python_callable=executar_etl_assunto,
-                op_kwargs={
-                    'assunto': assunto,
-                    'data_publicacao_apos': data_hora_busca
-                }
-            )
-            lista_task_assunto.append(etl_assunto)
+    #         etl_assunto = YoutubeBuscaOperator(
+    #             task_id=f'id_assunto_{id_assunto}',
+    #             assunto=assunto,
+    #             operacao_hook=YoutubeBuscaAssuntoHook(
+    #                 data_publicacao=data_hora_busca,
+    #                 assunto_pesquisa=assunto,
+
+    #             )
+    #         )
+    #         lista_task_assunto.append(etl_assunto)
 
     # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
     #     lista_canais = []
@@ -155,4 +100,4 @@ with DAG(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> tg_assunto >> fim_dag
+    inicio_dag >> fim_dag

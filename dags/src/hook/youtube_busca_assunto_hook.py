@@ -1,4 +1,4 @@
-from hook.youtube_hook import YotubeHook
+from dags.src.hook.youtube_hook import YotubeHook
 
 
 class YoutubeBuscaAssuntoHook(YotubeHook):

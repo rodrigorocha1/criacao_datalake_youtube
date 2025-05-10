@@ -1,0 +1,29 @@
+from src.hook.youtube_busca_assunto_hook import YotubeHook
+
+
+class YoutubeBuscaCanaisHook(YotubeHook):
+    def __init__(self, conn_id=None):
+        super().__init__(conn_id)
+
+    def _criar_url(self):
+        return self._URL + '/channels/'
+
+    def run(self):
+        session = self.get_conn()
+        lista_canais = self.__operacao_arquivo_pkl.carregar_dados()
+        print(lista_canais)
+        url = self._criar_url()
+        params = [
+            {
+                'part': 'snippet,statistics',
+                'id': id_canal,
+                'key': self._CHAVE,
+
+            } for id_canal in lista_canais
+        ]
+        response = self._executar_paginacao(
+            url=url,
+            session=session,
+            params=params
+        )
+        return response
