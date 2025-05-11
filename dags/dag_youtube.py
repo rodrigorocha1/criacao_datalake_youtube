@@ -59,11 +59,11 @@ with DAG(
                     camada='bronze',
                     entidade='assunto',
                     nome_arquivo='assunto.json',
-                    caminho_particao=None,
-                    opcao=2
-                ),
-                arquivo_temp_canal=ArquivoJson(
                     opcao=1
+                ),
+
+                arquivo_temp_json=ArquivoJson(
+                    opcao=2
                 ),
                 operacao_banco=OperacaoBancoHiveAirflow()
             )

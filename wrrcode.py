@@ -1,15 +1,34 @@
-from unidecode import unidecode
-import pendulum
+import json
 
-assunto = "No Man's Sky"
-assunto = ''.join(filter(lambda c: c.isalnum() or c.isspace(), unidecode(assunto))).replace(' ', '').lower()
-print(assunto)
+# Lista com os três objetos JSON
+dados = [
+    {
+        "nome": "Fernanda Oliveira",
+        "idade": 42,
+        "email": "fernanda.oliveira@example.com"
+    },
+    {
+        "nome": "Fernanda Oliveira",
+        "idade": 42,
+        "email": "fernanda.oliveira@example.com"
+    },
+    {
+        "nome": "Fernanda Oliveira",
+        "idade": 42,
+        "email": "fernanda.oliveira@example.com"
+    }
+]
 
-data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
-data_hora_atual = pendulum.parse(data_hora_atual)
-print(type(data_hora_atual))
-hora_atual = int(data_hora_atual.hour)
-data = data_hora_atual.format('YYYY_MM_DD')
-data_hora_busca = data_hora_atual.subtract(days=1)
-data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
-print(data_hora_busca)
+# Escrevendo cada objeto em uma linha no arquivo 'usuarios.jsonl'
+with open("usuarios.json", "w", encoding="utf-8") as f:
+    for item in dados:
+        f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+print("Arquivo 'usuarios.jsonl' criado com sucesso.")
+
+with open("usuarios.json", "r", encoding="utf-8") as f:
+    dados = [json.loads(linha) for linha in f]
+
+# Exibindo os dados lidos
+for item in dados:
+    print(item)
