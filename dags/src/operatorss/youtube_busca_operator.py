@@ -29,6 +29,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self.__arquivo_json = arquivo_json
         self.__tabela = 'bronze_assunto'
         self._operacao_banco = operacao_banco
+        self._arquivo_temp_json = arquivo_temp_json
         super().__init__(
             task_id=task_id,
             assunto=assunto,
@@ -41,8 +42,11 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self.__arquivo_json.guardar_dados(dado=req)
 
         json_canal_video = {
+            'ID_CANAL': req['snippet']['channelId'],
+            'ID_VIDEO': req['id']['videoId']
 
         }
+        self._arquivo_temp_json.guardar_dados(dado=json_canal_video)
 
     def execute(self, context):
         # Criar _particao
