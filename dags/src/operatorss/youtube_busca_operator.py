@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 from dags.src.operatorss.youtube_operator import YoutubeOperator
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 from dags.src.hook.youtube_hook import YotubeHook
-from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
+from dags.src.services.manipulacao_dados.arquivo import Arquivo
 from typing import Dict
 
 
@@ -21,9 +21,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
             task_id: str,
             assunto: str,
             operacao_hook: YotubeHook,
-            arquivo_json: ArquivoJson,
-            arquivo_temp_canal: ArquivoJson,
-            arquivo_temp_video: ArquivoJson,
+            arquivo_json: Arquivo,
             operacao_banco: IOperacaoDados,
             **kwargs
     ):
@@ -41,10 +39,14 @@ class YoutubeBuscaOperator(YoutubeOperator):
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)
 
-        json_canal = {
+        json_canal_video = {
 
         }
-        json_video = {}
+
+
+
+
+
 
     def execute(self, context):
         # Criar _particao

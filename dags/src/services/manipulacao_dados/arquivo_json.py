@@ -13,16 +13,23 @@ from dags.src.services.manipulacao_dados.arquivo import Arquivo
 
 class ArquivoJson(Arquivo):
 
-    def __init__(self, camada: str, entidade: str, nome_arquivo: str):
+    def __init__(
+            self,
+            camada: str,
+            entidade: str,
+            caminho_particao: str,
+            nome_arquivo: str,
+            opcao: int
+    ):
         super().__init__(
             camada=camada,
             entidade=entidade,
-            nome_arquivo=nome_arquivo
+            caminho_particao=caminho_particao,
+            nome_arquivo=nome_arquivo,
+            opcao=opcao
         )
 
     def guardar_dados(self, dado: Dict):
-        print('Self caminho datalake ================')
-
-        with open(self.caminho_datalake, 'a') as arquivo_json:
+        with open(self._caminho_completo, 'a') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)
             arquivo_json.write('\n')

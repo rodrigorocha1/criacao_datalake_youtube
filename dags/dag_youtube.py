@@ -2,6 +2,7 @@ import pendulum
 from src.operatorss.youtube_busca_operator import YoutubeBuscaOperator
 from dags.src.hook.youtube_busca_assunto_hook import YoutubeBuscaAssuntoHook
 from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
+from dags.src.services.manipulacao_dados.operacao_banco_hive_airlow import OperacaoBancoHiveAirflow
 from airflow.utils.task_group import TaskGroup
 from unidecode import unidecode
 from airflow import DAG
@@ -61,8 +62,7 @@ with DAG(
 
                 ),
                 arquivo_temp_canal=None,
-                arquivo_temp_video=None,
-                operacao_banco=None
+                operacao_banco=OperacaoBancoHiveAirflow()
             )
             lista_task_assunto.append(etl_assunto)
 
