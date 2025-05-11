@@ -34,6 +34,10 @@ class Arquivo(ABC):
     def guardar_dados(self, dado: Dict):
         pass
 
+    @abstractmethod
+    def abrir_dados(self):
+        pass
+
     @property
     def caminho_completo(self) -> str:
         if self.opcao == 1:
@@ -50,6 +54,5 @@ class Arquivo(ABC):
                 self._pasta_raiz_datalake,
                 self.camada
             )
-
 
         return os.path.join(caminho, self.nome_arquivo)
