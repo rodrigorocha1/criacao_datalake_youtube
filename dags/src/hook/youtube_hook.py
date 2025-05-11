@@ -74,5 +74,5 @@ class YotubeHook(HttpHook, ABC):
             return None
 
     @abstractmethod
-    def run(self):
+    def run(self, **kwargs):
         pass

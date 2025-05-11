@@ -37,12 +37,20 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
         except:
             pass
 
+    def __executar_consulta_canal_temp(self) -> str:
+        consulta = """
+            select distinct ID_CANAL
+            from youtube.temp_canal_video
+
+        """
+        return consulta
+
     def execute(self, context):
-        consulta = self._criar_particao_datalake_camada(
-            tabela_particao='bronze_assunto',
-        )
-        self._arquivo_json.caminho_particao = self._criar_caminho_particao()
-        self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
+        # consulta = self._criar_particao_datalake_camada(
+        #     tabela_particao='bronze_assunto',
+        # )
+        # self._arquivo_json.caminho_particao = self._criar_caminho_particao()
+        # self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
                 self.gravar_dados(json_response)
