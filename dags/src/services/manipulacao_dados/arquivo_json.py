@@ -16,9 +16,9 @@ class ArquivoJson(Arquivo):
     def __init__(
             self,
             opcao: int,
-            camada: Optional[str] = None,
-            entidade: Optional[str] = None,
-            nome_arquivo: Optional[str]= None,
+            camada: str,
+            entidade: str,
+            nome_arquivo: str,
 
     ):
         super().__init__(
@@ -29,7 +29,7 @@ class ArquivoJson(Arquivo):
         )
 
     def guardar_dados(self, dado: Dict):
-
+        print(f'Caminho completo: {self.caminho_completo}')
         with open(self._caminho_completo, 'a') as arquivo_json:
             json.dump(dado, arquivo_json, ensure_ascii=False)
             arquivo_json.write('\n')

@@ -54,13 +54,14 @@ class YoutubeBuscaOperator(YoutubeOperator):
             tabela_particao='bronze_assunto',
         )
         self.__arquivo_json._caminho_particao = self._criar_caminho_particao()
+        print(self.__arquivo_json.__dict__)
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
                 print('Dentro do método execute')
                 print(json_response)
 
-                # self.gravar_dados(req=json_response)
+                self.gravar_dados(req=json_response)
         except Exception as E:
             print(E)
             exit
