@@ -63,7 +63,9 @@ with DAG(
                 ),
 
                 arquivo_temp_json=ArquivoJson(
-                    opcao=2
+                    opcao=2,
+                    camada='temp',
+                    nome_arquivo='temp_assunto_canal_video.json'
                 ),
                 operacao_banco=OperacaoBancoHiveAirflow()
             )
