@@ -45,8 +45,8 @@ class YoutubeOperator(BaseOperator, ABC):
         return nome_dia.replace(" ", "_")
 
     def _criar_caminho_particao(self) -> str:
-        print(self._data)
-        print(self._data.day)
+
+
         caminho_particao = (
             f"ano={self._data.year}/"
             f"mes={self._data.month}/"
@@ -54,6 +54,7 @@ class YoutubeOperator(BaseOperator, ABC):
             f"dia_semana={self.__obter_semana_portugues(data=self._data).replace(' ', '_')}/"
             f"assunto={self._assunto}"
         )
+
         return caminho_particao
 
     def _criar_particao_datalake_camada(self, tabela_particao: str) -> str:
@@ -62,7 +63,7 @@ class YoutubeOperator(BaseOperator, ABC):
             ADD IF NOT EXISTS PARTITION (
                 ano={self._data.year},
                 mes={self._data.month},
-                dia={self._data.year},
+                dia={self._data.day},
                 dia_semana='{self.__obter_semana_portugues(data=self._data).replace(' ', '_')}',
                 assunto="{self._assunto}"
             )
