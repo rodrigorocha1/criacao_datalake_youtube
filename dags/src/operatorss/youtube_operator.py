@@ -12,6 +12,7 @@ from dags.src.hook.youtube_hook import YotubeHook
 from typing import Dict
 import pendulum
 from pendulum.datetime import DateTime
+from unidecode import unidecode
 
 
 class YoutubeOperator(BaseOperator, ABC):
@@ -24,7 +25,7 @@ class YoutubeOperator(BaseOperator, ABC):
             **kwargs
     ):
         self._operacao_hook = operacao_hook
-        self._assunto = assunto.replace(' ', '_')
+        self._assunto = unidecode(assunto.replace(' ', '_'))
         self._data = pendulum.parse(pendulum.now('America/Sao_Paulo').to_iso8601_string())
         super().__init__(task_id=task_id, **kwargs)
 
@@ -44,6 +45,8 @@ class YoutubeOperator(BaseOperator, ABC):
         return nome_dia.replace(" ", "_")
 
     def _criar_caminho_particao(self) -> str:
+        print(self._data)
+        print(self._data.day)
         caminho_particao = (
             f"ano={self._data.year}/"
             f"mes={self._data.month}/"

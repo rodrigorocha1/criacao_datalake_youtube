@@ -22,11 +22,17 @@ class YotubeHook(HttpHook, ABC):
             conn_id (str, optional): id do airflow. Defaults to None.
             carregar_dados (IInfraDados, optional): tipo de carregamento de dados. Defaults to None.
         """
-        self._conn_id = conn_id
+        self._conn_id = conn_id or None
         self._URL = Configuracao.url
         self._CHAVE = Configuracao.chave
 
-        super().__init__(http_conn_id=self._conn_id)
+        super().__init__(http_conn_id="http_default")
+
+    def get_connection(self, conn_id=None):
+        class DummyConn:
+            host = self._URL
+
+        return DummyConn()
 
     @abstractmethod
     def _criar_url(self):
