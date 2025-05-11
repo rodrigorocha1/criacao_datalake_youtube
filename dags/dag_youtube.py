@@ -62,7 +62,10 @@ with DAG(
                     opcao=1
                 ),
 
-                arquivo_temp_json=None,
+                arquivo_temp_json=ArquivoJson(
+                    camada='temp',
+                    nome_arquivo='temp_assunto.json'
+                ),
                 operacao_banco=OperacaoBancoHiveAirflow()
             )
             lista_task_assunto.append(etl_assunto)

@@ -49,7 +49,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self._arquivo_temp_json.guardar_dados(dado=json_canal_video)
 
     def execute(self, context):
-        # Criar _particao
+
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_assunto',
         )
@@ -58,9 +58,6 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
-                print('Dentro do método execute')
-                print(json_response)
-
                 self.gravar_dados(req=json_response)
         except Exception as E:
             print(E)
