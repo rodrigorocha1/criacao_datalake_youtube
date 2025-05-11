@@ -25,7 +25,7 @@ class YoutubeOperator(BaseOperator, ABC):
             **kwargs
     ):
         self._operacao_hook = operacao_hook
-        self._assunto = unidecode(assunto.replace(' ', '_'))
+        self._assunto = unidecode(assunto.replace(' ', '_')).lower()
         self._data = pendulum.parse(pendulum.now('America/Sao_Paulo').to_iso8601_string())
         super().__init__(task_id=task_id, **kwargs)
 

@@ -15,24 +15,11 @@ from dags.src.configuracao.configuracao import Configuracao
 
 class YotubeHook(HttpHook, ABC):
 
-    def __init__(self, conn_id: str) -> None:
-        """Método para inicializar o youtube hook
-
-        Args:
-            conn_id (str, optional): id do airflow. Defaults to None.
-            carregar_dados (IInfraDados, optional): tipo de carregamento de dados. Defaults to None.
-        """
-        self._conn_id = conn_id or None
+    def __init__(self, conn_id: str = 'youtube_default') -> None:
+        self._conn_id = conn_id
         self._URL = Configuracao.url
         self._CHAVE = Configuracao.chave
-
-        super().__init__(http_conn_id="http_default")
-
-    def get_connection(self, conn_id=None):
-        class DummyConn:
-            host = self._URL
-
-        return DummyConn()
+        super().__init__(http_conn_id=self._conn_id)
 
     @abstractmethod
     def _criar_url(self):
@@ -53,6 +40,8 @@ class YotubeHook(HttpHook, ABC):
             Iterator[Iterable[Dict]]: um json com as requisições da api
         """
         i = 1
+
+
         next_token = ''
         for param in params:
             while next_token is not None:
@@ -62,8 +51,10 @@ class YotubeHook(HttpHook, ABC):
                     json_response['data_pesquisa'] = datetime.now().strftime(
                         '%Y-%m-%d %H:%M:%S'
                     )
+                    print('dentro do json ', json_response)
+                    print(json_response)
 
-                    yield json_response['items']
+                    yield json_response
                     try:
                         next_token = json_response['nextPageToken']
                         param['pageToken'] = next_token
@@ -74,24 +65,16 @@ class YotubeHook(HttpHook, ABC):
                 else:
                     break
 
-    def conectar_api(self, url: str, params: Dict, session) -> Optional[requests.models.Response]:
-        """Método para conectar na api
-
-        Args:
-            url (str): url escolhida
-            params (Dict): params da api
-            session (_type_): session do airflow
-
-        Returns:
-            _type_: a conexão
-        """
+    def conectar_api(self, url: str, params: Dict, session: requests.Session) -> Optional[requests.Response]:
         try:
+            headers = {
+                'Accept': 'application/json'
+            }
             response = requests.Request('GET', url=url, params=params)
-
-            prep = session.prepare_request(response)
-
-            return self.run_and_check(session, prep, {})
-        except:
+            prepared = session.prepare_request(response)
+            return self.run_and_check(session=session,prepped_request=prepared, extra_options={})
+        except Exception as e:
+            print(f"Erro na conexão com API: {e}")
             return None
 
     @abstractmethod

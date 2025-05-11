@@ -57,6 +57,8 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
+                print('json_response')
+                print(json_response)
                 self.gravar_dados(req=json_response)
         except Exception as E:
             print(E)
