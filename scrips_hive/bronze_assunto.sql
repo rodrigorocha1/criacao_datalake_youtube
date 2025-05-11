@@ -72,7 +72,7 @@ from videos v2
 
 select *  
 from bronze_assunto
-order by assunto desc
+where dia = 10
 select 1;
 
 select *

@@ -53,7 +53,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_assunto',
         )
-        self.__arquivo_json._caminho_particao = self._criar_caminho_particao()
+        self.__arquivo_json.caminho_particao = self._criar_caminho_particao()
         print(self.__arquivo_json.__dict__)
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
