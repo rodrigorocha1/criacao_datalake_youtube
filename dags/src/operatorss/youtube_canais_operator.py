@@ -12,8 +12,10 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             assunto: str,
             operacao_hook: YotubeHook,
             arquivo_json: ArquivoJson,
+
             **kwargs
     ):
+        self._arquivo_json = arquivo_json
         super().__init__(
             task_id=task_id,
             assunto=assunto,
@@ -34,6 +36,11 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             pass
 
     def execute(self, context):
+        consulta = self._criar_particao_datalake_camada(
+            tabela_particao='bronze_assunto',
+        )
+        self._arquivo_json.caminho_particao = self._criar_caminho_particao()
+        self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
                 self.gravar_dados(json_response)

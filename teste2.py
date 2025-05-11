@@ -1,24 +1,17 @@
+
+
 import json
 
-# Lista com os três objetos JSON
-dados = [
-    {
-        "nome": "Fernanda Oliveira",
-        "idade": 42,
-        "email": "fernanda.oliveira@example.com"
-    },
-    {
-        "nome": "Fernanda Oliveira",
-        "idade": 42,
-        "email": "fernanda.oliveira@example.com"
-    },
-    {
-        "nome": "Fernanda Oliveira",
-        "idade": 42,
-        "email": "fernanda.oliveira@example.com"
-    }
-]
+# Inicializa o conjunto
+conjunto_videos = set()
 
-# Escrevendo os dados no arquivo 'usuarios.json'
-with open("usuarios.json", "w", encoding="utf-8") as f:
-    json.dump(dados, f, ensure_ascii=False, indent=4)
+# Abre o arquivo
+with open("datalake/temp/temp_assunto.jsonl", "r", encoding="utf-8") as arquivo:
+    for linha in arquivo:
+        dados = json.loads(linha)
+        par = (dados["ID_CANAL"])
+        conjunto_videos.add(par)
+
+# Exibe o set
+for video in conjunto_videos:
+    print(video)

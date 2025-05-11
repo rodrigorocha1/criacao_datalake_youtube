@@ -162,7 +162,7 @@ class ETLYoutube:
     def processo_etl_assunto_video(self, data_publicacao_apos: str):
 
         self.__preparar_caminho_particao(
-            nome_arquivo='assunto.json',
+            nome_arquivo='assunto.jsonl',
             opcao_particao=1,
             entidade='assunto',
             nome_camada=Camada.Bronze.value

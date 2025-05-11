@@ -40,7 +40,6 @@ class YoutubeBuscaOperator(YoutubeOperator):
     def gravar_dados(self, req: Dict):
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)
-
         json_canal_video = {
             'ID_CANAL': req['snippet']['channelId'],
             'ID_VIDEO': req['id']['videoId']
@@ -54,7 +53,6 @@ class YoutubeBuscaOperator(YoutubeOperator):
             tabela_particao='bronze_assunto',
         )
         self.__arquivo_json.caminho_particao = self._criar_caminho_particao()
-        print(self.__arquivo_json.__dict__)
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():

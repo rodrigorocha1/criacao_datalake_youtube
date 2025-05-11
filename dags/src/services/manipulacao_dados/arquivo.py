@@ -48,8 +48,7 @@ class Arquivo(ABC):
             caminho = os.path.join(
                 self._caminho_raiz,
                 self._pasta_raiz_datalake,
-                self.camada,
-                self.nome_arquivo
+                self.camada
             )
 
 

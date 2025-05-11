@@ -1,4 +1,4 @@
-from src.hook.youtube_busca_assunto_hook import YotubeHook
+from dags.src.hook.youtube_busca_assunto_hook import YotubeHook
 
 
 class YoutubeBuscaCanaisHook(YotubeHook):
@@ -11,7 +11,6 @@ class YoutubeBuscaCanaisHook(YotubeHook):
     def run(self):
         session = self.get_conn()
         lista_canais = self.__operacao_arquivo_pkl.carregar_dados()
-        print(lista_canais)
         url = self._criar_url()
         params = [
             {
