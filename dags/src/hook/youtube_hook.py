@@ -51,10 +51,8 @@ class YotubeHook(HttpHook, ABC):
                     json_response['data_pesquisa'] = datetime.now().strftime(
                         '%Y-%m-%d %H:%M:%S'
                     )
-                    print('dentro do json ', json_response)
-                    print(json_response)
 
-                    yield json_response
+                    yield from json_response['items']
                     try:
                         next_token = json_response['nextPageToken']
                         param['pageToken'] = next_token

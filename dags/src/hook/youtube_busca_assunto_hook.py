@@ -1,5 +1,3 @@
-
-
 from dags.src.hook.youtube_hook import YotubeHook
 
 
@@ -42,14 +40,12 @@ class YoutubeBuscaAssuntoHook(YotubeHook):
         ]
 
         response = self._executar_paginacao(
-            url=url, session=session, params=params)
-        print('response')
-        print(list(response))
-        for dado in response:
-            print('dado')
-            print(dado)
-            exit()
-        yield from response
+            url=url,
+            session=session,
+            params=params
+        )
+
+        return response
 
 
 if __name__ == '__main__':
