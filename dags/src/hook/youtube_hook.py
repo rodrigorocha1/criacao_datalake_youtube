@@ -65,9 +65,7 @@ class YotubeHook(HttpHook, ABC):
 
     def conectar_api(self, url: str, params: Dict, session: requests.Session) -> Optional[requests.Response]:
         try:
-            headers = {
-                'Accept': 'application/json'
-            }
+
             response = requests.Request('GET', url=url, params=params)
             prepared = session.prepare_request(response)
             return self.run_and_check(session=session,prepped_request=prepared, extra_options={})
