@@ -6,7 +6,7 @@ try:
 
 except ModuleNotFoundError:
     pass
-from typing import Dict
+from typing import Dict, Optional
 from abc import ABC, abstractmethod
 
 
@@ -14,11 +14,11 @@ class Arquivo(ABC):
 
     def __init__(
             self,
-            camada: str,
-            entidade: str,
-            caminho_particao: str,
-            nome_arquivo: str,
-            opcao: int
+            opcao: int,
+            camada: Optional[str] = None,
+            entidade: Optional[str] = None,
+            caminho_particao: Optional[str] = None,
+            nome_arquivo: Optional[str] = None,
     ):
         # self.__caminho_raiz = os.getcwd()
 

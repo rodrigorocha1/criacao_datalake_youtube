@@ -6,7 +6,7 @@ try:
 except ModuleNotFoundError:
     pass
 import json
-from typing import Dict
+from typing import Dict, Optional
 
 from dags.src.services.manipulacao_dados.arquivo import Arquivo
 
@@ -15,11 +15,12 @@ class ArquivoJson(Arquivo):
 
     def __init__(
             self,
-            camada: str,
-            entidade: str,
-            caminho_particao: str,
-            nome_arquivo: str,
-            opcao: int
+            opcao: int,
+            camada: Optional[str] = None,
+            entidade: Optional[str] = None,
+            caminho_particao: Optional[str]= None,
+            nome_arquivo: Optional[str]= None,
+
     ):
         super().__init__(
             camada=camada,

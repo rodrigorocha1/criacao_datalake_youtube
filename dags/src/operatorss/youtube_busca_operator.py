@@ -22,6 +22,7 @@ class YoutubeBuscaOperator(YoutubeOperator):
             assunto: str,
             operacao_hook: YotubeHook,
             arquivo_json: Arquivo,
+            arquivo_temp_json: Arquivo,
             operacao_banco: IOperacaoDados,
             **kwargs
     ):
@@ -43,17 +44,12 @@ class YoutubeBuscaOperator(YoutubeOperator):
 
         }
 
-
-
-
-
-
     def execute(self, context):
         # Criar _particao
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_assunto',
         )
-        self.__arquivo_json.caminho_particao = self._criar_caminho_particao()
+        self.__arquivo_json._caminho_particao = self._criar_caminho_particao()
         self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
         try:
             for json_response in self._operacao_hook.run():
