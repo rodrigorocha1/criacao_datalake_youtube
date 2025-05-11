@@ -8,9 +8,9 @@ class YoutubeBuscaCanaisHook(YotubeHook):
     def _criar_url(self):
         return self._URL + '/channels/'
 
-    def run(self):
+    def run(self, **kwargs):
         session = self.get_conn()
-        lista_canais = self.__operacao_arquivo_pkl.carregar_dados()
+        lista_canais = kwargs['id_canal']
         url = self._criar_url()
         params = [
             {

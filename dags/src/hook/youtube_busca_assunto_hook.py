@@ -8,7 +8,7 @@ class YoutubeBuscaAssuntoHook(YotubeHook):
         self.__assunto_pesquisa = assunto_pesquisa
         super().__init__(conn_id=conn_id)
 
-    def _criar_url(self) -> str:
+    def _criar_url(self, **kwargs) -> str:
         """Retorna a url
 
         Returns:
