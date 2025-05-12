@@ -2,15 +2,15 @@ from dags.src.hook.youtube_busca_assunto_hook import YotubeHook
 
 
 class YoutubeBuscaCanaisHook(YotubeHook):
-    def __init__(self, conn_id=None):
-        super().__init__(conn_id)
+    def __init__(self, conn_id='youtube_default'):
+        super().__init__(conn_id=conn_id)
 
     def _criar_url(self):
         return self._URL + '/channels/'
 
     def run(self, **kwargs):
         session = self.get_conn()
-        lista_canais = kwargs['id_canal']
+        lista_canais = kwargs['id_canais']
         url = self._criar_url()
         params = [
             {
@@ -20,9 +20,11 @@ class YoutubeBuscaCanaisHook(YotubeHook):
 
             } for id_canal in lista_canais
         ]
+        print(params)
         response = self._executar_paginacao(
             url=url,
             session=session,
             params=params
         )
+
         return response

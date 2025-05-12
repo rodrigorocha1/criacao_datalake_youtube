@@ -26,10 +26,12 @@ class OperacaoBancoHiveAirflow(IOperacaoDados):
     def executar_consulta_dados(self, consulta: str, opcao_consulta: int) -> Tuple[bool, Any]:
         try:
             if opcao_consulta == 1:
+
                 with self.__hook.get_conn() as conn:
                     cursor = conn.cursor()
                     cursor.execute(f'USE {self.__schema}')
                     cursor.execute(consulta)
+
                     result = True
             else:
                 result = self.__hook.get_records(consulta)

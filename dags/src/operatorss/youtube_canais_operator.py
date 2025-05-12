@@ -3,6 +3,7 @@ from dags.src.hook.youtube_hook import YotubeHook
 from dags.src.operatorss.youtube_operator import YoutubeOperator
 from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
 from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
+from operator import itemgetter
 
 
 class YoutubeBuscaCanaisOperator(YoutubeOperator):
@@ -27,32 +28,64 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
     def gravar_dados(self, req: Dict):
         try:
-            if len(req['items']) > 0 and req['items'][0]['snippet']['country'] == 'BR':
-                id_canal = [req['items'][0]['id']]
-
+            # if len(req['items']) > 0 and req['items'][0]['snippet']['country'] == 'BR':
+            if True:
+                print(f'Canal Brasileiro {req}')
                 req['assunto'] = self._assunto
-
                 self._arquivo_json.guardar_dados(dado=req)
-                self._arquivo_pkl_canal.salvar_dados(id_canal)
         except:
             pass
 
     def __executar_consulta_canal_temp(self) -> str:
+
         consulta = """
-            select distinct ID_CANAL
+            select  ID_CANAL
             from youtube.temp_canal_video
 
         """
         return consulta
 
+    def __executar_consulta_canal_bronze(self) -> str:
+        consulta = f"""
+            select  bc.id
+            from youtube.bronze_canais bc  
+            where bc.assunto = '{self._assunto}'
+
+        """
+
+        return consulta
+
     def execute(self, context):
         consulta = self._criar_particao_datalake_camada(
-            tabela_particao='bronze_assunto',
+            tabela_particao='bronze_canais',
         )
         self._arquivo_json.caminho_particao = self._criar_caminho_particao()
-        # self._operacao_banco.executar_consulta_dados(consulta=consulta, opcao_consulta=1)
+        self._operacao_banco.executar_consulta_dados(
+            consulta=consulta,
+            opcao_consulta=1
+        )
+        consulta_temp = self.__executar_consulta_canal_temp()
+        lista_temp_canais = self._operacao_banco.executar_consulta_dados(
+            consulta=consulta_temp,
+            opcao_consulta=2
+        )
+        print(lista_temp_canais)
+        consulta_canais = self.__executar_consulta_canal_bronze()
+        lista_consulta_canais = self._operacao_banco.executar_consulta_dados(
+            consulta=consulta_canais,
+            opcao_consulta=2
+        )
+
+        lista_temp_canais = list(map(itemgetter(0), lista_temp_canais[1]))
+        lista_consulta_canais = list(map(itemgetter(0), lista_consulta_canais[1]))
+        lista_canais = lista_consulta_canais + lista_temp_canais
+        lista_canais = list(set(lista_canais))
+
+
+
         try:
-            for json_response in self._operacao_hook.run():
+            for json_response in self._operacao_hook.run(id_canais=lista_canais):
+                print(json_response)
                 self.gravar_dados(json_response)
         except Exception as E:
             print(E)

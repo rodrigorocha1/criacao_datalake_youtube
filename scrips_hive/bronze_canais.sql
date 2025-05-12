@@ -53,9 +53,48 @@ LOCATION 'file:///home/hadoop/datalake/depara/canais';
 alter table CANAIS 
 drop partition (assunto="No_Mans_Sky")
 
-select *
-from canais;
+select distinct id
+from bronze_canais bc ;
 
 drop table canais
 
 ALTER TABLE bronze_canais ADD COLUMNS (data_pesquisa STRING);
+SELECT DISTINCT assunto FROM youtube.bronze_canais;
+
+	select distinct bc.id from youtube.bronze_canais bc where bc.assunto = 'no_mans_sky'
+select distinct ID_CANAL
+from temp_canal_video
+
+set mapreduce.map.memory.mb=2048;
+                set mapreduce.reduce.memory.mb=2048;
+                set mapreduce.map.java.opts=-Xmx1536m;
+                set mapreduce.reduce.java.opts=-Xmx1536m;
+            
+            select distinct ID_CANAL from youtube.temp_canal_video;
+
+
+
+select  ID_CANAL, id_video 
+from youtube.temp_canal_video
+limit 100;
+
+select distinct bc.id from youtube.bronze_canais bc where bc.assunto = 'no_mans_sky'
+
+describe temp_canal_video;
+
+drop table temp_canal_video;
+create external table temp_canal_video(
+	ID_CANAL string,
+	ID_VIDEO string
+)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE
+LOCATION 'file:///home/hadoop/datalake/temp';
+
+
+SELECT DISTINCT bc.id 
+FROM youtube.bronze_canais bc 
+WHERE bc.assunto = 'no_mans_sky'
+LIMIT 10;
+
+SHOW PARTITIONS youtube.bronze_canais;

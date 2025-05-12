@@ -86,7 +86,12 @@ with DAG(
             etl_canais = YoutubeBuscaCanaisOperator(
                 task_id=f'canais_{id_assunto}',
                 operacao_hook=YoutubeBuscaCanaisHook(),
-                arquivo_json=None,
+                arquivo_json=ArquivoJson(
+                    camada='bronze',
+                    entidade='canais',
+                    nome_arquivo='canal.jsonl',
+                    opcao=1
+                ),
                 operacao_banco=OperacaoBancoHiveAirflow(),
                 assunto=assunto,
 

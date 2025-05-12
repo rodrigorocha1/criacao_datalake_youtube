@@ -54,7 +54,7 @@ class YoutubeOperator(BaseOperator, ABC):
             f"dia_semana={self.__obter_semana_portugues(data=self._data).replace(' ', '_')}/"
             f"assunto={self._assunto}"
         )
-
+        print(caminho_particao)
         return caminho_particao
 
     def _criar_particao_datalake_camada(self, tabela_particao: str) -> str:
