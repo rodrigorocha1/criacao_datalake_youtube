@@ -1,6 +1,9 @@
 import pendulum
 from src.operatorss.youtube_busca_operator import YoutubeBuscaOperator
 from dags.src.hook.youtube_busca_assunto_hook import YoutubeBuscaAssuntoHook
+from dags.src.operatorss.youtube_video_operator import YoutubeVideoOperator
+from dags.src.hook.youtube_dados_videos_hook import YoutubeVideoHook
+
 from dags.src.hook.youtube_canais_hook import YoutubeBuscaCanaisHook
 from src.operatorss.youtube_canais_operator import YoutubeBuscaCanaisOperator
 
@@ -75,48 +78,54 @@ with DAG(
     #         )
     #         lista_task_assunto.append(etl_assunto)
 
-    with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
-        lista_canais = []
-        for assunto in lista_assunto:
-            id_assunto = ''.join(
-                filter(
-                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
-                )
-            ).replace(' ', '_').lower()
-            etl_canais = YoutubeBuscaCanaisOperator(
-                task_id=f'canais_{id_assunto}',
-                operacao_hook=YoutubeBuscaCanaisHook(),
-                arquivo_json=ArquivoJson(
-                    camada='bronze',
-                    entidade='canais',
-                    nome_arquivo='canal.jsonl',
-                    opcao=1
-                ),
-                operacao_banco=OperacaoBancoHiveAirflow(),
-                assunto=assunto,
-
-            )
-            lista_canais.append(etl_canais)
-
-    # with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
-    #     lista_videos = []
+    # with TaskGroup('task_youtube_api_canais', dag=dag) as tg_canais:
+    #     lista_canais = []
     #     for assunto in lista_assunto:
     #         id_assunto = ''.join(
     #             filter(
     #                 lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
     #             )
-    #         ).replace(' ', '').lower()
-    #         etl_videos = PythonOperator(
-    #             task_id=f'id_video_{id_assunto}',
-    #             python_callable=executar_etl_videos,
-    #             op_kwargs={
-    #                 'assunto': assunto
-    #             }
+    #         ).replace(' ', '_').lower()
+    #         etl_canais = YoutubeBuscaCanaisOperator(
+    #             task_id=f'canais_{id_assunto}',
+    #             operacao_hook=YoutubeBuscaCanaisHook(),
+    #             arquivo_json=ArquivoJson(
+    #                 camada='bronze',
+    #                 entidade='canais',
+    #                 nome_arquivo='canal.jsonl',
+    #                 opcao=1
+    #             ),
+    #             operacao_banco=OperacaoBancoHiveAirflow(),
+    #             assunto=assunto,
+    #
     #         )
-    #         lista_videos.append(etl_videos)
+    #         lista_canais.append(etl_canais)
+
+    with TaskGroup('task_youtube_api_video', dag=dag) as tg_videos:
+        lista_videos = []
+        for assunto in lista_assunto:
+            id_assunto = ''.join(
+                filter(
+                    lambda c: c.isalnum() or c.isspace(), unidecode(assunto)
+                )
+            ).replace(' ', '').lower()
+            etl_videos = YoutubeVideoOperator(
+                task_id=f'id_video_{id_assunto}',
+                arquivo_json=ArquivoJson(
+                    camada='bronze',
+                    entidade='videos',
+                    nome_arquivo='video.jsonl',
+                    opcao=1
+                ),
+                operacao_hook=YoutubeVideoHook(),
+                operacao_banco=OperacaoBancoHiveAirflow(),
+                assunto=assunto
+
+            )
+            lista_videos.append(etl_videos)
 
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> tg_canais >> fim_dag
+    inicio_dag >> tg_videos >> fim_dag

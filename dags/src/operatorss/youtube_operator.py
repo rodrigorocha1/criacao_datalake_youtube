@@ -44,6 +44,16 @@ class YoutubeOperator(BaseOperator, ABC):
 
         return nome_dia.replace(" ", "_")
 
+    def _executar_consulta_canal_bronze(self) -> str:
+        consulta = f"""
+            select  bc.id
+            from youtube.bronze_canais bc  
+            where bc.assunto = '{self._assunto}'
+
+        """
+
+        return consulta
+
     def _criar_caminho_particao(self) -> str:
 
 

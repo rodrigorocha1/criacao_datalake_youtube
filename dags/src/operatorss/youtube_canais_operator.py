@@ -45,15 +45,7 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
         """
         return consulta
 
-    def __executar_consulta_canal_bronze(self) -> str:
-        consulta = f"""
-            select  bc.id
-            from youtube.bronze_canais bc  
-            where bc.assunto = '{self._assunto}'
 
-        """
-
-        return consulta
 
     def execute(self, context):
         consulta = self._criar_particao_datalake_camada(
@@ -70,7 +62,7 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             opcao_consulta=2
         )
         print(lista_temp_canais)
-        consulta_canais = self.__executar_consulta_canal_bronze()
+        consulta_canais = self._executar_consulta_canal_bronze()
         lista_consulta_canais = self._operacao_banco.executar_consulta_dados(
             consulta=consulta_canais,
             opcao_consulta=2

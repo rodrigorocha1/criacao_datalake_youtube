@@ -74,7 +74,7 @@ set mapreduce.map.memory.mb=2048;
 
 
 
-select  ID_CANAL, id_video 
+select  ID_CANAL, ID_VIDEO 
 from youtube.temp_canal_video
 limit 100;
 
@@ -97,4 +97,5 @@ FROM youtube.bronze_canais bc
 WHERE bc.assunto = 'no_mans_sky'
 LIMIT 10;
 
-SHOW PARTITIONS youtube.bronze_canais;
+select *
+from bronze_canais

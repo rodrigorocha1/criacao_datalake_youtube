@@ -72,7 +72,7 @@ SELECT 1 FROM youtube.videos WHERE id_video = 'lBCbqciE26w' AND assunto = "No_Ma
 
 drop table bronze_videos;
 
-select *
+select v.id
 from bronze_videos v ;
 
 
@@ -88,15 +88,13 @@ add if not exists partition (
 )
 
 
+select *
+from bronze_canais bc ;
 
 
 
-
-SELECT 1
-            FROM youtube.videos
-            WHERE id_video = 'QGPGbxeXi1c'
-            AND assunto = 'No_Mans_Sky'
-            LIMIT 1
+SELECT *
+FROM youtube.videos
 
 
 
