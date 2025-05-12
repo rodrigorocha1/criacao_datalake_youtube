@@ -28,8 +28,7 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
     def gravar_dados(self, req: Dict):
         try:
-            # if len(req['items']) > 0 and req['items'][0]['snippet']['country'] == 'BR':
-            if True:
+            if len(req['items']) > 0 and req['items'][0]['snippet']['country'] == 'BR':
                 print(f'Canal Brasileiro {req}')
                 req['assunto'] = self._assunto
                 self._arquivo_json.guardar_dados(dado=req)
@@ -44,8 +43,6 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
         """
         return consulta
-
-
 
     def execute(self, context):
         consulta = self._criar_particao_datalake_camada(
@@ -72,8 +69,6 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
         lista_consulta_canais = list(map(itemgetter(0), lista_consulta_canais[1]))
         lista_canais = lista_consulta_canais + lista_temp_canais
         lista_canais = list(set(lista_canais))
-
-
 
         try:
             for json_response in self._operacao_hook.run(id_canais=lista_canais):
