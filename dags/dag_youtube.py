@@ -13,6 +13,7 @@ from airflow.utils.task_group import TaskGroup
 from unidecode import unidecode
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
+from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 
 # Argumentos padrão da DAG
@@ -23,13 +24,11 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
-
-
 data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
 data_hora_atual = pendulum.parse(data_hora_atual)
 hora_atual = int(data_hora_atual.hour)
 data = data_hora_atual.format('YYYY_MM_DD')
-data_hora_busca = data_hora_atual.subtract(minutes=60)
+data_hora_busca = data_hora_atual.subtract(hours=24)
 data_hora_busca = data_hora_busca.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 with DAG(
@@ -41,7 +40,7 @@ with DAG(
         catchup=False,
         tags=['youtube', 'etl', 'api']
 ) as dag:
-    lista_assunto = ["No Man's Sky", "Cities Skylines", "Python"]
+    lista_assunto = ["python", "palworld"]
     inicio_dag = EmptyOperator(
         task_id='id_inicio_dag'
     )
@@ -126,8 +125,13 @@ with DAG(
             )
             lista_videos.append(etl_videos)
 
+    tasq_remove_temp = BashOperator(
+        task_id='remome',
+        bash_command='rm -rf /opt/airflow/datalake/temp/*'
+    )
+
     fim_dag = EmptyOperator(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> fim_dag
+    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> tasq_remove_temp >> fim_dag
