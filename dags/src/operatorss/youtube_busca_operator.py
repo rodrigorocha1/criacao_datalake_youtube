@@ -42,7 +42,8 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self.__arquivo_json.guardar_dados(dado=req)
         json_canal_video = {
             'ID_CANAL': req['snippet']['channelId'],
-            'ID_VIDEO': req['id']['videoId']
+            'ID_VIDEO': req['id']['videoId'],
+            'ASSUNTO': self._assunto
 
         }
         self._arquivo_temp_json.guardar_dados(dado=json_canal_video)

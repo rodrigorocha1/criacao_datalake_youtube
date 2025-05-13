@@ -32,7 +32,7 @@ class YoutubeOperator(BaseOperator, ABC):
     def __obter_semana_portugues(self, data: DateTime) -> str:
         dias_semana = {
             0: 'Segunda-feira',
-            1: 'Terça-feira',
+            1: 'Terca-feira',
             2: 'Quarta-feira',
             3: 'Quinta-feira',
             4: 'Sexta-feira',

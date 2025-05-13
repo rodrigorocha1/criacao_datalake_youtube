@@ -75,8 +75,11 @@ drop table bronze_videos;
 select v.id
 from bronze_videos v ;
 
+select *
+from bronze_assunto ba 
 
-drop table videos;
+
+drop table bronze_videos;
 
 alter table bronze_videos 
 add if not exists partition (
@@ -94,9 +97,25 @@ from bronze_canais bc ;
 
 
 SELECT *
-FROM youtube.videos
+FROM temp_canal_video
 
 
+
+CREATE EXTERNAL TABLE `youtube`.`temp_canal_video`(
+  `id_canal` string COMMENT 'from deserializer', 
+  `id_video` string COMMENT 'from deserializer',
+  `assunto` string COMMENT 'from deserializer')
+ROW FORMAT SERDE 
+  'org.apache.hive.hcatalog.data.JsonSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+  'file:/home/hadoop/datalake/temp'
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+  'transient_lastDdlTime'='1747001512');
 
 
 

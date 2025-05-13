@@ -25,6 +25,8 @@ ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
 LOCATION 'file:///home/hadoop/datalake/bronze/canais';
 
+drop table bronze_canais;
+
 alter table bronze_canais 
 add if not exists partition (
 	ano=2025,
@@ -82,7 +84,7 @@ select distinct bc.id from youtube.bronze_canais bc where bc.assunto = 'no_mans_
 
 describe temp_canal_video;
 
-drop table temp_canal_video;
+drop table bronze_canais ;
 create external table temp_canal_video(
 	ID_CANAL string,
 	ID_VIDEO string

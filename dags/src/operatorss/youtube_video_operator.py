@@ -29,10 +29,10 @@ class YoutubeVideoOperator(YoutubeOperator):
         super().__init__(task_id=task_id, assunto=assunto, operacao_hook=operacao_hook, **kwargs)
 
     def __executar_consulta_canal_video_temp(self) -> str:
-        consulta = """
+        consulta = f"""
             select  ID_CANAL, ID_VIDEO 
             from youtube.temp_canal_video
-
+            where assunto = '{self._assunto}'
         """
         return consulta
 

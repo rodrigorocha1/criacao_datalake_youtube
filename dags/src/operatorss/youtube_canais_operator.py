@@ -28,7 +28,7 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
     def gravar_dados(self, req: Dict):
         try:
-            if len(req['items']) > 0 and req['items'][0]['snippet']['country'] == 'BR':
+            if req['snippet']['country'] == 'BR':
                 print(f'Canal Brasileiro {req}')
                 req['assunto'] = self._assunto
                 self._arquivo_json.guardar_dados(dado=req)
@@ -37,9 +37,10 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
     def __executar_consulta_canal_temp(self) -> str:
 
-        consulta = """
+        consulta = f"""
             select  ID_CANAL
             from youtube.temp_canal_video
+            where assunto = '{self._assunto}'
 
         """
         return consulta

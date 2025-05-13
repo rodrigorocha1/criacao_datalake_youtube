@@ -104,6 +104,8 @@ SELECT 1
   from bronze_assunto ba;
   
   
+drop table bronze_assunto ;
+  
 select *
 from bronze_assunto ba
 where ba.data_pesquisa is not null;
