@@ -16,8 +16,8 @@ from bronze_canais bc  ;
 select 
 
 	bv.statistics.viewcount as total_visualizacoes,
-	bv.statistics.likecount as total_likes,
-	bv.statistics.favoritecount  total_favoritos,
+	coalesce(bv.statistics.likecount, 0) as total_likes,
+	coalesce(bv.statistics.favoritecount, 0)  total_favoritos,
 	bv.statistics.commentcount as total_comentarios,
 	bv.assunto as assunto,
 	bv.ano as ano,
