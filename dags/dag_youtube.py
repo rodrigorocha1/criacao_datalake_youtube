@@ -126,7 +126,7 @@ with DAG(
             lista_videos.append(etl_videos)
 
     tasq_remove_temp = BashOperator(
-        task_id='remome',
+        task_id='remove',
         bash_command='rm -rf /opt/airflow/datalake/temp/*'
     )
 
