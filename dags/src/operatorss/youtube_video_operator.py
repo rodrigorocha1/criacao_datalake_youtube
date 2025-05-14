@@ -29,6 +29,11 @@ class YoutubeVideoOperator(YoutubeOperator):
         super().__init__(task_id=task_id, assunto=assunto, operacao_hook=operacao_hook, **kwargs)
 
     def __executar_consulta_canal_video_temp(self) -> str:
+        """
+        Método para consultar na tabela temprárioa
+        ID_CANAL, ID_VIDEO
+        :return: consulta
+        """
         consulta = f"""
             select  ID_CANAL, ID_VIDEO 
             from youtube.temp_canal_video
@@ -37,6 +42,10 @@ class YoutubeVideoOperator(YoutubeOperator):
         return consulta
 
     def __executar_consulta_video_bronze(self):
+        """
+        Método para consutar em bronze_videos
+        :return:
+        """
         consulta = f"""
             select v.id
             from youtube.bronze_videos v 
@@ -45,11 +54,21 @@ class YoutubeVideoOperator(YoutubeOperator):
         return consulta
 
     def gravar_dados(self, req: Dict):
+        """
+        método para gravar dados
+        :param req: requisição da API
+
+        """
         if len(req['items']) > 0:
             req['assunto'] = self._assunto
             self._arquivo_json.guardar_dados(dado=req)
 
     def execute(self, context):
+        """
+        Método para executar o contexto do apache airflor
+        :param context: Contexto
+
+        """
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_videos',
         )
@@ -72,21 +91,18 @@ class YoutubeVideoOperator(YoutubeOperator):
             for canal_video in lista_canal_video_temp[1]
             if canal_video[0] in lista_consulta_canais_bronze
         ]
-        print('lista vídeos brasileiros')
-        print(lista_videos_brasileiros)
+
 
         consulta_video_bronze = self.__executar_consulta_video_bronze()
         lista_videos_bronze = self._operacao_banco.executar_consulta_dados(
             consulta=consulta_video_bronze,
             opcao_consulta=2
         )
-        print('Lista vídeos Bronze')
-        print(lista_videos_bronze)
-        print(lista_videos_bronze[1])
+
         lista_videos_bronze = list(map(itemgetter(0), lista_videos_bronze[1]))
         lista_videos = lista_videos_bronze + lista_videos_brasileiros
         lista_videos = list(set(lista_videos))
-        print(lista_videos)
+
         try:
             for json_response in self._operacao_hook.run(ids_videos=lista_videos):
                 print(json_response)

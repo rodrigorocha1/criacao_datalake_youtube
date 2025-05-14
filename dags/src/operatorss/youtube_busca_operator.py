@@ -38,6 +38,10 @@ class YoutubeBuscaOperator(YoutubeOperator):
         )
 
     def gravar_dados(self, req: Dict):
+        """
+        Método para gravar dados
+        :param req: requisição da API
+        """
         req['assunto'] = self._assunto
         self.__arquivo_json.guardar_dados(dado=req)
         json_canal_video = {
@@ -49,6 +53,11 @@ class YoutubeBuscaOperator(YoutubeOperator):
         self._arquivo_temp_json.guardar_dados(dado=json_canal_video)
 
     def execute(self, context):
+        """
+        Método para executar a DAG
+        :param context: contexto do apache airflow
+
+        """
 
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_assunto',

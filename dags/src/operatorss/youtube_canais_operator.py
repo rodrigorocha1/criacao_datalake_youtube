@@ -27,6 +27,10 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
         )
 
     def gravar_dados(self, req: Dict):
+        """
+        Método para gravar dados
+        :param req: requisição da API
+        """
         try:
             if req['snippet']['country'] == 'BR':
                 req['assunto'] = self._assunto
@@ -35,7 +39,10 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             pass
 
     def __executar_consulta_canal_temp(self) -> str:
-
+        """
+        Método para executar na temp_canal_video
+        :return: consulta
+        """
         consulta = f"""
             select  ID_CANAL
             from youtube.temp_canal_video
@@ -45,6 +52,10 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
         return consulta
 
     def execute(self, context):
+        """
+        Método para executar a dag
+        :param context: contexto do apache airflow
+        """
         consulta = self._criar_particao_datalake_camada(
             tabela_particao='bronze_canais',
         )

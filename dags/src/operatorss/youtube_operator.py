@@ -68,6 +68,11 @@ class YoutubeOperator(BaseOperator, ABC):
         return caminho_particao
 
     def _criar_particao_datalake_camada(self, tabela_particao: str) -> str:
+        """
+        Método para criar na partição na camada bronze
+        :param tabela_particao:
+        :return:
+        """
         consulta = f"""
             ALTER TABLE {tabela_particao}
             ADD IF NOT EXISTS PARTITION (
@@ -81,6 +86,11 @@ class YoutubeOperator(BaseOperator, ABC):
         return consulta
 
     def _criar_particao_datalake_depara(self, tabela_particao: str) -> str:
+        """
+        Métpdp para criar a partição
+        :param tabela_particao: tabela do banco
+        :return: consulta
+        """
         consulta = f"""
             ALTER TABLE {tabela_particao}
             ADD IF NOT EXISTS PARTITION (
