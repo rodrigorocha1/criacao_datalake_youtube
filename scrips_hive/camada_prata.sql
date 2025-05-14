@@ -3,21 +3,15 @@ select
 	bc.statistics.viewcount as total_visualizacoes, 
 	bc.statistics.videocount as total_videos_publicados,
 	bc.statistics.subscribercount as total_inscritos,
-	year(bc.data_pesquisa) as ano,
-	month(bc.data_pesquisa) as mes,
-	bc.data_pesquisa as data,
-	CASE dayofweek(bc.data_pesquisa)
-	    WHEN 1 THEN 'Domingo'
-	    WHEN 2 THEN 'Segunda-feira'
-	    WHEN 3 THEN 'Terça-feira'
-	    WHEN 4 THEN 'Quarta-feira'
-	    WHEN 5 THEN 'Quinta-feira'
-	    WHEN 6 THEN 'Sexta-feira'
-	    WHEN 7 THEN 'Sábado'
-  END AS dia_da_semana,
+	bc.assunto as assunto,
+	bc.ano as ano,
+	bc.mes as mes,
+	bc.dia as dia,
+	bc.dia_semana as semana,
  	bc.id as id_canal,
  	bc.snippet.title as nm_canal
 from bronze_canais bc  ;
+
 
 select 
 
@@ -25,17 +19,11 @@ select
 	bv.statistics.likecount as total_likes,
 	bv.statistics.favoritecount  total_favoritos,
 	bv.statistics.commentcount as total_comentarios,
-	YEAR(bv.data_pesquisa) as ano,
-	MONTH(bv.data_pesquisa) as mes,
-	CASE dayofweek(bv.data_pesquisa)
-	    WHEN 1 THEN 'Domingo'
-	    WHEN 2 THEN 'Segunda-feira'
-	    WHEN 3 THEN 'Terça-feira'
-	    WHEN 4 THEN 'Quarta-feira'
-	    WHEN 5 THEN 'Quinta-feira'
-	    WHEN 6 THEN 'Sexta-feira'
-	    WHEN 7 THEN 'Sábado'
-  END AS dia_da_semana,
+	bv.assunto as assunto,
+	bv.ano as ano,
+	bv.mes as mes,
+	bv.dia as dia,
+	bv.dia_semana as semana,
   bv.snippet.channelId as id_canal,
   bv.snippet.channelTitle as nome_canal,
   bv.id as id_video,
@@ -43,7 +31,8 @@ select
 	
 from bronze_videos bv ;
 
-SELECT current_timestamp;
+select *
+from bronze_videos;
 
 
 SELECT date_format(current_timestamp, 'yyyy-MM-dd HH:mm:ss') AS formatted_time;
