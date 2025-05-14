@@ -20,7 +20,7 @@ class YoutubeBuscaCanaisHook(YotubeHook):
 
             } for id_canal in lista_canais
         ]
-        print(params)
+
         response = self._executar_paginacao(
             url=url,
             session=session,

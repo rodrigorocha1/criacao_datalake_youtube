@@ -100,7 +100,7 @@ SELECT 1
                 )
                 
                 
-  select ba.* 
+  select * 
   from bronze_assunto ba;
   
   

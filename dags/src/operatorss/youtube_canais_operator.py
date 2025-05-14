@@ -29,7 +29,6 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
     def gravar_dados(self, req: Dict):
         try:
             if req['snippet']['country'] == 'BR':
-                print(f'Canal Brasileiro {req}')
                 req['assunto'] = self._assunto
                 self._arquivo_json.guardar_dados(dado=req)
         except:
@@ -59,7 +58,7 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             consulta=consulta_temp,
             opcao_consulta=2
         )
-        print(lista_temp_canais)
+
         consulta_canais = self._executar_consulta_canal_bronze()
         lista_consulta_canais = self._operacao_banco.executar_consulta_dados(
             consulta=consulta_canais,
@@ -73,7 +72,6 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
 
         try:
             for json_response in self._operacao_hook.run(id_canais=lista_canais):
-                print(json_response)
                 self.gravar_dados(json_response)
         except Exception as E:
             print(E)

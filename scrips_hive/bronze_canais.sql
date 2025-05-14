@@ -101,3 +101,48 @@ LIMIT 10;
 
 select *
 from bronze_canais
+
+select  bc.id
+            from youtube.bronze_canais bc  
+            where bc.assunto = 'python'
+
+
+select bc.id from youtube.bronze_canais bc where bc.assunto = 'cities_skylines'
+
+
+select  *
+from temp_canal_video tcv 
+
+
+select  *
+            from youtube.bronze_canais bc  
+            where bc.assunto = 'python'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            select ID_CANAL from youtube.temp_canal_video where assunto = 'palworld'
+
+
+
+
+
+
+
+
+
