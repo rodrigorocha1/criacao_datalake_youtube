@@ -37,16 +37,15 @@ select
 	coalesce(bv.statistics.likecount, 0) as total_likes,
 	coalesce(bv.statistics.favoritecount, 0)  total_favoritos,
 	bv.statistics.commentcount as total_comentarios,
+	bv.snippet.channelTitle as nome_canal,
+	bv.snippet.title as titulo_video,
 	bv.assunto as assunto,
 	bv.ano as ano,
 	bv.mes as mes,
 	bv.dia as dia,
 	bv.dia_semana as semana,
   bv.snippet.channelId as id_canal,
-  bv.snippet.channelTitle as nome_canal,
-  bv.id as id_video,
-  bv.snippet.title as titulo_video
-	
+  bv.id as id_video
 from bronze_videos bv ;
 
 select *
