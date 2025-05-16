@@ -1,4 +1,11 @@
-from typing import Dict, Optional, Tuple
+try:
+    import sys
+    import os
+
+    sys.path.insert(0, os.path.abspath(os.curdir))
+except ModuleNotFoundError:
+    pass
+from typing import Dict
 from dags.src.hook.youtube_hook import YotubeHook
 from dags.src.operatorss.youtube_operator import YoutubeOperator
 from dags.src.services.manipulacao_dados.arquivo_json import ArquivoJson
