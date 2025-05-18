@@ -206,6 +206,7 @@ services:
       - "9083:9083"
     volumes:
       - ./warehouse:/opt/hive/data/warehouse
+      - ./datalake:/opt/hive/datalake
     restart: unless-stopped
     networks:
       airflow-net:
@@ -226,6 +227,7 @@ services:
       - "10002:10002"
     volumes:
       - ./warehouse:/opt/hive/data/warehouse
+      - ./datalake:/opt/hive/datalake
     restart: unless-stopped
     networks:
       airflow-net:

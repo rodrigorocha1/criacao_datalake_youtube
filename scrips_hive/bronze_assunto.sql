@@ -24,7 +24,7 @@ create external table bronze_assunto (
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana string, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
-LOCATION 'file:///home/hadoop/datalake/bronze/assunto';
+LOCATION 'file:///opt/hive/datalake/bronze/assunto';
 
 
 DROP TABLE bronze_assunto;
