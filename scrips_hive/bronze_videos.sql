@@ -53,7 +53,7 @@ CREATE EXTERNAL TABLE bronze_videos(
 PARTITIONED BY (ano INT, mes INT, dia INT, dia_semana STRING, assunto STRING)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS TEXTFILE
-LOCATION 'file:///home/hadoop/datalake/bronze/videos';
+LOCATION 'file:///opt/hive/datalake/bronze/videos';
 
 
 create external table videos (
@@ -112,7 +112,7 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  'file:/home/hadoop/datalake/temp'
+  'file:/opt/hive/datalake/temp'
 TBLPROPERTIES (
   'bucketing_version'='2', 
   'transient_lastDdlTime'='1747001512');
