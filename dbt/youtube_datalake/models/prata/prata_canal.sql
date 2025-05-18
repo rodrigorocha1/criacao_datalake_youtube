@@ -2,6 +2,7 @@
     config(
         materialized='table',
         partition_by=['assunto', 'ano', 'mes', 'dia', 'semana', 'id_canal'],
+        file_format='PARQUET'
     )
 }}
 
