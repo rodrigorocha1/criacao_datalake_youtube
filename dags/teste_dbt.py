@@ -12,9 +12,9 @@ default_args = {
 }
 
 ssh_hook = SSHHook(
-    remote_host="172.28.0.15",
-    username="hadoop",
-    password="hadoop"
+    remote_host="172.25.0.20",
+    username="root",
+    password="root"
 )
 
 with DAG(
@@ -28,10 +28,10 @@ with DAG(
         task_id="connect_via_ssh_with_password",
         ssh_hook=ssh_hook,
         command=(
-            "cd /usr/app/dbt && "
-            "dbt debug"
+            "DBT_PROFILES_DIR=/usr/app/dbt/youtube_datalake "
+            "dbt debug "
+            "--project-dir /usr/app/dbt/youtube_datalake"
         ),
-
         retries=20,
         retry_delay=timedelta(minutes=20),
         cmd_timeout=240,  # Aumente o tempo de espera para o comando
