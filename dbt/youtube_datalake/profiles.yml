@@ -3,7 +3,7 @@ youtube_datalake:
     dev:
       type: hive
       # Add sample credentials here, like:
-      host: 172.25.0.10
+      host: 172.25.0.42
       port: 10000
       username: rodrigo
       password: rodrigo3

@@ -35,12 +35,12 @@ with DAG(
         dag_id='youtube_etl_dag_exemplos',
         default_args=default_args,
         description='DAG para processo ETL dos vídeos e canais do YouTube por assunto',
-        schedule_interval='@daily',
+        schedule_interval=None,
         start_date=datetime(2024, 4, 1),
         catchup=False,
         tags=['youtube', 'etl', 'api']
 ) as dag:
-    lista_assunto = ["python", "palworld"]
+    lista_assunto = ["python", "palworld", "no man's sky"]
     inicio_dag = EmptyOperator(
         task_id='id_inicio_dag'
     )
