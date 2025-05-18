@@ -5,8 +5,6 @@ youtube_datalake:
       # Add sample credentials here, like:
       host: 172.25.0.42
       port: 10000
-      username: rodrigo
-      password: rodrigo3
       schema: youtube
       database: youtube  
   target: dev

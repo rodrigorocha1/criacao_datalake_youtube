@@ -28,9 +28,7 @@ with DAG(
         task_id="connect_via_ssh_with_password",
         ssh_hook=ssh_hook,
         command=(
-            "cd /home/hadoop/projeto_dbt && "
-            "source venv/bin/activate && "
-            "cd teste && "
+            "cd /usr/app/dbt && "
             "dbt debug"
         ),
 

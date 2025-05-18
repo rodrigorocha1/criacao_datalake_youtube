@@ -13,7 +13,8 @@ select
 from bronze_canais bc 
 where bc.ano = year(current_date)
 and bc.mes = MONTH(CURRENT_date)
-and bc.dia = day(current_date);
+and bc.dia = day(current_date)
+order by bc.snippet.title;
 
 SELECT current_date, year(current_date), MONTH(CURRENT_date), day(current_date);
 

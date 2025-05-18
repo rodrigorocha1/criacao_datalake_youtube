@@ -142,8 +142,6 @@ services:
       airflow-net:
         ipv4_address: 172.25.0.12
 
-
-
   dbt_hive:
     image: ghcr.io/dbt-labs/dbt-core:1.10.0b2
     container_name: dbt_hive
@@ -160,6 +158,7 @@ services:
     networks:
       airflow-net:
         ipv4_address: 172.25.0.12
+
   mysql:
     image: mysql:8.0
     container_name: mysql
