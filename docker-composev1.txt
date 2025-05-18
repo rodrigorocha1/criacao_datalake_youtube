@@ -32,6 +32,13 @@ x-airflow-common:
     postgres:
       condition: service_healthy
 
+networks:
+  airflow-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
 services:
   postgres:
     image: postgres:13
@@ -39,7 +46,6 @@ services:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
-      TZ: "America/Sao_Paulo"
     volumes:
       - ./postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -51,6 +57,7 @@ services:
     networks:
       airflow-net:
         ipv4_address: 172.25.0.16
+
 
   airflow-webserver:
     <<: *airflow-common
@@ -78,9 +85,6 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    environment:
-
-      TZ: "America/Sao_Paulo"
     command: scheduler
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
@@ -111,7 +115,7 @@ services:
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,datalake}
         
         exec /entrypoint airflow version
-    
+
     environment:
       <<: *airflow-common-env
       TZ: "America/Sao_Paulo"  # Adicionando configuração de fuso horário
@@ -120,7 +124,7 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
-    
+
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
@@ -140,7 +144,7 @@ services:
       - bash
       - -c
       - airflow
-    
+
     networks:
       airflow-net:
         ipv4_address: 172.25.0.12
@@ -163,77 +167,8 @@ services:
     networks:
       airflow-net:
         ipv4_address: 172.25.0.12
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    environment:
-      MYSQL_DATABASE: metastore_db
-      MYSQL_USER: hive
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: rootpassword
-      TZ: "America/Sao_Paulo"
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - ./mysqldata:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    restart: unless-stopped
-    networks:
-      airflow-net:
-        ipv4_address: 172.25.0.40
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-prootpassword" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
 
-  hive-metastore:
-    image: apache_hive_mysql  # Substitua por uma imagem válida se necessário, como bde2020/hive:2.3.2-postgresql-metastore
-    container_name: metastore-standalone
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      SERVICE_NAME: metastore
-      TZ: "America/Sao_Paulo"
-      DB_DRIVER: mysql
-      SERVICE_OPTS: >
-        -Djavax.jdo.option.ConnectionDriverName=com.mysql.cj.jdbc.Driver
-        -Djavax.jdo.option.ConnectionURL=jdbc:mysql://172.25.0.40:3306/metastore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-        -Djavax.jdo.option.ConnectionUserName=hive
-        -Djavax.jdo.option.ConnectionPassword=password
-    ports:
-      - "9083:9083"
-    volumes:
-      - ./warehouse:/opt/hive/data/warehouse
-    restart: unless-stopped
-    networks:
-      airflow-net:
-        ipv4_address: 172.25.0.41
-
-  hive-server:
-    image: apache_hive_mysql  # Verifique se a mesma imagem funciona como HiveServer2
-    container_name: hiveserver2-standalone
-    depends_on:
-      - hive-metastore
-    environment:
-      SERVICE_NAME: hiveserver2
-      SERVICE_OPTS: -Dhive.metastore.uris=thrift://172.25.0.41:9083
-      IS_RESUME: "true"
-      TZ: "America/Sao_Paulo"
-    ports:
-      - "10000:10000"
-      - "10002:10002"
-    volumes:
-      - ./warehouse:/opt/hive/data/warehouse
-    restart: unless-stopped
-    networks:
-      airflow-net:
-        ipv4_address: 172.25.0.42
-
-networks:
-  airflow-net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.0.0/16
+volumes:
+  postgres-db-volume:
+  datalake:
+    driver: local
