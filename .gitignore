@@ -6,7 +6,7 @@ mysqldata/
 warehouse/
 # C extensions
 *.so
-
+backup_docker/
 # Distribution / packaging
 .Python
 build/
