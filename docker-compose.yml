@@ -108,7 +108,7 @@ services:
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,datalake}
         
         exec /entrypoint airflow version
-    
+
     environment:
       <<: *airflow-common-env
       TZ: "America/Sao_Paulo"  # Adicionando configuração de fuso horário
@@ -117,7 +117,7 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
-    
+
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
@@ -137,7 +137,7 @@ services:
       - bash
       - -c
       - airflow
-    
+
     networks:
       airflow-net:
         ipv4_address: 172.25.0.12
@@ -151,13 +151,25 @@ services:
       - ./dbt:/usr/app/dbt
     working_dir: /usr/app/dbt
     entrypoint: /bin/sh
-    command: -c "apt-get update && \
-      apt-get install -y gcc g++ libkrb5-dev && \
-      pip install dbt-hive && \
-      tail -f /dev/null"
+    ports:
+      - "8081:8081"
+    command: -c "
+      apt-get update && \
+      apt-get install -y gcc g++ libkrb5-dev openssh-server && \
+      mkdir /var/run/sshd && \
+      echo 'root:root' | chpasswd && \
+      sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+      sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+      ssh-keygen -A && \
+      pip install dbt-core && \
+      pip install dbt-spark && \
+      pip install dbt-spark[PyHive] && \
+      /usr/sbin/sshd && \
+      tail -f /dev/null
+      "
     networks:
       airflow-net:
-        ipv4_address: 172.25.0.12
+        ipv4_address: 172.25.0.20
 
   mysql:
     image: mysql:8.0

@@ -18,9 +18,11 @@ order by bc.snippet.title;
 
 SELECT current_date, year(current_date), MONTH(CURRENT_date), day(current_date);
 
+SELECT current_role();
+
 
 select *
-from prata_canal pc ;
+from prata_video pc ;
 
 select 
 
