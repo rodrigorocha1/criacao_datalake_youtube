@@ -31,6 +31,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+warehouse
 
 # Installer logs
 pip-log.txt
@@ -774,3 +775,25 @@ metastore_db/#innodb_redo/#ib_redo11
 /mysqldata/metastore_db/WM_RESOURCEPLAN.ibd
 /mysqldata/metastore_db/WM_TRIGGER.ibd
 /mysqldata/metastore_db/WRITE_SET.ibd
+/mysqldata/#innodb_redo/#ib_redo10
+/mysqldata/#innodb_redo/#ib_redo41_tmp
+/mysqldata/binlog.000005
+/mysqldata/binlog.000006
+/mysqldata/binlog.000007
+/mysqldata/binlog.000008
+/mysqldata/binlog.000009
+/mysqldata/binlog.000010
+/mysqldata/binlog.000011
+/mysqldata/binlog.000012
+/mysqldata/binlog.000013
+/mysqldata/binlog.000014
+/mysqldata/binlog.000015
+/mysqldata/binlog.000016
+/mysqldata/binlog.000017
+/mysqldata/binlog.000018
+/mysqldata/binlog.000019
+/mysqldata/binlog.000020
+/mysqldata/binlog.000021
+/mysqldata/binlog.000022
+/mysqldata/binlog.000023
+/mysqldata/binlog.000024
