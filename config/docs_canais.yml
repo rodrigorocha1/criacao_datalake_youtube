@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: prata_canal  # Substitua pelo nome do arquivo SQL, por ex: canais_incremental
+    description: |
+      Modelo incremental que captura estatísticas dos canais do YouTube,
+      particionado por assunto, ano, mês, dia, semana e id do canal.
+    columns:
+      - name: total_visualizacoes
+        description: Número total de visualizações do canal.
+        tests:
+          - not_null
+      - name: total_videos_publicados
+        description: Quantidade total de vídeos publicados no canal.
+      - name: total_inscritos
+        description: Quantidade total de inscritos no canal.
+      - name: nm_canal
+        description: Nome do canal.
+      - name: assunto
+        description: Assunto principal do canal.
+      - name: ano
+        description: Ano da estatística.
+        tests:
+          - not_null
+      - name: mes
+        description: Mês da estatística.
+        tests:
+          - not_null
+      - name: dia
+        description: Dia da estatística.
+        tests:
+          - not_null
+      - name: semana
+        description: Semana do ano da estatística.
+      - name: id_canal
+        description: Identificador único do canal.
+        tests:
+          - not_null

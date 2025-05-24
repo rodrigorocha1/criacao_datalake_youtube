@@ -26,7 +26,10 @@ with source_data as (
         bc.dia as dia,
         bc.dia_semana as semana,
         bc.id as id_canal
-    from youtube.bronze_canais bc
+    from {{ source('camada_bronze', 'bronze_canais') }} bc
+    {% if is_incremental() %}
+    where bc.dia = {{ dia }} and bc.mes = {{ mes }} and bc.ano = {{ ano }}
+    {% endif %}
 
 
 )
