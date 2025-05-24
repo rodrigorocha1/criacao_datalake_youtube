@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 mysqldata/
 warehouse/
+hue/
+mysql-init/
 # C extensions
 *.so
 backup_docker/
