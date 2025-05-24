@@ -1,0 +1,8 @@
+sources:
+  - name: camada_bronze
+    database: youtube
+    schema: youtube
+    tables:
+      - name: bronze_assunto
+      - name: bronze_canais
+      - name: bronze_videos
