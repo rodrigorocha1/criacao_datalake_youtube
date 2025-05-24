@@ -1,27 +1,55 @@
-select pv.id_canal, pv.total_videos_publicados
-from prata_canal pv   
-where pv.assunto = 'palworld'
-order by pv.id_canal ;
+-- Canais
+--- Total visualizacoes_dia dia
 
-DESCRIBE prata_canal;
-describe FORMATED prata_canal;
-describe EXTENDED prata_canal;
+select *
+from prata_canal pc ;
 
 
+select 
+	  ano
+	, mes
+	, dia
+	, assunto
+	, id_canal
+	, total_videos_publicados
+from prata_canal pc 
+order by id_canal ;
 
-EXPLAIN
-select pv.id_canal, pv.total_videos_publicados
-from prata_canal pv
-where pv.assunto = 'palworld'
-ORDER BY pv.id_canal 
-
-SELECT * FROM prata_canal LIMIT 10;
+--- Total Commentarios dia
 
 
 
-SELECT 
-    pv.id_canal, 
-    pv.total_videos_publicados
-FROM prata_canal pv
-WHERE pv.assunto = 'palworld'
-LIMIT 10;
+--- total vísualizacoes dia
+
+
+--- Total engajamento 
+
+
+select pc.ano, 
+pc.mes, 
+pc.dia, 
+pc.assunto, 
+pc.nm_canal , 
+pc.id_canal ,
+(pc.total_visualizacoes / pc.total_inscritos) * 100 as total_engajmento
+from prata_canal pc 
+order by  pc.id_canal 
+
+
+--- Videos
+--- Total Visualizacoes dia
+
+
+select pv.ano,
+	pv.mes,
+	pv.dia,
+
+	pv.id_canal,
+	pv.id_video,
+	pv.total_comentarios,
+	pv.total_favoritos,
+	pv.total_likes,
+	pv.total_visualizacoes
+from prata_video pv 
+order by id_video
+

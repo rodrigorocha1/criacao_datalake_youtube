@@ -56,6 +56,15 @@ STORED AS TEXTFILE
 LOCATION 'file:///opt/hive/datalake/bronze/videos';
 
 
+ALTER TABLE 'bronze_videos'
+            ADD IF NOT EXISTS PARTITION (
+                ano=2025,
+                mes=05,
+                dia=24,
+                dia_semana='Sabado',
+                assunto="no_mans_sky"
+            )
+
 create external table videos (
 	id_video VARCHAR(80),
 	nome_video string
@@ -99,24 +108,13 @@ from bronze_canais bc ;
 SELECT *
 FROM temp_canal_video
 
-
-
-CREATE EXTERNAL TABLE `youtube`.`temp_canal_video`(
-  `id_canal` string COMMENT 'from deserializer', 
-  `id_video` string COMMENT 'from deserializer',
-  `assunto` string COMMENT 'from deserializer')
-ROW FORMAT SERDE 
-  'org.apache.hive.hcatalog.data.JsonSerDe' 
-STORED AS INPUTFORMAT 
-  'org.apache.hadoop.mapred.TextInputFormat' 
-OUTPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-LOCATION
-  'file:/opt/hive/datalake/temp'
-TBLPROPERTIES (
-  'bucketing_version'='2', 
-  'transient_lastDdlTime'='1747001512');
-
-
-
+    ALTER TABLE bronze_assunto
+            ADD IF NOT EXISTS PARTITION (
+                ano=2025,
+                mes=5,
+                dia=24,
+                dia_semana='Sabado',
+                assunto="python"
+            )
+        
 
