@@ -162,8 +162,7 @@ services:
       sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
       ssh-keygen -A && \
       pip install dbt-core && \
-      pip install dbt-spark && \
-      pip install dbt-spark[PyHive] && \
+      pip install dbt-hive && \
       /usr/sbin/sshd && \
       tail -f /dev/null
       "
