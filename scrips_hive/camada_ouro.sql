@@ -19,6 +19,22 @@ from prata_canal pc
 where pc.id_canal = 'UCpcCgSD1BEDiEQ8EkY7Comw';
 
 
+SELECT
+  total_visualizacoes,
+  total_videos_publicados,
+  total_inscritos,
+  nm_canal,
+  (CAST(total_visualizacoes AS DECIMAL) / total_inscritos) * 100 AS taxa_engajamento_percentual
+FROM
+  prata_canal
+WHERE
+  total_inscritos > 0; -- Para evitar divisão por zero
+
+
+-----Média de Visualizações por Vídeo total_visualizacoes / total_videos_publicados
+  
+  
+----- Engajamento por Vídeo Publicado: (total_visualizacoes / total_videos_publicados) / total_inscritos
 
 
 --- Total Vídeos Públicados dia selecionando canal
@@ -69,31 +85,6 @@ select pv.ano,
 	pv.total_visualizacoes
 from prata_video pv 
 order by id_video
-
-ALTER TABLE bronze_videos DROP IF EXISTS PARTITION (
-    ano=2025,
-    mes=5,
-    dia=25,
-    dia_semana='Domingo',
-    assunto='no_mans_sky'
-);
-
-ALTER TABLE bronze_videos DROP IF EXISTS PARTITION (
-    ano=2025,
-    mes=5,
-    dia=25,
-    dia_semana='Domingo',
-    assunto='palworld'
-);
-
-ALTER TABLE bronze_videos DROP IF EXISTS PARTITION (
-    ano=2025,
-    mes=5,
-    dia=25,
-    dia_semana='Domingo',
-    assunto='python'
-);
-
 
 
 
