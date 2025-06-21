@@ -1,0 +1,34 @@
+models:
+  - name: prata_canal
+    database: youtube
+    columns:
+      - name: total_visualizacoes
+        description: "Total de Visualizações do canal"
+        data_type: INT
+      - name: total_videos_publicados
+        description: "Total de vídeos públicados do canal"
+        data_type: INT
+      - name: total_inscritos
+        description: "Total de inscritos do canal"
+        data_type: INT
+      - name: nm_canal
+        description: "Nome do canal"
+        data_type: STRING
+      - name: assunto
+        description: "Assunto de pesquisa"
+        data_type: VARCHAR(30)
+      - name: ano
+        description: "Ano de pesquisa"
+        data_type: SMALLINT
+      - name: mes
+        description: "Mês de pesquisa"
+        data_type: TINYINT
+      - name: dia
+        description: "Dia de pesquisa"
+        data_type: TINYINT
+      - name: semana
+        description: "semana de pesquisa"
+        data_type: VARCHAR(30)
+      - name: id_canal
+        description: "id do canal"
+        data_type: STRING
