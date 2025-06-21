@@ -1,59 +1,56 @@
 -- Canais
---- Total visualizacoes_dia dia
-
-select *
-from prata_canal pc 
-order by pc.id_canal;
-
-select *
-from bronze_canais bc 
-order by bc.id, bc.mes, bc.dia ;
-
-select *
-from bronze_assunto bv  
-
-
- ALTER TABLE bronze_assunto
-            ADD IF NOT EXISTS PARTITION (
-                ano=2025,
-                mes=5,
-                dia=25,
-                dia_semana='Domingo',
-                assunto="python"
-            )
-            
-            
-show partitions bronze_videos
+--- Total visualizacoes_dia selecionando canal
 
 select 
-	  ano
-	, mes
-	, dia
-	, assunto
-	, id_canal
-	, total_videos_publicados
+	pc.nm_canal as nome_canal,
+	pc.semana as semana,
+	pc.mes as mes,
+
+	pc.total_visualizacoes as total_visualizacoes_acumuladas,
+	LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) AS visualizacoes_acumuladas_anterior,
+	pc.total_visualizacoes - LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) as TOTAL_VISUALIZACAO_DIA
 from prata_canal pc 
-order by id_canal ;
-
---- Total Commentarios dia
-
+where pc.id_canal = 'UCpcCgSD1BEDiEQ8EkY7Comw'
+order by pc.mes ;
 
 
---- total vísualizacoes dia
-
-
---- Total engajamento 
-
-
-select pc.ano, 
-pc.mes, 
-pc.dia, 
-pc.assunto, 
-pc.nm_canal , 
-pc.id_canal ,
-(pc.total_visualizacoes / pc.total_inscritos) * 100 as total_engajmento
+select *
 from prata_canal pc 
-order by  pc.id_canal 
+where pc.id_canal = 'UCpcCgSD1BEDiEQ8EkY7Comw';
+
+
+
+
+--- Total Vídeos Públicados dia selecionando canal
+
+select 
+	pc.nm_canal as nome_canal,
+	pc.semana as semana,
+	pc.mes as mes,
+	pc.total_videos_publicados as total_videos_publicados_acumuladas,
+	LAG(pc.total_videos_publicados, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) AS videos_acumuladas_anterior,
+	pc.total_videos_publicados - LAG(pc.total_videos_publicados, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) as TOTAL_VIDEOS_PUBLICADOS
+from prata_canal pc 
+where pc.id_canal = 'UCpcCgSD1BEDiEQ8EkY7Comw'
+order by pc.mes ;
+
+
+
+
+
+--- total Inscritos dia selecionando canal
+
+select 
+	pc.nm_canal as nome_canal,
+	pc.semana as semana,
+	pc.mes as mes,
+	pc.total_inscritos  as total_inscritos_acumuladas,
+	LAG(pc.total_inscritos, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) AS total_inscritos_anterior,
+	pc.total_inscritos - LAG(pc.total_inscritos, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes) as total_inscritos_PUBLICADOS
+from prata_canal pc 
+where pc.id_canal = 'UCpcCgSD1BEDiEQ8EkY7Comw'
+order by pc.mes ;
+
 
 
 --- Videos
