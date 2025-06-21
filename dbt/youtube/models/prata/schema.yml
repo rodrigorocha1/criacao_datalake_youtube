@@ -32,3 +32,42 @@ models:
       - name: id_canal
         description: "id do canal"
         data_type: STRING
+  - name: prata_video
+    database: youtube
+    columns:
+      - name: total_visualizacoes
+        description: "Total de Visualizações do vídeo"
+        data_type: INT
+      - name: total_favoritos
+        description: "Total de vezes em que o vídeo foi favoritado"
+        data_type: INT
+      - name: total_comentarios
+        description: "Total de comentários"
+        data_type: INT
+      - name: nm_canal
+        description: "Nome do canal"
+        data_type: STRING
+      - name: titulo_video
+        description: "Título do vídeo"
+        data_type: STRING
+      - name: assunto
+        description: "Assunto de pesquisa"
+        data_type: VARCHAR(30)
+      - name: ano
+        description: "Ano de pesquisa"
+        data_type: SMALLINT
+      - name: mes
+        description: "Mês de pesquisa"
+        data_type: TINYINT
+      - name: dia
+        description: "Dia de pesquisa"
+        data_type: TINYINT
+      - name: semana
+        description: "Dia da semana"
+        data_type: VARCHAR(40)
+      - name: id_canal
+        description: "id_do_canal do vídeo"
+        data_type: STRING
+      - name: id_video
+        description: "id do vídeo"
+        data_type: STRING
