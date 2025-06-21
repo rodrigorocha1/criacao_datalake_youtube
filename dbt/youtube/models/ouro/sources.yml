@@ -1,0 +1,6 @@
+sources:
+  - name: camada_ouro
+    database: youtube
+    schema: youtube
+    tables:
+      - name: prata_canal
