@@ -23,7 +23,16 @@ with prata_video as (
         cast(bv.ano as SMALLINT) as ano,
         cast(bv.mes as TINYINT) as mes,
         cast(bv.dia as TINYINT) as dia,
-        cast(bv.dia_semana as TINYINT) as semana,
+        CASE
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Sunday' THEN 'Domingo'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Monday' THEN 'Segunda-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Tuesday' THEN 'Terça-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Wednesday' THEN 'Quarta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Thursday' THEN 'Quinta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Friday' THEN 'Sexta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bv.ano AS STRING), LPAD(CAST(bv.mes AS STRING), 2, '0'), LPAD(CAST(bv.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Saturday' THEN 'Sábado'
+            ELSE 'Desconhecido'
+        END AS semana,
         bv.snippet.channelId as id_canal,
         bv.id as id_video
     from {{ source('camada_bronze', 'bronze_videos') }} bv

@@ -121,27 +121,26 @@ select  *
 
 
 
+select
+        cast(bc.statistics.viewcount as int) as total_visualizacoes,
+        bc.statistics.videocount as total_videos_publicados,
+        bc.statistics.subscribercount as total_inscritos,
+        bc.snippet.title as nm_canal,
+        bc.assunto as assunto,
+        bc.ano as ano,
+        bc.mes as mes,
+        bc.dia as dia,
+        bc.dia_semana as semana,
+        bc.id as id_canal
+from bronze_canais bc 
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-            select ID_CANAL from youtube.temp_canal_video where assunto = 'palworld'
-
-
-
-
-
+select *
+from bronze_canais pc ;
 
 
 

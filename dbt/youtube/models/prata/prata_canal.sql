@@ -24,7 +24,15 @@ with source_data as (
         CAST(bc.ano as SMALLINT) as ano,
         CAST( bc.mes AS TINYINT) as mes,
         CAST(bc.dia as TINYINT) as dia,
-        CAST(bc.dia_semana as VARCHAR(30)) as semana,
+        CASE
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Sunday' THEN 'Domingo'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Monday' THEN 'Segunda-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Tuesday' THEN 'Terça-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Wednesday' THEN 'Quarta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Thursday' THEN 'Quinta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Friday' THEN 'Sexta-feira'
+            WHEN date_format(DATE_FORMAT(CONCAT_WS('-', CAST(bc.ano AS STRING), LPAD(CAST(bc.mes AS STRING), 2, '0'), LPAD(CAST(bc.dia AS STRING), 2, '0')), 'yyyy-MM-dd'), 'EEEE') = 'Saturday' THEN 'Sábado'
+        ELSE 'Desconhecido' END  as semana,
         CAST(bc.id AS STRING) as id_canal
     from {{ source('camada_bronze', 'bronze_canais') }} bc
     {% if is_incremental() %}
