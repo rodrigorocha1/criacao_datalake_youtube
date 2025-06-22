@@ -36,9 +36,9 @@ with prata_video as (
         bv.snippet.channelId as id_canal,
         bv.id as id_video
     from {{ source('camada_bronze', 'bronze_videos') }} bv
-   -- {% if is_incremental() %}
-   -- where bv.dia = {{ dia }} and bv.mes = {{ mes }} and bv.ano = {{ ano }}
-    -- {% endif %}
+   {% if is_incremental() %}
+   where bv.dia = {{ dia }} and bv.mes = {{ mes }} and bv.ano = {{ ano }}
+   {% endif %}
 )
 
 select * FROM prata_video
