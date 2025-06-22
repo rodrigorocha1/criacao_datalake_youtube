@@ -28,9 +28,9 @@ with DAG(
         task_id="connect_via_ssh_with_password",
         ssh_hook=ssh_hook,
         command=(
-            "DBT_PROFILES_DIR=/usr/app/dbt/youtube_datalake "
+            "DBT_PROFILES_DIR=/usr/app/dbt/youtube "
             "dbt debug "
-            "--project-dir /usr/app/dbt/youtube_datalake"
+            "--project-dir /usr/app/dbt/youtube "
         ),
         retries=20,
         retry_delay=timedelta(minutes=20),

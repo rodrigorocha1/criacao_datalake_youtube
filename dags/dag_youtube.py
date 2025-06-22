@@ -14,6 +14,8 @@ from unidecode import unidecode
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.bash import BashOperator
+from airflow.providers.ssh.hooks.ssh import SSHHook
+from airflow.providers.ssh.operators.ssh import SSHOperator
 from datetime import datetime, timedelta
 
 # Argumentos padrão da DAG
@@ -23,6 +25,12 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5)
 }
+
+ssh_hook = SSHHook(
+    remote_host="172.25.0.20",
+    username="root",
+    password="root"
+)
 
 data_hora_atual = pendulum.now('America/Sao_Paulo').to_iso8601_string()
 data_hora_atual = pendulum.parse(data_hora_atual)
@@ -125,6 +133,34 @@ with DAG(
             )
             lista_videos.append(etl_videos)
 
+    ssh_dbt_canal = SSHOperator(
+        task_id="id_ssh_dbt_canal",
+        ssh_hook=ssh_hook,
+        command=(
+            "DBT_PROFILES_DIR=/usr/app/dbt/youtube "
+            "dbt run --select prata_canal "
+            "--project-dir /usr/app/dbt/youtube "
+        ),
+        retries=20,
+        retry_delay=timedelta(minutes=20),
+        cmd_timeout=240,  # Aumente o tempo de espera para o comando
+
+    )
+
+    ssh_dbt_video = SSHOperator(
+        task_id="id_ssh_dbt_video",
+        ssh_hook=ssh_hook,
+        command=(
+            "DBT_PROFILES_DIR=/usr/app/dbt/youtube "
+            "dbt run --select prata_video "
+            "--project-dir /usr/app/dbt/youtube "
+        ),
+        retries=20,
+        retry_delay=timedelta(minutes=20),
+        cmd_timeout=240,  # Aumente o tempo de espera para o comando
+
+    )
+
     tasq_remove_temp = BashOperator(
         task_id='remove',
         bash_command='rm -rf /opt/airflow/datalake/temp/*'
@@ -134,4 +170,4 @@ with DAG(
         task_id='id_fim_dag'
     )
 
-    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> tasq_remove_temp >> fim_dag
+    inicio_dag >> tg_assunto >> tg_canais >> tg_videos >> ssh_dbt_canal >> ssh_dbt_video >> tasq_remove_temp >> fim_dag
