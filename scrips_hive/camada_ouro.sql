@@ -1,12 +1,9 @@
 -- Canais
 --- Total visualizacoes_dia selecionando canal
-
+create VIEW ouro_canal_total_visualizacao_dia as
 select 
-	pc.total_visualizacoes as total_visualizacoes_acumuladas,
-	LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes, pc.dia ) AS visualizacoes_acumuladas_anterior,
 	pc.total_visualizacoes - LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes, pc.dia) as TOTAL_VISUALIZACAO_DIA,
 	pc.nm_canal as nome_canal,
-	DATE_FORMAT(CONCAT_WS('-', CAST(pc.ano AS STRING), LPAD(CAST(pc.mes AS STRING), 2, '0'), LPAD(CAST(pc.dia AS STRING), 2, '0')), 'yyyy-MM-dd') dia_formatado,
 	pc.semana as semana,
 	pc.assunto as assunto,
 	pc.ano as ano,
@@ -30,17 +27,29 @@ select
 from prata_canal pc 
  -- where pc.id_canal = 'UCGxmd2AnLNrSWFhrCcEj0lQ'  
 -- AND  pc.dia BETWEEN 24 and 25  and pc.mes in (5, 6)
- where DATE_FORMAT(CONCAT_WS('-', CAST(pc.ano AS STRING), LPAD(CAST(pc.mes AS STRING), 2, '0'), LPAD(CAST(pc.dia AS STRING), 2, '0')), 'yyyy-MM-dd') >= CURRENT_DATE() - 1
+ -- where DATE_FORMAT(CONCAT_WS('-', CAST(pc.ano AS STRING), LPAD(CAST(pc.mes AS STRING), 2, '0'), LPAD(CAST(pc.dia AS STRING), 2, '0')), 'yyyy-MM-dd') >= CURRENT_DATE() - 1
 order by pc.id_canal , pc.mes, pc.dia ;
 
+
+select *
+from ouro_canal_total_visualizacao_dia;
+
+
+drop VIEW teste;
 
 SELECT CURRENT_DATE() - 1;
 
 
 select *
+from total_visualizacoes_canal_dia tvcd 
+
+select *
 from prata_canal pc 
 where pc.id_canal = 'UCGxmd2AnLNrSWFhrCcEj0lQ';
 
+
+select *
+from prata_video
 
 SELECT
   total_visualizacoes,
