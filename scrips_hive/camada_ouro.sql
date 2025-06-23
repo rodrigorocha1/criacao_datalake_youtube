@@ -258,5 +258,25 @@ order by pv.id_video, pv.mes, pv.dia;
 select *
 from ouro_video_taxa_engajamento_video_dia pv ;
 
+create VIEW depara_video as 
+select distinct
+	pv.assunto ,
+	pv.id_canal,
+	pv.nome_canal ,
+	pv.id_video,
+	pv.titulo_video
+from prata_video pv 
+order by id_canal ;
 
+create view depara_canal as 
+select 
+	DISTINCT
+	pc.assunto,
+	pc.id_canal,
+	pc.nm_canal
+from prata_canal pc 
+order by pc.id_canal;
+
+select *
+from depara_canal;
 
