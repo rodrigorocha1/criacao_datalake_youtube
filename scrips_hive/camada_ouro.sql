@@ -205,6 +205,8 @@ order by pv.id_video, pv.mes, pv.dia;
 
 
 -- TOTAL LIKES 
+select *
+from ouro_video_total_likes_dia;
 
 create VIEW ouro_video_total_likes_dia as 
 select 
@@ -256,7 +258,8 @@ from prata_video pv
 order by pv.id_video, pv.mes, pv.dia;
 
 select *
-from ouro_video_taxa_engajamento_video_dia pv ;
+from ouro_video_taxa_engajamento_video_dia pv
+where pv.assunto = 'palworld';
 
 create VIEW depara_video as 
 select distinct
