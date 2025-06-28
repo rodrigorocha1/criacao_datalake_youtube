@@ -246,7 +246,8 @@ services:
 
 
   superset:
-    image: apache/superset:latest
+    user: "0:0"
+    image: superset_hive:latest
     container_name: superset
     ports:
       - "8091:8091"
@@ -257,6 +258,7 @@ services:
       - ./superset_home:/app/superset_home
     command: >
       /bin/bash -c "
+        pip install --no-cache-dir pyhive[hive] thrift sasl thrift-sasl &&
         superset db upgrade &&
         superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin &&
         superset init &&
