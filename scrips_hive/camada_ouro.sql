@@ -1,5 +1,7 @@
 -- Canais
 --- Total visualizacoes_dia selecionando canal
+
+drop VIEW ouro_canal_total_visualizacao_dia;
 create VIEW ouro_canal_total_visualizacao_dia as
 select 
 	pc.total_visualizacoes - LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes, pc.dia) as TOTAL_VISUALIZACAO_DIA,
@@ -11,15 +13,15 @@ select
 	pc.dia as dia,
 	case when pc.semana == 'Domingo'
 		then 0
-	when pc.semana == 'Segunda'
+	when pc.semana == 'Segunda-feira'
 		then 1
-	when pc.semana == 'Terça'	
+	when pc.semana == 'Terça-feira'	
 		then 2
-	when pc.semana == 'Quarta'	
+	when pc.semana == 'Quarta-feira'	
 		then 3
-	when pc.semana == 'Quinta'	
+	when pc.semana == 'Quinta-feira'	
 		then 4
-	when pc.semana == 'Sexta'	
+	when pc.semana == 'Sexta-feira'	
 		then 5
 	when pc.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -30,7 +32,8 @@ from prata_canal pc
  -- where DATE_FORMAT(CONCAT_WS('-', CAST(pc.ano AS STRING), LPAD(CAST(pc.mes AS STRING), 2, '0'), LPAD(CAST(pc.dia AS STRING), 2, '0')), 'yyyy-MM-dd') >= CURRENT_DATE() - 1
 order by pc.id_canal , pc.mes, pc.dia ;
 
-
+select *
+from ouro_canal_total_visualizacao_dia;
 
   
 ----- Taxa Engajamento do canal por dia: (total_visualizacoes / total_videos_publicados) / total_inscritos
@@ -52,6 +55,8 @@ from prata_canal;
 
 --- Total Vídeos Públicados dia selecionando canal
 
+
+
 create VIEW ouro_canal_total_videos_publicados_dia as
 select 
 	pc.total_videos_publicados - LAG(pc.total_videos_publicados, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes, pc.dia) as TOTAL_VIDEOS_PUBLICADOS_DIA,
@@ -63,15 +68,15 @@ select
 	pc.dia as dia,
 	case when pc.semana == 'Domingo'
 		then 0
-	when pc.semana == 'Segunda'
+	when pc.semana == 'Segunda-feira'
 		then 1
-	when pc.semana == 'Terça'	
+	when pc.semana == 'Terça-feira'	
 		then 2
-	when pc.semana == 'Quarta'	
+	when pc.semana == 'Quarta-feira'	
 		then 3
-	when pc.semana == 'Quinta'	
+	when pc.semana == 'Quinta-feira'	
 		then 4
-	when pc.semana == 'Sexta'	
+	when pc.semana == 'Sexta-feira'	
 		then 5
 	when pc.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -89,6 +94,7 @@ from ouro_canal_total_videos_publicados_dia;
 select *
 from prata_canal;
 
+drop VIEW ouro_canal_total_inscritos_dia
 
 create VIEW ouro_canal_total_inscritos_dia as
 select 
@@ -101,15 +107,15 @@ select
 	pc.dia as dia,
 	case when pc.semana == 'Domingo'
 		then 0
-	when pc.semana == 'Segunda'
+	when pc.semana == 'Segunda-feira'
 		then 1
-	when pc.semana == 'Terça'	
+	when pc.semana == 'Terça-feira'	
 		then 2
-	when pc.semana == 'Quarta'	
+	when pc.semana == 'Quarta-feira'	
 		then 3
-	when pc.semana == 'Quinta'	
+	when pc.semana == 'Quinta-feira'	
 		then 4
-	when pc.semana == 'Sexta'	
+	when pc.semana == 'Sexta-feira'	
 		then 5
 	when pc.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -130,12 +136,30 @@ select
 	pc.dia,
 	pc.total_visualizacoes,
 	pc.total_inscritos,
+	pc.semana, 
+	case when pc.semana == 'Domingo'
+		then 0
+	when pc.semana == 'Segunda-feira'
+		then 1
+	when pc.semana == 'Terça-feira'	
+		then 2
+	when pc.semana == 'Quarta-feira'	
+		then 3
+	when pc.semana == 'Quinta-feira'	
+		then 4
+	when pc.semana == 'Sexta-feira'	
+		then 5
+	when pc.semana == 'Sábado'	
+		then 6 end as indice_semana,
 
     pc.total_visualizacoes - LAG(pc.total_visualizacoes, 1, 0) OVER (PARTITION BY pc.id_canal ORDER BY pc.mes, pc.dia), 
 	round((pc.total_visualizacoes / pc.total_inscritos ) * 100, 2) as taxa_engajamento_canal
 	
 from prata_canal pc 
 order by pc.id_canal , pc.mes, pc.dia ;
+
+select *
+from ouro_canal_taxa_engajamento_dia
 
 
 --- Videos
@@ -148,20 +172,21 @@ select
 	pv.id_canal as id_canal ,
 	pv.nome_canal as nome_canal,
 	pv.id_video as id_video,
+	pv.titulo_video,
 	pv.mes as mes,
 	pv.dia as dia,
 	pv.semana,
 	case when pv.semana == 'Domingo'
 		then 0
-	when pv.semana == 'Segunda'
+	when pv.semana == 'Segunda-feira'
 		then 1
-	when pv.semana == 'Terça'	
+	when pv.semana == 'Terça-feira'	
 		then 2
-	when pv.semana == 'Quarta'	
+	when pv.semana == 'Quarta-feira'	
 		then 3
-	when pv.semana == 'Quinta'	
+	when pv.semana == 'Quinta-feira'	
 		then 4
-	when pv.semana == 'Sexta'	
+	when pv.semana == 'Sexta-feira'	
 		then 5
 	when pv.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -170,8 +195,10 @@ from prata_video pv
 order by pv.id_video, pv.mes, pv.dia;
 
 
+select * from prata_video pv ;
+
 select *
-from prata_video pv ;
+from ouro_video_total_visualizacoes_dia pv ;
 
 --- TOTAL COMENTÁRIOS DIA
 drop VIEW ouro_video_total_vcomentarios_dia;
@@ -182,20 +209,21 @@ select
 	pv.id_canal as id_canal ,
 	pv.nome_canal as nome_canal,
 	pv.id_video as id_video,
+	pv.titulo_video,
 	pv.mes as mes,
 	pv.dia as dia,
 	pv.semana,
 	case when pv.semana == 'Domingo'
 		then 0
-	when pv.semana == 'Segunda'
+	when pv.semana == 'Segunda-feira'
 		then 1
-	when pv.semana == 'Terça'	
+	when pv.semana == 'Terça-feira'	
 		then 2
-	when pv.semana == 'Quarta'	
+	when pv.semana == 'Quarta-feira'	
 		then 3
-	when pv.semana == 'Quinta'	
+	when pv.semana == 'Quinta-feira'	
 		then 4
-	when pv.semana == 'Sexta'	
+	when pv.semana == 'Sexta-feira'	
 		then 5
 	when pv.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -205,8 +233,7 @@ order by pv.id_video, pv.mes, pv.dia;
 
 
 -- TOTAL LIKES 
-select *
-from ouro_video_total_likes_dia;
+drop VIEW ouro_video_total_likes_dia;
 
 create VIEW ouro_video_total_likes_dia as 
 select 
@@ -214,20 +241,21 @@ select
 	pv.id_canal as id_canal ,
 	pv.nome_canal as nome_canal,
 	pv.id_video as id_video,
+	pv.titulo_video,
 	pv.mes as mes,
 	pv.dia as dia,
 	pv.semana,
 	case when pv.semana == 'Domingo'
 		then 0
-	when pv.semana == 'Segunda'
+	when pv.semana == 'Segunda-feira'
 		then 1
-	when pv.semana == 'Terça'	
+	when pv.semana == 'Terça-feira'	
 		then 2
-	when pv.semana == 'Quarta'	
+	when pv.semana == 'Quarta-feira'	
 		then 3
-	when pv.semana == 'Quinta'	
+	when pv.semana == 'Quinta-feira'	
 		then 4
-	when pv.semana == 'Sexta'	
+	when pv.semana == 'Sexta-feira'	
 		then 5
 	when pv.semana == 'Sábado'	
 		then 6 end as indice_semana,
@@ -235,7 +263,10 @@ select
 from prata_video pv 
 order by pv.id_video, pv.mes, pv.dia;
 
+
+select * from ouro_video_total_likes_dia
 -- taxa engajamento do vídeo por dia
+drop view ouro_video_taxa_engajamento_video_dia 
 
 create VIEW ouro_video_taxa_engajamento_video_dia AS
 select 
@@ -245,6 +276,21 @@ select
 	pv.id_video, 
 	pv.mes, 
 	pv.dia,
+	pv.semana,
+	case when pv.semana == 'Domingo'
+		then 0
+	when pv.semana == 'Segunda-feira'
+		then 1
+	when pv.semana == 'Terça-feira'	
+		then 2
+	when pv.semana == 'Quarta-feira'	
+		then 3
+	when pv.semana == 'Quinta-feira'	
+		then 4
+	when pv.semana == 'Sexta-feira'	
+		then 5
+	when pv.semana == 'Sábado'	
+		then 6 end as indice_semana,
 
 	coalesce(round((
 		(
@@ -260,6 +306,9 @@ order by pv.id_video, pv.mes, pv.dia;
 select *
 from ouro_video_taxa_engajamento_video_dia pv
 where pv.assunto = 'palworld';
+
+select *
+from ouro_video_taxa_engajamento_video_dia
 
 create VIEW depara_video as 
 select distinct
@@ -282,4 +331,7 @@ order by pc.id_canal;
 
 select *
 from depara_canal;
+
+select *
+from depara_video dv 
 
