@@ -214,3 +214,5 @@ mysql_data/binlog.index
 metastore_db/
 /docs/fluxo.txt
 /mysqldata/
+/superset_home/superset.db
+/superset_home/superset.db-journal
