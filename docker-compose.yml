@@ -229,8 +229,8 @@ services:
       SERVICE_NAME: hiveserver2
       SERVICE_OPTS: >
         -Dhive.metastore.uris=thrift://172.25.0.41:9083
-        -Dhive.exec.max.dynamic.partitions=2000 
-        -Dhive.exec.max.dynamic.partitions.pernode=150
+        -Dhive.exec.max.dynamic.partitions=7000 
+        -Dhive.exec.max.dynamic.partitions.pernode=750
       IS_RESUME: "true"
       TZ: "America/Sao_Paulo"
     ports:
