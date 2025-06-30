@@ -33,7 +33,8 @@ from prata_canal pc
 order by pc.id_canal , pc.mes, pc.dia ;
 
 select *
-from ouro_canal_total_visualizacao_dia;
+from ouro_canal_total_visualizacao_dia
+where id_canal = 'UCGxmd2AnLNrSWFhrCcEj0lQ'  ;
 
   
 ----- Taxa Engajamento do canal por dia: (total_visualizacoes / total_videos_publicados) / total_inscritos
@@ -198,7 +199,8 @@ order by pv.id_video, pv.mes, pv.dia;
 select * from prata_video pv ;
 
 select *
-from ouro_video_total_visualizacoes_dia pv ;
+from ouro_video_total_visualizacoes_dia pv 
+where pv.id_video  = 'uhtx7w9MyVo';
 
 --- TOTAL COMENTÁRIOS DIA
 drop VIEW ouro_video_total_vcomentarios_dia;
