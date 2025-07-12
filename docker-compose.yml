@@ -33,6 +33,24 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+
+  create-superset-db:
+    image: postgres:13
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: >
+      bash -c "
+        until pg_isready -h postgres -U airflow; do sleep 2; done;
+        psql -h postgres -U airflow -d airflow -c 'CREATE DATABASE superset;'
+      "
+    environment:
+      PGPASSWORD: airflow
+    networks:
+      airflow-net:
+        ipv4_address: 172.25.0.17
+
+
   postgres:
     image: postgres:13
     environment:
@@ -246,7 +264,36 @@ services:
         ipv4_address: 172.25.0.42
 
 
-
+  superset:
+    image: superset_hive:latest
+    container_name: superset
+    ports:
+      - "8091:8091"
+    environment:
+      - SUPERSET_SECRET_KEY=supersecretkey
+      - SUPERSET_HOME=/app/superset_home
+      - DATABASE_URL=postgresql+psycopg2://airflow:airflow@postgres/superset
+    volumes:
+      - ./superset_home:/app/superset_home
+    depends_on:
+      create-superset-db:
+        condition: service_completed_successfully
+    command: >
+      /bin/bash -c "
+        pip install --no-cache-dir pyhive[hive] thrift sasl thrift-sasl &&
+        superset db upgrade &&
+        superset fab create-admin \
+          --username admin \
+          --firstname Superset \
+          --lastname Admin \
+          --email admin@superset.com \
+          --password admin &&
+        superset init &&
+        superset run -h 0.0.0.0 -p 8091
+      "
+    networks:
+      airflow-net:
+        ipv4_address: 172.25.0.43
 
 networks:
   airflow-net:
