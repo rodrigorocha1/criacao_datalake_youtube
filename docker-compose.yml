@@ -264,6 +264,12 @@ services:
     networks:
       airflow-net:
         ipv4_address: 172.25.0.44
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U superset" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 
 
@@ -281,8 +287,10 @@ services:
       - ./config_superset:/app/pythonpath
       - ./superset-data:/app/superset_home
     depends_on:
-      - redis
-      - superset-db
+      redis:
+        condition: service_started
+      superset-db:
+        condition: service_healthy
     entrypoint:
       - sh
       - -c
@@ -295,11 +303,13 @@ services:
           --lastname Admin \
           --email admin@superset.com \
           --password admin && \
-        superset init
+        superset init && \
+        superset run -h 0.0.0.0 -p 9090
+    ports:
+      - "9090:9090"
     networks:
       airflow-net:
         ipv4_address: 172.25.0.45
-
 
 
 

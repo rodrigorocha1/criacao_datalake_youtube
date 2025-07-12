@@ -17,6 +17,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Instala psycopg2-binary usando pip
-RUN pip install --no-cache-dir psycopg2-binary
+RUN pip install --no-cache-dir psycopg2-binary pyhive[hive] thrift sasl thrift-sasl
 
 USER superset
