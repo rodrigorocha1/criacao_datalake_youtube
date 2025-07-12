@@ -33,24 +33,6 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-
-  create-superset-db:
-    image: postgres:13
-    depends_on:
-      postgres:
-        condition: service_healthy
-    entrypoint: >
-      bash -c "
-        until pg_isready -h postgres -U airflow; do sleep 2; done;
-        psql -h postgres -U airflow -d airflow -c 'CREATE DATABASE superset;'
-      "
-    environment:
-      PGPASSWORD: airflow
-    networks:
-      airflow-net:
-        ipv4_address: 172.25.0.17
-
-
   postgres:
     image: postgres:13
     environment:
@@ -263,37 +245,64 @@ services:
       airflow-net:
         ipv4_address: 172.25.0.42
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      airflow-net:
+        ipv4_address: 172.25.0.43
 
-  superset:
+  superset-db:
+    image: postgres:13
+    container_name: superset-db
+    environment:
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_DB: superset
+    volumes:
+      - ./superset-db-data:/var/lib/postgresql/data
+    networks:
+      airflow-net:
+        ipv4_address: 172.25.0.44
+
+
+
+  superset_hive:
     image: superset_hive:latest
     container_name: superset
-    ports:
-      - "8091:8091"
     environment:
-      - SUPERSET_SECRET_KEY=supersecretkey
-      - SUPERSET_HOME=/app/superset_home
-      - DATABASE_URL=postgresql+psycopg2://airflow:airflow@postgres/superset
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+      PYTHONPATH: /app/pythonpath
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_DB: superset
+      POSTGRES_HOST: superset-db
     volumes:
-      - ./superset_home:/app/superset_home
+      - ./config_superset:/app/pythonpath
+      - ./superset-data:/app/superset_home
     depends_on:
-      create-superset-db:
-        condition: service_completed_successfully
-    command: >
-      /bin/bash -c "
-        pip install --no-cache-dir pyhive[hive] thrift sasl thrift-sasl &&
-        superset db upgrade &&
+      - redis
+      - superset-db
+    entrypoint:
+      - sh
+      - -c
+      - |
+        pip install --user --no-cache-dir psycopg2-binary && \
+        superset db upgrade && \
         superset fab create-admin \
           --username admin \
           --firstname Superset \
           --lastname Admin \
           --email admin@superset.com \
-          --password admin &&
-        superset init &&
-        superset run -h 0.0.0.0 -p 8091
-      "
+          --password admin && \
+        superset init
     networks:
       airflow-net:
-        ipv4_address: 172.25.0.43
+        ipv4_address: 172.25.0.45
+
+
+
+
 
 networks:
   airflow-net:
