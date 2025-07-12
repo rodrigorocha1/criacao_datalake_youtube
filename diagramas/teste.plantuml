@@ -1,0 +1,47 @@
+@startuml etl
+
+  package / {
+    package config {
+
+    }
+    package dags {
+        package src {
+            package hook {
+                package modulo_youtube_busca_assunto_hook {
+
+                }
+
+                package modulo_youtube_canais_hook {
+
+                }
+
+                package modulo_youtube_dados_videos_hook {
+
+                }
+
+                package modulo_youtube_hook {
+
+                }
+
+            }
+
+            package operatorss {
+                package modulo_youtube_busca_operator  {
+
+                }
+                package modulo_youtube_canais_operator  {
+
+                }
+
+                package modulo_youtube_operator  {
+
+                }
+
+                package modulo_youtube_video_operator  {
+
+                }
+            }
+        }
+    }
+  }
+@enduml
