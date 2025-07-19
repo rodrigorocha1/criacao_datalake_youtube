@@ -334,7 +334,4 @@ order by pc.id_canal;
 select *
 from depara_canal
 where id_canal = 'UCYdNzGpnk6hAtU0eV9QOVSA';
-
-select *
-from depara_video dv 
-
+do 

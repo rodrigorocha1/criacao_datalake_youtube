@@ -6,7 +6,7 @@ class YoutubeVideoHook(YotubeHook):
     def __init__(self, conn_id='youtube_default'):
         super().__init__(conn_id=conn_id)
 
-    def _criar_url(self):
+    def _criar_url(self) -> str :
         return self._URL + '/videos/'
 
     def run(self, **kwargs):

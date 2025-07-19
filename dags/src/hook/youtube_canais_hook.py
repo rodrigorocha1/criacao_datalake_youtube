@@ -5,7 +5,7 @@ class YoutubeBuscaCanaisHook(YotubeHook):
     def __init__(self, conn_id='youtube_default'):
         super().__init__(conn_id=conn_id)
 
-    def _criar_url(self):
+    def _criar_url(self) -> str:
         return self._URL + '/channels/'
 
     def run(self, **kwargs):

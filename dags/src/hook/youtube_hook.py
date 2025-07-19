@@ -22,7 +22,7 @@ class YotubeHook(HttpHook, ABC):
         super().__init__(http_conn_id=self._conn_id)
 
     @abstractmethod
-    def _criar_url(self):
+    def _criar_url(self) -> str:
         pass
 
     def _executar_paginacao(self, url: str, session, params: List[Dict]) -> Iterable[Dict]:

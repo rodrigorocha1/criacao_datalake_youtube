@@ -1,6 +1,3 @@
-a = [1, 2]
-b = [2, 4]
+class Pessoa:
 
-print(dict.fromkeys(a + b))
-resultado = list(dict.fromkeys(a + b))
-print(resultado)
+    def __init__(self, a, b):

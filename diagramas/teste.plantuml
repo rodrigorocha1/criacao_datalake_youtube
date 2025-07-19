@@ -1,7 +1,15 @@
 @startuml etl
-
+left to right direction
   package / {
-    package config {
+    package configuracao {
+        package modulo_configuracao {
+
+            class Configuracao {
+                __+url : str__
+                __+chave : str__
+            }
+
+        }
 
     }
     package dags {
