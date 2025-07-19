@@ -1,4 +1,4 @@
-from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
+
 
 try:
     import sys
@@ -11,6 +11,7 @@ from datetime import datetime
 from airflow.models import BaseOperator
 from abc import ABC, abstractmethod
 from dags.src.hook.youtube_hook import YotubeHook
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
 from typing import Dict
 import pendulum
 from pendulum.datetime import DateTime
