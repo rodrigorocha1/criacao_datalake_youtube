@@ -28,12 +28,13 @@ class YoutubeBuscaOperator(YoutubeOperator):
     ):
         self.__arquivo_json = arquivo_json
         self.__tabela = 'bronze_assunto'
-        self._operacao_banco = operacao_banco
+
         self._arquivo_temp_json = arquivo_temp_json
         super().__init__(
             task_id=task_id,
             assunto=assunto,
             operacao_hook=operacao_hook,
+            operacao_banco=operacao_banco,
             **kwargs
         )
 

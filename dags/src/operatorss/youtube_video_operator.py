@@ -24,9 +24,10 @@ class YoutubeVideoOperator(YoutubeOperator):
             operacao_banco: IOperacaoDados,
             **kwargs
     ):
-        self._operacao_banco = operacao_banco
+
         self._arquivo_json = arquivo_json
-        super().__init__(task_id=task_id, assunto=assunto, operacao_hook=operacao_hook, **kwargs)
+
+        super().__init__(task_id=task_id, assunto=assunto, operacao_hook=operacao_hook, operacao_banco=operacao_banco, **kwargs)
 
     def __executar_consulta_canal_video_temp(self) -> str:
         """

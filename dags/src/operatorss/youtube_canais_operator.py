@@ -25,11 +25,12 @@ class YoutubeBuscaCanaisOperator(YoutubeOperator):
             **kwargs
     ):
         self._arquivo_json = arquivo_json
-        self._operacao_banco = operacao_banco
+
         super().__init__(
             task_id=task_id,
             assunto=assunto,
             operacao_hook=operacao_hook,
+            operacao_banco=operacao_banco,
             **kwargs
         )
 

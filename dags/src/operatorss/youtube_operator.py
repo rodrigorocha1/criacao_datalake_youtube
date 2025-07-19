@@ -1,3 +1,5 @@
+from dags.src.services.manipulacao_dados.ioperacao_dados import IOperacaoDados
+
 try:
     import sys
     import os
@@ -21,10 +23,12 @@ class YoutubeOperator(BaseOperator, ABC):
             task_id,
             assunto: str,
             operacao_hook: YotubeHook,
+            operacao_banco: IOperacaoDados,
 
             **kwargs
     ):
         self._operacao_hook = operacao_hook
+        self._operacao_banco = operacao_banco
         self._assunto = unidecode(assunto.replace(' ', '_').replace("'", "")).lower()
         self._data = pendulum.parse(pendulum.now('America/Sao_Paulo').to_iso8601_string())
         super().__init__(task_id=task_id, **kwargs)
@@ -92,7 +96,7 @@ class YoutubeOperator(BaseOperator, ABC):
         consulta = f"""
             ALTER TABLE {tabela_particao}
             ADD IF NOT EXISTS PARTITION (
-            ssunto="{self.__assunto}"
+            assunto="{self.__assunto}"
         )
         """
         return consulta

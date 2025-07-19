@@ -1,5 +1,6 @@
 @startuml etl
-left to right direction
+
+skinparam classAttributeIconSize 0
   package / {
     package configuracao {
         package modulo_configuracao {
@@ -16,6 +17,8 @@ left to right direction
         package src {
             package hook {
                 package modulo_youtube_busca_assunto_hook {
+
+
 
                 }
 
